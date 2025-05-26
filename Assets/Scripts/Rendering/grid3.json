@@ -1,0 +1,154 @@
+{
+   "cells": [
+      
+         {
+            "gridX": 0,
+            "gridY": 0,
+            "type": "Entrance",
+            "modelToAssign": "None",
+            "floorToAssign": "bricks1",
+            "walls": ["S", "W"],
+            "traversible": true
+         },
+         {
+            "gridX": 1,
+            "gridY": 0,
+            "type": "Hallway",
+            "modelToAssign": "None",
+            "floorToAssign": "bricks1",
+            "walls": ["S"],
+            "traversible": true
+         },
+         {
+            "gridX": 2,
+            "gridY": 0,
+            "type": "Hallway",
+            "modelToAssign": "None",
+            "floorToAssign": "bricks1",
+            "walls": ["S"],
+            "traversible": true
+         },
+         {
+            "gridX": 3,
+            "gridY": 0,
+            "type": "Hallway",
+            "modelToAssign": "None",
+            "floorToAssign": "bricks1",
+            "walls": ["S", "E"],
+            "traversible": true
+         },
+         {
+            "gridX": 0,
+            "gridY": 1,
+            "type": "Hallway",
+            "modelToAssign": "None",
+            "floorToAssign": "bricks1",
+            "walls": ["W"],
+            "traversible": true
+         },
+         {
+            "gridX": 1,
+            "gridY": 1,
+            "type": "Decoration",
+            "modelToAssign": "SampleModel",
+            "floorToAssign": "grass1",
+            "walls": [],
+            "traversible": false
+         },
+         {
+            "gridX": 2,
+            "gridY": 1,
+            "type": "Hallway",
+            "modelToAssign": "None",
+            "floorToAssign": "grass1",
+            "walls": [],
+            "traversible": true
+         },
+         {
+            "gridX": 3,
+            "gridY": 1,
+            "type": "Hallway",
+            "modelToAssign": "None",
+            "floorToAssign": "bricks1",
+            "walls": ["E"],
+            "traversible": true
+         },
+         {
+            "gridX": 0,
+            "gridY": 2,
+            "type": "Hallway",
+            "modelToAssign": "None",
+            "floorToAssign": "bricks1",
+            "walls": ["W"],
+            "traversible": true
+         },
+         {
+            "gridX": 1,
+            "gridY": 2,
+            "type": "Decoration",
+            "modelToAssign": "SampleModel",
+            "floorToAssign": "grass1",
+            "walls": [],
+            "traversible": false
+         },
+         {
+            "gridX": 2,
+            "gridY": 2,
+            "type": "Hallway",
+            "modelToAssign": "None",
+            "floorToAssign": "grass1",
+            "walls": [],
+            "traversible": true
+         },
+         {
+            "gridX": 3,
+            "gridY": 2,
+            "type": "Hallway",
+            "modelToAssign": "None",
+            "floorToAssign": "bricks1",
+            "walls": ["E"],
+            "traversible": true
+         },
+         {
+            "gridX": 0,
+            "gridY": 3,
+            "type": "Hallway",
+            "modelToAssign": "None",
+            "floorToAssign": "bricks1",
+            "walls": ["N", "W"],
+            "traversible": true
+         },
+         {
+            "gridX": 1,
+            "gridY": 3,
+            "type": "Hallway",
+            "modelToAssign": "None",
+            "floorToAssign": "bricks1",
+            "walls": ["N"],
+            "traversible": true
+         },
+         {
+            "gridX": 2,
+            "gridY": 3,
+            "type": "Hallway",
+            "modelToAssign": "None",
+            "floorToAssign": "bricks1",
+            "walls": ["N"],
+            "traversible": true
+         },
+         {
+            "gridX": 3,
+            "gridY": 3,
+            "type": "Hallway",
+            "modelToAssign": "None",
+            "floorToAssign": "bricks1",
+            "walls": ["N", "E"],
+            "traversible": true
+         }
+         
+         
+      
+   ],
+   "width": 4,
+   "height": 4
+}
