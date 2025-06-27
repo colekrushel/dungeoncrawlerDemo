@@ -1,3 +1,4 @@
+using NUnit.Framework.Constraints;
 using System.Collections;
 using Unity.VisualScripting;
 using UnityEngine;
@@ -7,6 +8,7 @@ using UnityEngine.UIElements;
 public class InputHandler : MonoBehaviour
 {
     [SerializeField] GameObject gridParent;
+    [SerializeField] bool isCreator = false;
     DungeonGrid grid;
     Player player;
     const int cellWidth = 1;
@@ -119,69 +121,103 @@ public class InputHandler : MonoBehaviour
             bufferedInput = inputKey;
             bufferCounter = bufferLifetime;
         }
-        switch (inputKey)
+        //different control scheme for creation view
+        if (isCreator)
         {
-            //rotation keys
-            case 'd':
-                if (!isRotating && !isMoving)
-                {
-                    //set up rotation animation
-                    isRotating = true;
-                    startRotation = player.playerObject.transform.rotation;
-                    endRotation = Quaternion.AngleAxis(90f, Vector3.up) * startRotation;
-                    totalRotation = 0f;
-                }
-                break;
-            case 'a':
-                if (!isRotating && !isMoving)
-                {
-                    //set up rotation animation
-                    isRotating = true;
-                    startRotation = player.playerObject.transform.rotation;
-                    endRotation = Quaternion.AngleAxis(-90f, Vector3.up) * startRotation;
-                    totalRotation = 0f;
+            switch (inputKey) 
+            {
+                case 'w':
+                    if (!isMoving)
+                    {
+                        movePlayer(true);
+                    }
+                    break;
+                case 'a':
+                    if (!isMoving)
+                    {
+                        movePlayer(false, 90);
+                    }
+                    break;
+                case 's':
+                    if (!isMoving)
+                    {
+                        movePlayer(false);
+                    }
+                    break;
+                case 'd':
+                    if (!isMoving)
+                    {
+                        movePlayer(false, -90);
+                    }
+                    break;
+            }
+        }
+        else
+        {
+            switch (inputKey)
+            {
+                //rotation keys
+                case 'd':
+                    if (!isRotating && !isMoving)
+                    {
+                        //set up rotation animation
+                        isRotating = true;
+                        startRotation = player.playerObject.transform.rotation;
+                        endRotation = Quaternion.AngleAxis(90f, Vector3.up) * startRotation;
+                        totalRotation = 0f;
+                    }
+                    break;
+                case 'a':
+                    if (!isRotating && !isMoving)
+                    {
+                        //set up rotation animation
+                        isRotating = true;
+                        startRotation = player.playerObject.transform.rotation;
+                        endRotation = Quaternion.AngleAxis(-90f, Vector3.up) * startRotation;
+                        totalRotation = 0f;
 
-                }
-                break;
-            //movement keys
-            case 'w': //move forwards
-                if (!isRotating && !isMoving)
-                {
-                    movePlayer(true);
-                }
-                break;
-            case 's': //move backwards
-                if (!isRotating && !isMoving)
-                {
-                    movePlayer(false);
-                }
-                break;
-            case 'e': //move right but keep camera fowards
-                if (!isRotating && !isMoving)
-                {
-                    movePlayer(false, -90);
-                }
-                break;
-            case 'q': //move left but keep camera forwaards
-                if (!isRotating && !isMoving)
-                {
-                    movePlayer(false, 90);
-                }
-                break;
+                    }
+                    break;
+                //movement keys
+                case 'w': //move forwards
+                    if (!isRotating && !isMoving)
+                    {
+                        movePlayer(true);
+                    }
+                    break;
+                case 's': //move backwards
+                    if (!isRotating && !isMoving)
+                    {
+                        movePlayer(false);
+                    }
+                    break;
+                case 'e': //move right but keep camera fowards
+                    if (!isRotating && !isMoving)
+                    {
+                        movePlayer(false, -90);
+                    }
+                    break;
+                case 'q': //move left but keep camera forwaards
+                    if (!isRotating && !isMoving)
+                    {
+                        movePlayer(false, 90);
+                    }
+                    break;
 
-            //debug commands
-            case 'c':
-                isRotating = false;
-                isMoving = false;
-                player.playerObject.transform.eulerAngles = Vector3.zero;
-                SnapPlayer(0, 0, new Vector3(0, 0, 0));
-                break;
-            case 'z':
-                Debug.Log(isMoving);
-                Debug.Log(isRotating);
-                break;
+                //debug commands
+                case 'c':
+                    isRotating = false;
+                    isMoving = false;
+                    player.playerObject.transform.eulerAngles = Vector3.zero;
+                    SnapPlayer(0, 0, new Vector3(0, 0, 0));
+                    break;
+                case 'z':
+                    Debug.Log(isMoving);
+                    Debug.Log(isRotating);
+                    break;
 
-                
+
+            }
         }
         
     }
@@ -287,6 +323,15 @@ public class InputHandler : MonoBehaviour
     void SnapPlayer(int cellX, int cellY, Vector3 camRotation)
     {
         player.updatePos((new Vector2(cellX, cellY)));
-        player.teleportPlayer(new Vector3(cellX, .25f, cellY));
+        if (isCreator)
+        {
+            //move camera above grid
+            //this.transform.rotation.SetEulerAngles(-90, transform.rotation.y, transform.rotation.z);
+            player.teleportPlayer(new Vector3(cellX, 5f, cellY));
+        }
+        else
+        {
+            player.teleportPlayer(new Vector3(cellX, .25f, cellY));
+        }
     }
 }
