@@ -1,33 +1,28 @@
 using UnityEngine;
 
-public class Player 
+public static class Player 
 {
     //player params
-    private Vector2 gridPos;
-    public GameObject playerObject;
+    private static Vector2 gridPos = Vector2.zero;
+    public static GameObject playerObject;
 
-    public Player(GameObject playObj)
-    {
-        gridPos = Vector2.zero;
-        playerObject = playObj;
-    }
 
-    public void teleportPlayer(Vector3 pos)
+    static public void teleportPlayer(Vector3 pos)
     {
         playerObject.transform.position = pos;
     }
 
-    public void updatePos(Vector2 newpos)
+    static public void updatePos(Vector2 newpos)
     {
         gridPos = newpos;
     }
 
-    public Vector2 getPos()
+    static public Vector2 getPos()
     {
         return gridPos;
     }
 
-    public void printPos()
+    static public void printPos()
     {
         Debug.Log(gridPos.x);
         Debug.Log(gridPos.y);

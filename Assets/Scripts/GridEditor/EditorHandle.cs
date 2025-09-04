@@ -1,5 +1,9 @@
 using System.Collections;
+using System.Collections.Generic;
+using System.IO;
+using TMPro;
 using Unity.VisualScripting;
+using UnityEditor;
 using UnityEditor.Build;
 using UnityEngine;
 using UnityEngine.EventSystems;
@@ -15,104 +19,110 @@ public class EditorHandle : MonoBehaviour
     //globals
     [SerializeField] GameObject tileGrid;
     [SerializeField] public GameObject currSelected;
+    GameObject tileGridParent;
     Tile blankTile;
-    float s;
+    int s;
     float tileSize;
     bool hasCeiling = false;
     [SerializeField] Sprite nullsprite;
+    [SerializeField] Sprite restrictedsprite;
+    int currLayer = 1;
 
-
+    //handles the ui for the grid editor.
+    //layers above layer 1 require a ceiling on the corresponding spot in the previous layer to exist and be elligible for editing. blank floors on higher layer will use the lower tile's ceiling as its floor.
 
     void Start()
     {
-        //initialize params
+        //initialize params and layers
         float h = tileGrid.GetComponent<RectTransform>().rect.height;
         float w = tileGrid.GetComponent<RectTransform>().rect.width;
-        if (h > w) s = w; else s = h;
-        Debug.Log(w);
         blankTile = Resources.Load<Tile>("Tiles/blankTile");
-        //nullsprite = Resources.Load<Sprite>("Tiles/IconsWIPTransparentNoBorder_7");
         tileSize = w / gridSize - wallSize * 2;
-        tileGrid.GetComponent<GridLayoutGroup>().cellSize = new Vector2(tileSize, tileSize);
-        tileGrid.GetComponent<GridLayoutGroup>().spacing = new Vector2(wallSize * 2, wallSize * 2);
+        tileGridParent = tileGrid.transform.parent.gameObject;
+        foreach (Transform child in tileGridParent.transform)
+        {
+            GameObject cgrid = child.gameObject;
+            cgrid.GetComponent<GridLayoutGroup>().cellSize = new Vector2(tileSize, tileSize);
+            cgrid.GetComponent<GridLayoutGroup>().spacing = new Vector2(wallSize * 2, wallSize * 2);
+        }
+
+
         drawGrid();
 
     }
 
     void drawGrid()
     {
-        for (int i = 0; i < gridSize; i++)
+        int index = 1;
+        //initialize each layer
+        foreach (Transform child in tileGridParent.transform)
         {
-            for (int j = 0; j < gridSize; j++)
+            GameObject cgrid = child.gameObject;
+            for (int i = 0; i < gridSize; i++)
             {
-                //tilemap.SetTile(new Vector3Int(j, i, 0), blankTile);
-                //GameObject panel = new GameObject();
-                //panel.AddComponent<CanvasRenderer>();
-                //panel.AddComponent<RectTransform>();
-                //panel.AddComponent<Image>();
-                //panel.AddComponent<Button>();
-                //panel.AddComponent<GraphicRaycaster>();
-                GameObject panel = Instantiate(Resources.Load<GameObject>("Prefabs/editorTile"), new Vector3(0, 0, 0), Quaternion.identity);
-                panel.transform.SetParent(tileGrid.transform, false);
-                panel.transform.Find("Icon").GetComponent<RectTransform>().sizeDelta = new Vector2(tileSize, tileSize);
-                panel.transform.Find("Icon").GetComponent<Image>().sprite = nullsprite;
-                panel.transform.Find("N").GetComponent<Button>().onClick.AddListener(tileGridWallPress);
-                panel.transform.Find("E").GetComponent<Button>().onClick.AddListener(tileGridWallPress);
-                panel.transform.Find("S").GetComponent<Button>().onClick.AddListener(tileGridWallPress);
-                panel.transform.Find("W").GetComponent<Button>().onClick.AddListener(tileGridWallPress);
-                panel.GetComponent<Button>().onClick.AddListener(tileGridPress);
+                for (int j = 0; j < gridSize; j++)
+                {
+                    //all tiles in layers above 1 will be restricted by default.
+                    GameObject panel = Instantiate(Resources.Load<GameObject>("Prefabs/editorTile"), new Vector3(0, 0, 0), Quaternion.identity);
+                    panel.transform.SetParent(cgrid.transform, false);
+                    panel.transform.Find("Icon").GetComponent<RectTransform>().sizeDelta = new Vector2(tileSize, tileSize);
+                    if (index > 1)
+                    {
+                        panel.transform.Find("Icon").GetComponent<Image>().sprite = restrictedsprite;
+                    } else
+                    {
+                        panel.transform.Find("Icon").GetComponent<Image>().sprite = nullsprite;
+                    }
 
-                //panel.GetComponent<Image>().sprite = null;
-
-                //create panels to act as wall toggles
-                //for (int k = 0; k < 4; k++)
-                //{
-                //    GameObject p = new GameObject();
-                //    p.AddComponent<CanvasRenderer>();
-                //    p.AddComponent<RectTransform>();
-                //    RectTransform r = p.GetComponent<RectTransform>();
-                //    p.AddComponent<Image>();
-                //    p.AddComponent<Button>();
-                //    p.GetComponent<Button>().onClick.AddListener(tileGridWallPress);
-                //    switch (k)
-                //    {
-                //        case 0:
-                //            r.SetInsetAndSizeFromParentEdge(RectTransform.Edge.Top, -wallSize, wallSize);
-                //            r.sizeDelta = new Vector2(tileSize, r.sizeDelta.y);
-                //            break;
-                //        case 1:
-                //            r.SetInsetAndSizeFromParentEdge(RectTransform.Edge.Right, -wallSize, wallSize);
-                //            r.sizeDelta = new Vector2(r.sizeDelta.x, tileSize);
-                //            break;
-                //        case 2:
-                //            r.SetInsetAndSizeFromParentEdge(RectTransform.Edge.Bottom, -wallSize, wallSize);
-                //            r.sizeDelta = new Vector2(tileSize, r.sizeDelta.y);
-                //            break;
-                //        case 3:
-                //            r.SetInsetAndSizeFromParentEdge(RectTransform.Edge.Left, -wallSize, wallSize);
-                //            r.sizeDelta = new Vector2(r.sizeDelta.x, tileSize);
-                //            break;
-                //    }
-
-                //    p.transform.SetParent(panel.transform, false);
-                //}
-
+                    panel.transform.Find("N").GetComponent<Button>().onClick.AddListener(tileGridWallPress);
+                    panel.transform.Find("E").GetComponent<Button>().onClick.AddListener(tileGridWallPress);
+                    panel.transform.Find("S").GetComponent<Button>().onClick.AddListener(tileGridWallPress);
+                    panel.transform.Find("W").GetComponent<Button>().onClick.AddListener(tileGridWallPress);
+                    panel.GetComponent<Button>().onClick.AddListener(tileGridPress);
+                }
             }
+            //set inactive if index isnt currlayer
+            if (index != currLayer) cgrid.SetActive(false);
+            index++;
         }
+
     }
 
 
     public void tileGridPress()
     {
-        //set clicked on tile's icon to match currently selected icon
         GameObject selectedObject = EventSystem.current.currentSelectedGameObject;
-        Image tileImg = selectedObject.transform.Find("Icon").GetComponent<Image>();
-        tileImg.sprite = currSelected.transform.Find("Icon").GetComponent<Image>().sprite;
-        Image tileBckg = selectedObject.transform.Find("Background").GetComponent<Image>();
-        tileBckg.color = currSelected.transform.Find("Background").GetComponent<Image>().color;
-        if (hasCeiling) {
-
+        //set clicked on tile's icon to match currently selected icon
+        //check if tile is restricted; cannot edit restricted tiles.
+        if (selectedObject.transform.Find("Icon").GetComponent<Image>().sprite == restrictedsprite)
+        {
+            //do nothing
+        } else
+        {
+            Image tileImg = selectedObject.transform.Find("Icon").GetComponent<Image>();
+            tileImg.sprite = currSelected.transform.Find("Icon").GetComponent<Image>().sprite;
+            Image tileBckg = selectedObject.transform.Find("Background").GetComponent<Image>();
+            tileBckg.color = currSelected.transform.Find("Background").GetComponent<Image>().color;
+            Image tileCeil = selectedObject.transform.Find("Ceiling").GetComponent<Image>();
+            tileCeil.color = currSelected.transform.Find("Ceiling").GetComponent<Image>().color;
+            if (hasCeiling && currLayer != 3)
+            {
+                //if a ceiling is placed, then unrestrict the above tile.
+                int index = selectedObject.transform.GetSiblingIndex();
+                GameObject aboveGrid = tileGridParent.transform.GetChild(currLayer).gameObject;
+                GameObject aboveTile = aboveGrid.transform.GetChild(index).gameObject;
+                aboveTile.transform.Find("Icon").GetComponent<Image>().sprite = nullsprite;
+            } else if (!hasCeiling && currLayer != 3)
+            {
+                //if a ceiling is removed, make sure the above tile is restricted.
+                int index = selectedObject.transform.GetSiblingIndex();
+                GameObject aboveGrid = tileGridParent.transform.GetChild(currLayer).gameObject;
+                GameObject aboveTile = aboveGrid.transform.GetChild(index).gameObject;
+                aboveTile.transform.Find("Icon").GetComponent<Image>().sprite = restrictedsprite;
+            }
         }
+
+
     }
 
     public void tileGridWallPress()
@@ -155,14 +165,153 @@ public class EditorHandle : MonoBehaviour
 
     public void toggleCeiling()
     {
-        if (hasCeiling) 
-        { 
-            hasCeiling = false; 
-            //currSelected.GetComponent<Image>().color = Color.white; 
-        } else 
-        { 
+        if (hasCeiling)
+        {
+            hasCeiling = false;
+            currSelected.transform.Find("Ceiling").GetComponent<Image>().color = Color.white;
+        } else
+        {
             hasCeiling = true;
-            //currSelected.GetComponent<Image>().color = Color.cyan;
+            currSelected.transform.Find("Ceiling").GetComponent<Image>().color = Color.black;
+        }
+    }
+
+    public void switchLayer(int layer)
+    {
+        //set previous layer to inactive and button's layer to active
+        tileGridParent.transform.GetChild(currLayer - 1).gameObject.SetActive(false);
+        tileGridParent.transform.GetChild(layer - 1).gameObject.SetActive(true);
+        currLayer = layer;
+    }
+
+    public void importGrid()
+    {
+        GameObject selectedObject = EventSystem.current.currentSelectedGameObject;
+        string fileName = selectedObject.transform.Find("importName").GetComponent<TMP_InputField>().text;
+        //for each layer
+        for(int i = 0; i < 3; i++)
+        {
+            string path = Application.dataPath + "/Scripts/Rendering/" + fileName + (i+1) + ".txt";
+            //fetch file
+            if (File.Exists(path))
+            {
+                var sr = File.OpenText(path);
+                string json = sr.ReadLine();
+                //read json
+                DungeonGrid grid = JsonUtility.FromJson<DungeonGrid>(json);
+                //iterate through each cell in the grid and change editor to match
+                for (int j = 0; j < grid.cells.Length; j++)
+                {
+                    DungeonCell cell = grid.cells[j];
+                    GameObject editorCell = tileGridParent.transform.GetChild(i).GetChild(j).gameObject;
+                    //handle walls
+                    foreach (string wall in cell.walls){
+                        editorCell.transform.Find(wall).gameObject.GetComponent<Image>().color = Color.black;
+                    }
+                    //handle background/floor
+                    string colorString = GridDicts.floorToColor[cell.floorToAssign];
+                    string[] rgba = colorString.Substring(5, colorString.Length - 6).Split(", ");
+                    Color color = new Color(float.Parse(rgba[0]), float.Parse(rgba[1]), float.Parse(rgba[2]), float.Parse(rgba[3]));
+                    editorCell.transform.Find("Background").gameObject.GetComponent<Image>().color = color;
+
+                    //handle icon
+                    string p = "Tiles/" + GridDicts.typeToSprite[cell.type];
+                    p = "Tiles/restricted";
+                    //cant load tiles from the spritesheet??
+                    Debug.Log(p);
+                    Sprite s = Resources.Load<Sprite>(p);
+                    Debug.Log(s.name);
+                    editorCell.transform.Find("Icon").gameObject.GetComponent<Image>().sprite = s;
+
+                    //handle ceiling
+                    if(cell.hasCeiling) editorCell.transform.Find("Ceiling").gameObject.GetComponent<Image>().color = Color.black;
+                }
+
+            } else
+            {
+                Debug.Log(path + " doesnt exist");
+                return;
+            }
+
+        }
+    }
+
+    public void saveGrid() // 3(gridSize^2 * 6) objects iterated through
+    {
+        GameObject selectedObject = EventSystem.current.currentSelectedGameObject;
+        string fileName = selectedObject.transform.Find("gridName").GetComponent<TMP_InputField>().text;
+        int clayer = 1;
+
+        foreach (Transform child in tileGridParent.transform)
+        {
+            GameObject cgrid = child.gameObject;
+            DungeonGrid grid = new DungeonGrid();
+            grid.width = gridSize;
+            grid.height = gridSize;
+            //loop through each cell on the grid and translate its data into a cell object
+            int cellindex = 0;
+            List<DungeonCell> cellList = new List<DungeonCell>();
+            foreach (Transform tile in cgrid.transform)
+            {
+                DungeonCell cell = new DungeonCell();
+                cell.gridX = cellindex % gridSize; 
+                cell.gridY = cellindex / gridSize;
+                //current gameobject is the parent of the tile object; data is stored in children, so we must check those too
+                int i = 0;
+                List<string> walls = new List<string>();
+                foreach (Transform param in tile.transform)
+                {
+                    GameObject p = param.gameObject;
+                    //N, E, S, W, Background, Icon, Ceiling
+                    //add wall data
+                    
+                    if (i < 4)
+                    {
+                        if (p.GetComponent<Image>().color == Color.black)
+                        {
+                            walls.Add(p.name);
+                        }
+                    }
+                    else if (i == 4)//background (floor) data
+                    {
+                        cell.floorType = p.gameObject.GetComponent<Image>().color.ToString();
+                        cell.floorToAssign = GridDicts.colorToFloor[cell.floorType];
+
+                    }
+                    else if (i == 5)//icon (type) data
+                    {
+                        cell.type = GridDicts.spriteToType[p.GetComponent<Image>().sprite.name];
+                        if (cell.type == "None" || cell.type == "Empty")
+                        {
+                            cell.traversible = true;
+                        }
+                    } else if (i == 6)//ceiling 
+                    {
+                        if(p.GetComponent<Image>().color == Color.black)cell.hasCeiling = true;
+                    }
+                    i++;
+                }
+                cell.walls = walls.ToArray();
+                cellList.Add(cell);
+                cellindex++;
+            }
+            grid.cells = cellList.ToArray();
+            //export json
+            string json = JsonUtility.ToJson(grid);
+            Debug.Log(json);
+            string cfileName = fileName + clayer + ".txt";
+            string path = Application.dataPath + "/Scripts/Rendering/" + cfileName;
+
+            if (File.Exists(path))
+            {
+                Debug.Log(cfileName + " already exists.");
+                return;
+            }
+            var sr = File.CreateText(path);
+            sr.WriteLine(json);
+            sr.Close();
+            clayer++;
+            AssetDatabase.Refresh();
         }
     }
 

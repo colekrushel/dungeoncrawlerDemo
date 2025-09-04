@@ -18,10 +18,6 @@ public class RenderGrid : MonoBehaviour
         //render cell objects ; cant be rendered in a class function as serializable objects cannot inherit monobehavior to be loaded from json
         renderCellGrid();
         
-        
-       
-
-        
     }
 
     private void renderCellGrid()

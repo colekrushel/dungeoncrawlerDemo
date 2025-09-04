@@ -10,7 +10,7 @@ public class InputHandler : MonoBehaviour
     [SerializeField] GameObject gridParent;
     [SerializeField] bool isCreator = false;
     DungeonGrid grid;
-    Player player;
+    //Player player;
     const int cellWidth = 1;
     bool loaded = false;
     const int speedMultiplier = 2;
@@ -33,11 +33,12 @@ public class InputHandler : MonoBehaviour
 
     void Start()
     {
-        player = new Player(gameObject);
+        Player.playerObject = gameObject;
         //get grid info from script
 
         //move player onto 0,0 tile
-        SnapPlayer(0, 0, new Vector3(0, 0, 0));
+        //SnapPlayer(0, 0, new Vector3(0, 0, 0));
+
     }
 
     // Update is called once per frame
@@ -73,7 +74,7 @@ public class InputHandler : MonoBehaviour
             if (Mathf.Abs(totalRotation - 90f) < 1)
             {
                 isRotating = false;
-                player.playerObject.transform.rotation = endRotation;
+                Player.playerObject.transform.rotation = endRotation;
             }
 
 
@@ -84,15 +85,15 @@ public class InputHandler : MonoBehaviour
         {
             float moveAmount = 1f * speedMultiplier * Time.deltaTime;
             //move player towards new cell
-            player.playerObject.transform.position += new Vector3(moveAmount * moveDir.x, 0, moveAmount * moveDir.z);
+            Player.playerObject.transform.position += new Vector3(moveAmount * moveDir.x, 0, moveAmount * moveDir.z);
             
 
             //check if movement complete
-            Vector3 dist = (player.playerObject.transform.position - finalPosition);
+            Vector3 dist = (Player.playerObject.transform.position - finalPosition);
             if ( Mathf.Abs(dist.x) < (.01f*speedMultiplier) && Mathf.Abs(dist.z) < (.01f * speedMultiplier))
             {
                 isMoving = false;
-                player.playerObject.transform.position = finalPosition;
+                Player.playerObject.transform.position = finalPosition;
             }
         }
     }
@@ -107,6 +108,7 @@ public class InputHandler : MonoBehaviour
                 RenderGrid gridScript = gridParent.GetComponent<RenderGrid>();
                 grid = gridScript.getGrid();
                 loaded = true;
+                
             }
             Keyboard.current.onTextInput += cha => movePlayer(cha);
         }
@@ -162,7 +164,7 @@ public class InputHandler : MonoBehaviour
                     {
                         //set up rotation animation
                         isRotating = true;
-                        startRotation = player.playerObject.transform.rotation;
+                        startRotation = Player.playerObject.transform.rotation;
                         endRotation = Quaternion.AngleAxis(90f, Vector3.up) * startRotation;
                         totalRotation = 0f;
                     }
@@ -172,7 +174,7 @@ public class InputHandler : MonoBehaviour
                     {
                         //set up rotation animation
                         isRotating = true;
-                        startRotation = player.playerObject.transform.rotation;
+                        startRotation = Player.playerObject.transform.rotation;
                         endRotation = Quaternion.AngleAxis(-90f, Vector3.up) * startRotation;
                         totalRotation = 0f;
 
@@ -208,7 +210,7 @@ public class InputHandler : MonoBehaviour
                 case 'c':
                     isRotating = false;
                     isMoving = false;
-                    player.playerObject.transform.eulerAngles = Vector3.zero;
+                    Player.playerObject.transform.eulerAngles = Vector3.zero;
                     SnapPlayer(0, 0, new Vector3(0, 0, 0));
                     break;
                 case 'z':
@@ -228,10 +230,10 @@ public class InputHandler : MonoBehaviour
         //-90 = west (-x)
         //0 = north (+y)
         //90 = east (+x)
-        float dir = player.playerObject.transform.rotation.eulerAngles.y + dirOffset;
+        float dir = Player.playerObject.transform.rotation.eulerAngles.y + dirOffset;
         if (dir == -90) dir = 270; //exception for north -> west
         bool canMove;
-        Vector2 playerPos = player.getPos();
+        Vector2 playerPos = Player.getPos();
 
         //handle backwards by reversing player movement direction
         if (!moveForwards)
@@ -249,14 +251,14 @@ public class InputHandler : MonoBehaviour
                 canMove = grid.canMoveBetween(playerPos, playerPos - new Vector2(0, 1), 'S');
                 if (canMove)
                 {
-                    finalPosition = player.playerObject.transform.position + new Vector3(0, 0, -1) * cellWidth;
+                    finalPosition = Player.playerObject.transform.position + new Vector3(0, 0, -1) * cellWidth;
                     moveDir = new Vector3(0, 0, -1);
                     isMoving = true;
-                    player.updatePos(playerPos - new Vector2(0, 1));
+                    Player.updatePos(playerPos - new Vector2(0, 1));
                 }
                 else
                 {
-                    Debug.Log("can't move");
+                    Debug.Log("can't move south");
                 }
 
                 break;
@@ -265,15 +267,15 @@ public class InputHandler : MonoBehaviour
                 canMove = grid.canMoveBetween(playerPos, playerPos - new Vector2(1, 0), 'W');
                 if (canMove)
                 {
-                    finalPosition = player.playerObject.transform.position + new Vector3(-1, 0, 0) * cellWidth;
+                    finalPosition = Player.playerObject.transform.position + new Vector3(-1, 0, 0) * cellWidth;
                     moveDir = new Vector3(-1, 0, 0);
                     isMoving = true;
-                    player.updatePos(playerPos - new Vector2(1, 0));
+                    Player.updatePos(playerPos - new Vector2(1, 0));
 
                 }
                 else
                 {
-                    Debug.Log("can't move");
+                    Debug.Log("can't move west");
                 }
                 break;
             case 0:
@@ -281,14 +283,14 @@ public class InputHandler : MonoBehaviour
                 canMove = grid.canMoveBetween(playerPos, playerPos + new Vector2(0, 1), 'N');
                 if (canMove)
                 {
-                    finalPosition = player.playerObject.transform.position + new Vector3(0, 0, 1) * cellWidth;
+                    finalPosition = Player.playerObject.transform.position + new Vector3(0, 0, 1) * cellWidth;
                     moveDir = new Vector3(0, 0, 1);
-                    player.updatePos(playerPos + new Vector2(0, 1));
+                    Player.updatePos(playerPos + new Vector2(0, 1));
                     isMoving = true;
                 }
                 else
                 {
-                    Debug.Log("can't move");
+                    Debug.Log("can't move north");
                 }
                 break;
             case 90:
@@ -296,14 +298,14 @@ public class InputHandler : MonoBehaviour
                 canMove = grid.canMoveBetween(playerPos, playerPos + new Vector2(1, 0), 'E');
                 if (canMove)
                 {
-                    finalPosition = player.playerObject.transform.position + new Vector3(1, 0, 0) * cellWidth;
+                    finalPosition = Player.playerObject.transform.position + new Vector3(1, 0, 0) * cellWidth;
                     moveDir = new Vector3(1, 0, 0);
-                    player.updatePos(playerPos + new Vector2(1, 0));
+                    Player.updatePos(playerPos + new Vector2(1, 0));
                     isMoving = true;
                 }
                 else
                 {
-                    Debug.Log("can't move");
+                    Debug.Log("can't move east");
                 }
                 break;
         }
@@ -322,16 +324,16 @@ public class InputHandler : MonoBehaviour
 
     void SnapPlayer(int cellX, int cellY, Vector3 camRotation)
     {
-        player.updatePos((new Vector2(cellX, cellY)));
+        Player.updatePos((new Vector2(cellX, cellY)));
         if (isCreator)
         {
             //move camera above grid
             //this.transform.rotation.SetEulerAngles(-90, transform.rotation.y, transform.rotation.z);
-            player.teleportPlayer(new Vector3(cellX, 5f, cellY));
+            Player.teleportPlayer(new Vector3(cellX, 5f, cellY));
         }
         else
         {
-            player.teleportPlayer(new Vector3(cellX, .25f, cellY));
+            Player.teleportPlayer(new Vector3(cellX, .25f, cellY));
         }
     }
 }

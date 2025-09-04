@@ -13,6 +13,7 @@ public class DungeonGrid
     //public CellRow[] cells;
     public int width;
     public int height;
+    public Vector2 startpos;
     private List<List<DungeonCell>> cellGrid; //does public/private matter for json serializing?
     public DungeonGrid()
     {
@@ -64,8 +65,13 @@ public class DungeonGrid
         {
             cellGrid[rowCount].Add(cells[i]);
             colCount++;
-            //Debug.Log(colCount);
-            //Debug.Log(rowCount);
+            //check for entrance cell
+            if (cells[i].type == "Entrance")
+            {
+                Debug.Log("entrance found");
+                startpos = new Vector2(cells[i].gridX, cells[i].gridY);
+                //Player.updatePos(startpos);
+            }
             
             //increment row
             if (colCount >= width)
