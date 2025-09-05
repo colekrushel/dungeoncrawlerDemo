@@ -1,29 +1,45 @@
 using System.Collections.Generic;
 using System.Linq;
 using UnityEngine;
+using static TMPro.SpriteAssetUtilities.TexturePacker_JsonArray;
 
 public static class GridDicts
 {
+
+
+
     //static string name = "WA";
-    public static Dictionary<string, string> colorToFloor = new Dictionary<string, string>()
+    public static Dictionary<Color, string> colorToFloor = new Dictionary<Color, string>()
     {
-        { "RGBA(1.000, 1.000, 1.000, 1.000)", "bricks1" },
-        { "RGBA(0.041, 0.464, 0.062, 1.000)", "grass1" }
+        { Color.white, "bricks1" },
+        { new Color32(0, 123, 0, 255), "grass1" },
+        { new Color32(255, 0, 0, 255), "red" },
+        { new Color32(0, 0, 0, 255), "black" },
 
     };
-    public static Dictionary<string, string> spriteToType = new Dictionary<string, string>()
+    public static Dictionary<Sprite, string> spriteToType = new Dictionary<Sprite, string>();
+
+    public static Dictionary<string, Color> floorToColor = colorToFloor.ToDictionary(x => x.Value, x => x.Key);
+    public static Dictionary<string, Sprite> typeToSprite = new Dictionary<string, Sprite>();
+
+    public static void init()
     {
-        { "None", "None2" },
-        { "iconsWIPTransparentNoBorder_0", "Rest" },
-        { "iconsWIPTransparentNoBorder_1", "Item" },
-        { "iconsWIPTransparentNoBorder_2", "OpenDoor" },
-        { "iconsWIPTransparentNoBorder_3", "ClosedDoor" },
-        { "iconsWIPTransparentNoBorder_4", "OneWay" },
-        { "iconsWIPTransparentNoBorder_5", "Entrance" },
-        { "iconsWIPTransparentNoBorder_7", "None" }, //transparent icon
-        { "restricted", "Empty" }
-    };
-    public static Dictionary<string, string> floorToColor = colorToFloor.ToDictionary(x => x.Value, x => x.Key);
-    public static Dictionary<string, string> typeToSprite = spriteToType.ToDictionary(x => x.Value, x => x.Key);
+        //add spritesheet icons to dict
+        Sprite[] spritesheet = Resources.LoadAll<Sprite>("Tiles/iconsWIPTransparentNoBorder");
+
+        foreach (var s in spritesheet)
+        {
+            if (s.name == "iconsWIPTransparentNoBorder_0") spriteToType.Add(s, "Rest");
+            if (s.name == "iconsWIPTransparentNoBorder_1") spriteToType.Add(s, "Item");
+            if (s.name == "iconsWIPTransparentNoBorder_2") spriteToType.Add(s, "OpenDoor");
+            if (s.name == "iconsWIPTransparentNoBorder_3") spriteToType.Add(s, "ClosedDoor");
+            if (s.name == "iconsWIPTransparentNoBorder_4") spriteToType.Add(s, "OneWay");
+            if (s.name == "iconsWIPTransparentNoBorder_5") spriteToType.Add(s, "Entrance");
+            if (s.name == "iconsWIPTransparentNoBorder_7") spriteToType.Add(s, "None");
+
+        }
+        spriteToType.Add(Resources.Load<Sprite>("Tiles/restricted"), "Empty");
+        typeToSprite = spriteToType.ToDictionary(x => x.Value, x => x.Key);
+    }
 
 }

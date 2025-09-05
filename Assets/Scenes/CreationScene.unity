@@ -1415,7 +1415,7 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   m_Material: {fileID: 0}
-  m_Color: {r: 1, g: 0.020754695, b: 0.020754695, a: 1}
+  m_Color: {r: 1, g: 0, b: 0, a: 1}
   m_RaycastTarget: 1
   m_RaycastPadding: {x: 0, y: 0, z: 0, w: 0}
   m_Maskable: 1
@@ -3250,8 +3250,8 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 826d9cc24ebf09b4b8def46a5bd00961, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  gridSize: 8
-  wallSize: 15
+  gridSize: 10
+  wallSize: 10
   tileGrid: {fileID: 300552969}
   currSelected: {fileID: 2133323266}
   nullsprite: {fileID: 1460657098, guid: 02014b9c896994f4aa7b809cbf2314de, type: 3}
@@ -3624,7 +3624,7 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   m_Material: {fileID: 0}
-  m_Color: {r: 0.041160528, g: 0.4641509, b: 0.062059518, a: 1}
+  m_Color: {r: 0, g: 0.48235294, b: 0, a: 1}
   m_RaycastTarget: 1
   m_RaycastPadding: {x: 0, y: 0, z: 0, w: 0}
   m_Maskable: 1
@@ -3798,7 +3798,7 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   m_Material: {fileID: 0}
-  m_Color: {r: 0.3283019, g: 0.29423285, b: 0.29423285, a: 1}
+  m_Color: {r: 0, g: 0, b: 0, a: 1}
   m_RaycastTarget: 1
   m_RaycastPadding: {x: 0, y: 0, z: 0, w: 0}
   m_Maskable: 1

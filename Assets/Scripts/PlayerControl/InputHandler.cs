@@ -9,6 +9,7 @@ public class InputHandler : MonoBehaviour
 {
     [SerializeField] GameObject gridParent;
     [SerializeField] bool isCreator = false;
+    [SerializeField] Vector2Int startpos;
     DungeonGrid grid;
     //Player player;
     const int cellWidth = 1;
@@ -34,11 +35,11 @@ public class InputHandler : MonoBehaviour
     void Start()
     {
         Player.playerObject = gameObject;
+        Player.currentLayer = 0;
+        SnapPlayer(startpos.x, startpos.y);
         //get grid info from script
 
         //move player onto 0,0 tile
-        //SnapPlayer(0, 0, new Vector3(0, 0, 0));
-
     }
 
     // Update is called once per frame
@@ -106,7 +107,7 @@ public class InputHandler : MonoBehaviour
             if (!loaded) //load grid into input script on first input 
             {
                 RenderGrid gridScript = gridParent.GetComponent<RenderGrid>();
-                grid = gridScript.getGrid();
+                grid = gridScript.getGrid(Player.currentLayer);
                 loaded = true;
                 
             }
@@ -211,7 +212,7 @@ public class InputHandler : MonoBehaviour
                     isRotating = false;
                     isMoving = false;
                     Player.playerObject.transform.eulerAngles = Vector3.zero;
-                    SnapPlayer(0, 0, new Vector3(0, 0, 0));
+                    SnapPlayer(0, 0);
                     break;
                 case 'z':
                     Debug.Log(isMoving);
@@ -322,7 +323,7 @@ public class InputHandler : MonoBehaviour
     }
 
 
-    void SnapPlayer(int cellX, int cellY, Vector3 camRotation)
+    void SnapPlayer(int cellX, int cellY)
     {
         Player.updatePos((new Vector2(cellX, cellY)));
         if (isCreator)

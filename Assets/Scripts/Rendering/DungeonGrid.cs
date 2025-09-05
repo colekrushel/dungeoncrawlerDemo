@@ -13,6 +13,7 @@ public class DungeonGrid
     //public CellRow[] cells;
     public int width;
     public int height;
+    public int layer = 0;
     public Vector2 startpos;
     private List<List<DungeonCell>> cellGrid; //does public/private matter for json serializing?
     public DungeonGrid()
@@ -48,23 +49,28 @@ public class DungeonGrid
     {
         //Debug.Log(cells.Length);
         //fill 2D array from 1D json cell data
-        int colCount = 0;
-        int rowCount = 0;
+       // int colCount = 0;
+        //int rowCount = 0;
 
         //create empty rows
         
         for (int i = 0; i < height; i++)
         {
             List<DungeonCell> trow = new List<DungeonCell>();
+            for (int j = 0; j < width; j++)
+            {
+                DungeonCell tc = new DungeonCell();
+                trow.Add(tc);
+            }
             cellGrid.Add(trow);
         }
-       
-
-        //fill empty rows one at a time
+        //fill grid by using the x/y positions of the cells in loaded data
         for (int i = 0; i < cells.Length; i++)
         {
-            cellGrid[rowCount].Add(cells[i]);
-            colCount++;
+            DungeonCell cell = cells[i];
+            int yPos = cell.gridY;
+            int xPos = cell.gridX;
+            cellGrid[yPos][xPos] = cell;
             //check for entrance cell
             if (cells[i].type == "Entrance")
             {
@@ -72,13 +78,8 @@ public class DungeonGrid
                 startpos = new Vector2(cells[i].gridX, cells[i].gridY);
                 //Player.updatePos(startpos);
             }
-            
-            //increment row
-            if (colCount >= width)
-            {
-                rowCount++;
-                colCount = 0;
-            }
+
+           
         }
     }
 
@@ -160,9 +161,32 @@ public class DungeonGrid
         }
         return canMove;
     }
-
+    
+    //helpers
     public List<List<DungeonCell>> getCellGrid()
     {
         return cellGrid;
+    }
+
+    //get cell in given direction from given cell; returns null if out of bounds
+    public DungeonCell getCellInDirection(DungeonCell currcell, string direction)
+    {
+        switch (direction)
+        {
+            case "N":
+                if (currcell.gridY + 1 >= height) return null;
+                return cellGrid[currcell.gridY+1][currcell.gridX];
+            case "E":
+                if (currcell.gridX + 1 >= width) return null;
+                return cellGrid[currcell.gridY][currcell.gridX+1];
+            case "S":
+                if (currcell.gridY - 1 < 0) return null;
+                return cellGrid[currcell.gridY - 1][currcell.gridX];
+            case "W":
+                if (currcell.gridX - 1 < 0) return null;
+                return cellGrid[currcell.gridY][currcell.gridX - 1];
+        }
+        //invalid direction given
+        return null;
     }
 }

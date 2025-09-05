@@ -15,8 +15,8 @@ public class DungeonCell
     public string type; //type of cell (entrance, item, door
     public string modelToAssign; //string telling what model to assign to this cell when loading from json
     public string floorToAssign; //string telling what texture to assign to the floor
-    public string floorType = "Default";
-    public bool hasCeiling = false;
+    public string floorType = "Default"; //unused ??
+    public bool hasCeiling = false; //tells whether to render a ceiling tile or not on this cell
     public string[] walls; //array containing what walls will need to be rendered on this cell (W,E,S,N)
     //public Texture2D floorTexture; //texture rendered on floor
     //public GameObject model; //model associated with cell (can be decorative, door, etc)

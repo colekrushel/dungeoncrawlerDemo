@@ -45,7 +45,7 @@ public class EditorHandle : MonoBehaviour
             cgrid.GetComponent<GridLayoutGroup>().cellSize = new Vector2(tileSize, tileSize);
             cgrid.GetComponent<GridLayoutGroup>().spacing = new Vector2(wallSize * 2, wallSize * 2);
         }
-
+        GridDicts.init();
 
         drawGrid();
 
@@ -75,9 +75,13 @@ public class EditorHandle : MonoBehaviour
                     }
 
                     panel.transform.Find("N").GetComponent<Button>().onClick.AddListener(tileGridWallPress);
+                    panel.transform.Find("N").GetComponent<RectTransform>().sizeDelta = new Vector2(tileSize, wallSize);
                     panel.transform.Find("E").GetComponent<Button>().onClick.AddListener(tileGridWallPress);
+                    panel.transform.Find("E").GetComponent<RectTransform>().sizeDelta = new Vector2(wallSize, tileSize);
                     panel.transform.Find("S").GetComponent<Button>().onClick.AddListener(tileGridWallPress);
+                    panel.transform.Find("S").GetComponent<RectTransform>().sizeDelta = new Vector2(tileSize, wallSize);
                     panel.transform.Find("W").GetComponent<Button>().onClick.AddListener(tileGridWallPress);
+                    panel.transform.Find("W").GetComponent<RectTransform>().sizeDelta = new Vector2(wallSize, tileSize);
                     panel.GetComponent<Button>().onClick.AddListener(tileGridPress);
                 }
             }
@@ -204,23 +208,23 @@ public class EditorHandle : MonoBehaviour
                 {
                     DungeonCell cell = grid.cells[j];
                     GameObject editorCell = tileGridParent.transform.GetChild(i).GetChild(j).gameObject;
-                    //handle walls
+                    //handle walls N, E, S, W
+                    //reset walls to be blank
+                    for(int w = 0; w < 4; w++)
+                    {
+                        editorCell.transform.GetChild(w).gameObject.GetComponent<Image>().color = Color.white;
+                    }
+                    //then fill with walls from data
                     foreach (string wall in cell.walls){
                         editorCell.transform.Find(wall).gameObject.GetComponent<Image>().color = Color.black;
                     }
                     //handle background/floor
-                    string colorString = GridDicts.floorToColor[cell.floorToAssign];
-                    string[] rgba = colorString.Substring(5, colorString.Length - 6).Split(", ");
-                    Color color = new Color(float.Parse(rgba[0]), float.Parse(rgba[1]), float.Parse(rgba[2]), float.Parse(rgba[3]));
+                    Color color = GridDicts.floorToColor[cell.floorToAssign];
                     editorCell.transform.Find("Background").gameObject.GetComponent<Image>().color = color;
 
                     //handle icon
-                    string p = "Tiles/" + GridDicts.typeToSprite[cell.type];
-                    p = "Tiles/restricted";
-                    //cant load tiles from the spritesheet??
-                    Debug.Log(p);
-                    Sprite s = Resources.Load<Sprite>(p);
-                    Debug.Log(s.name);
+
+                    Sprite s = GridDicts.typeToSprite[cell.type];
                     editorCell.transform.Find("Icon").gameObject.GetComponent<Image>().sprite = s;
 
                     //handle ceiling
@@ -256,6 +260,8 @@ public class EditorHandle : MonoBehaviour
                 DungeonCell cell = new DungeonCell();
                 cell.gridX = cellindex % gridSize; 
                 cell.gridY = cellindex / gridSize;
+                //inverse y pos because rendering has (0,0) corner at bottom left but editor has (0,0) corner at top left
+                cell.gridY = Mathf.Abs(cell.gridY - (gridSize-1));
                 //current gameobject is the parent of the tile object; data is stored in children, so we must check those too
                 int i = 0;
                 List<string> walls = new List<string>();
@@ -275,12 +281,12 @@ public class EditorHandle : MonoBehaviour
                     else if (i == 4)//background (floor) data
                     {
                         cell.floorType = p.gameObject.GetComponent<Image>().color.ToString();
-                        cell.floorToAssign = GridDicts.colorToFloor[cell.floorType];
+                        cell.floorToAssign = GridDicts.colorToFloor[p.gameObject.GetComponent<Image>().color];
 
                     }
                     else if (i == 5)//icon (type) data
                     {
-                        cell.type = GridDicts.spriteToType[p.GetComponent<Image>().sprite.name];
+                        cell.type = GridDicts.spriteToType[p.GetComponent<Image>().sprite];
                         if (cell.type == "None" || cell.type == "Empty")
                         {
                             cell.traversible = true;
