@@ -12,6 +12,7 @@ public class RenderGrid : MonoBehaviour
     {
         gameObject.transform.position = Vector3.zero;
         grids = new DungeonGrid[gridFiles.Length];
+        GridDicts.init();
         //for each layer
         for (int i = 0; i < gridFiles.Length; i++)
         {
@@ -166,7 +167,12 @@ public class RenderGrid : MonoBehaviour
             ceil.transform.SetParent(cellObject.transform);
             ceil.transform.position = new Vector3(0, 1, 0);
         }
-        //models
+        //models/entities
+        //we have cell type and entity facing position, assign subclasses and open
+        if(cell.type != "None" && cell.type != "Empty") initializeEntity(cell, cellObject);
+
+       
+        
 
         //handle models for types (set when saving?
         string modelURL = "Prefabs/" + cell.getModelToAssign();
@@ -182,6 +188,45 @@ public class RenderGrid : MonoBehaviour
         //add rendered object to global array so it doesnt have to be loaded again
         cellObject.transform.position = new Vector3(cellX, 0, cellY);
         return cellObject;
+    }
+
+    public void initializeEntity(DungeonCell cell, GameObject cellObject)
+    {
+        
+        //get model from dict
+        GameObject model = Instantiate(GridDicts.typeToModel[cell.type]);
+        model.transform.SetParent(cellObject.transform);
+        //rotate 
+        switch (cell.entity.facing)
+        {
+            case "N":
+                model.transform.Rotate(0, 180, 0); //xyz
+                break;
+            case "E":
+                model.transform.Rotate(0, 270, 0); //xyz
+                break;
+            case "S":
+                model.transform.Rotate(0, 0, 0); //xyz
+                break;
+            case "W":
+                model.transform.Rotate(0, 90, 0); //xyz
+                break;
+        }
+
+        //assign subclass
+        //switch (cell.type)
+        //{
+        //    case "OpenDoor":
+        //        Door door = (Door)cell.entity; 
+        //        door.open = true;
+        //        cell.entity = door;
+        //        break;
+        //    case "ClosedDoor":
+        //        Door cdoor = (Door)cell.entity;
+        //        cdoor.open = true;
+        //        cell.entity = cdoor;
+        //        break;
+        //}
     }
 
     public DungeonGrid getGrid(int layer)

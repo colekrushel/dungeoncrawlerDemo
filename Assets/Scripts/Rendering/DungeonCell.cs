@@ -14,6 +14,7 @@ public class DungeonCell
     public int width = 1; //width and height of cell in scene
     public string type; //type of cell (entrance, item, door
     public string modelToAssign; //string telling what model to assign to this cell when loading from json
+    public string modelFacingDir; // N/E/S/W string telling how much to rotate the model by when placed in the scene
     public string floorToAssign; //string telling what texture to assign to the floor
     public string floorType = "Default"; //unused ??
     public bool hasCeiling = false; //tells whether to render a ceiling tile or not on this cell
@@ -22,6 +23,8 @@ public class DungeonCell
     //public GameObject model; //model associated with cell (can be decorative, door, etc)
     private GameObject cellObject; //rendered model for whole cell
     public bool traversible; //whether the tile can be traversed by players/entities or not
+    public CellEntity entity; //entity used to handle interactable cell types (doors, items, levers, ect)
+    //when serializing the dungeon json in, the entity will always be serialized as a CellEntity object. this means that to subtype it, we have to assign subtypes manually.
     public DungeonCell()
     {
         //default values are for empty cells

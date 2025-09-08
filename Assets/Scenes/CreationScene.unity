@@ -153,6 +153,7 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   gridParent: {fileID: 1029283032}
   isCreator: 1
+  startpos: {x: 0, y: 0}
 --- !u!114 &88525243
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -3459,7 +3460,7 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 3eb136ba53d70854dae929fed7e20e8d, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  gridFile: {fileID: 4900000, guid: 17a646ea3e0e7844aa45b89775c4eb5f, type: 3}
+  gridFiles: []
 --- !u!4 &1029283034
 Transform:
   m_ObjectHideFlags: 0
@@ -3859,7 +3860,7 @@ RectTransform:
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
   m_AnchorMin: {x: 0.5, y: 0.5}
   m_AnchorMax: {x: 0.5, y: 0.5}
-  m_AnchoredPosition: {x: 497.1, y: 79.2}
+  m_AnchoredPosition: {x: 497.1, y: 124.3}
   m_SizeDelta: {x: 160, y: 30}
   m_Pivot: {x: 0.5, y: 0.5}
 --- !u!114 &1203062000
@@ -4149,7 +4150,7 @@ RectTransform:
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
   m_AnchorMin: {x: 0, y: 1}
   m_AnchorMax: {x: 0, y: 1}
-  m_AnchoredPosition: {x: 1081.4, y: -190.8}
+  m_AnchoredPosition: {x: 1081.4, y: -154}
   m_SizeDelta: {x: 100, y: 47.6}
   m_Pivot: {x: 0.5, y: 0.5}
 --- !u!114 &1378471003
@@ -7412,7 +7413,7 @@ RectTransform:
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
   m_AnchorMin: {x: 0, y: 1}
   m_AnchorMax: {x: 0, y: 1}
-  m_AnchoredPosition: {x: 1080.1, y: -102}
+  m_AnchoredPosition: {x: 1080.1, y: -52}
   m_SizeDelta: {x: 100, y: 100}
   m_Pivot: {x: 0.5, y: 0.5}
 --- !u!1660057539 &9223372036854775807

@@ -9,6 +9,7 @@ using UnityEngine;
 using UnityEngine.EventSystems;
 using UnityEngine.Tilemaps;
 using UnityEngine.UI;
+using static UnityEngine.EventSystems.EventTrigger;
 
 public class EditorHandle : MonoBehaviour
 {
@@ -27,6 +28,8 @@ public class EditorHandle : MonoBehaviour
     [SerializeField] Sprite nullsprite;
     [SerializeField] Sprite restrictedsprite;
     int currLayer = 1;
+
+    
 
     //handles the ui for the grid editor.
     //layers above layer 1 require a ceiling on the corresponding spot in the previous layer to exist and be elligible for editing. blank floors on higher layer will use the lower tile's ceiling as its floor.
@@ -83,6 +86,12 @@ public class EditorHandle : MonoBehaviour
                     panel.transform.Find("W").GetComponent<Button>().onClick.AddListener(tileGridWallPress);
                     panel.transform.Find("W").GetComponent<RectTransform>().sizeDelta = new Vector2(wallSize, tileSize);
                     panel.GetComponent<Button>().onClick.AddListener(tileGridPress);
+                    //assign right click listening functionality to grid items (why isnt this default...)
+                    EventTrigger trigger = panel.AddComponent<EventTrigger>(); 
+                    var pointerDown = new EventTrigger.Entry();
+                    pointerDown.eventID = EventTriggerType.PointerDown;
+                    pointerDown.callback.AddListener((e) => rightClickTile(e));
+                    trigger.triggers.Add(pointerDown);
                 }
             }
             //set inactive if index isnt currlayer
@@ -92,6 +101,22 @@ public class EditorHandle : MonoBehaviour
 
     }
 
+    public void rightClickTile(BaseEventData eventData)
+    {
+        PointerEventData e = eventData as PointerEventData; //cast it to pointer event data even though it doesn't have automatic conversion
+        GameObject selectedObject = e.pointerEnter.transform.parent.gameObject; //event is intercepted by its child (ceiling obj)... bandage fix it
+        if (e.button == PointerEventData.InputButton.Right && selectedObject.transform.Find("Icon").gameObject.GetComponent<Image>().sprite != nullsprite)
+        {
+            Debug.Log("Right click");
+            //toggle this item's entitymenu
+
+
+            GameObject menu = selectedObject.transform.GetChild(selectedObject.transform.childCount - 1).gameObject;
+            menu.transform.position = new Vector3(600, 350, 0);
+            menu.SetActive(true);
+        }
+            
+    }
 
     public void tileGridPress()
     {
@@ -207,6 +232,8 @@ public class EditorHandle : MonoBehaviour
                 for (int j = 0; j < grid.cells.Length; j++)
                 {
                     DungeonCell cell = grid.cells[j];
+                    CellEntity entity = cell.entity;
+                    if (entity == null) entity = new CellEntity();
                     GameObject editorCell = tileGridParent.transform.GetChild(i).GetChild(j).gameObject;
                     //handle walls N, E, S, W
                     //reset walls to be blank
@@ -229,6 +256,15 @@ public class EditorHandle : MonoBehaviour
 
                     //handle ceiling
                     if(cell.hasCeiling) editorCell.transform.Find("Ceiling").gameObject.GetComponent<Image>().color = Color.black;
+
+                    //populate entity info if not empty
+                    if(cell.type != "Empty" && cell.type != "None")
+                    {
+                        GameObject menu = editorCell.transform.Find("entityMenu").gameObject;
+                        menu.transform.Find("linkX").gameObject.GetComponent<TMP_InputField>().text = entity.targetx.ToString();
+                        menu.transform.Find("linkY").gameObject.GetComponent<TMP_InputField>().text = entity.targety.ToString();//invert?
+                        menu.transform.Find("Facing").gameObject.GetComponent<TMP_InputField>().text = entity.facing;
+                    }
                 }
 
             } else
@@ -258,19 +294,21 @@ public class EditorHandle : MonoBehaviour
             foreach (Transform tile in cgrid.transform)
             {
                 DungeonCell cell = new DungeonCell();
-                cell.gridX = cellindex % gridSize; 
+                cell.gridX = cellindex % gridSize;
                 cell.gridY = cellindex / gridSize;
                 //inverse y pos because rendering has (0,0) corner at bottom left but editor has (0,0) corner at top left
-                cell.gridY = Mathf.Abs(cell.gridY - (gridSize-1));
+                cell.gridY = Mathf.Abs(cell.gridY - (gridSize - 1));
                 //current gameobject is the parent of the tile object; data is stored in children, so we must check those too
                 int i = 0;
                 List<string> walls = new List<string>();
+
+                CellEntity entity;
                 foreach (Transform param in tile.transform)
                 {
                     GameObject p = param.gameObject;
                     //N, E, S, W, Background, Icon, Ceiling
                     //add wall data
-                    
+
                     if (i < 4)
                     {
                         if (p.GetComponent<Image>().color == Color.black)
@@ -293,11 +331,35 @@ public class EditorHandle : MonoBehaviour
                         }
                     } else if (i == 6)//ceiling 
                     {
-                        if(p.GetComponent<Image>().color == Color.black)cell.hasCeiling = true;
+                        if (p.GetComponent<Image>().color == Color.black) cell.hasCeiling = true;
+                    } else if ((i == 7)) //entity info
+                    {
+                        //switch based on type
+                        if (cell.type != "None" && cell.type != "Empty")
+                        {
+                            //TEST HOW SUBCLASSES GET EXPORTED
+                            entity = new CellEntity();
+                            //get info from menu
+                            GameObject menu = p;
+                            //menu.SetActive(true);
+                            entity.targetx = int.Parse(menu.transform.Find("linkX").gameObject.GetComponent<TMP_InputField>().text);
+                            entity.targety = int.Parse(menu.transform.Find("linkY").gameObject.GetComponent<TMP_InputField>().text); //invert?
+                            entity.xpos = cell.gridX;
+                            entity.ypos = cell.gridY;
+                            entity.facing = menu.transform.Find("Facing").gameObject.GetComponent<TMP_InputField>().text;
+                            cell.entity = entity;
+                            //menu.SetActive(false);
+
+                        } 
+
                     }
+
                     i++;
                 }
                 cell.walls = walls.ToArray();
+                //export cellentity data
+
+                
                 cellList.Add(cell);
                 cellindex++;
             }

@@ -1,7 +1,6 @@
 using System.Collections.Generic;
 using System.Linq;
 using UnityEngine;
-using static TMPro.SpriteAssetUtilities.TexturePacker_JsonArray;
 
 public static class GridDicts
 {
@@ -22,6 +21,8 @@ public static class GridDicts
     public static Dictionary<string, Color> floorToColor = colorToFloor.ToDictionary(x => x.Value, x => x.Key);
     public static Dictionary<string, Sprite> typeToSprite = new Dictionary<string, Sprite>();
 
+    public static Dictionary<string, GameObject> typeToModel = new Dictionary<string, GameObject>();
+
     public static void init()
     {
         //add spritesheet icons to dict
@@ -40,6 +41,13 @@ public static class GridDicts
         }
         spriteToType.Add(Resources.Load<Sprite>("Tiles/restricted"), "Empty");
         typeToSprite = spriteToType.ToDictionary(x => x.Value, x => x.Key);
+
+        //entity models
+        typeToModel.Add("OpenDoor", Resources.Load<GameObject>("Prefabs/Door1"));
+        typeToModel.Add("ClosedDoor", Resources.Load<GameObject>("Prefabs/Door1"));
+        typeToModel.Add("Entrance", Resources.Load<GameObject>("Prefabs/Door1"));
+        typeToModel.Add("Item", Resources.Load<GameObject>("Prefabs/Item1"));
+        typeToModel.Add("Rest", Resources.Load<GameObject>("Prefabs/Rest1"));
     }
 
 }
