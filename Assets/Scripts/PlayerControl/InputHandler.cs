@@ -22,6 +22,7 @@ public class InputHandler : MonoBehaviour
     Quaternion startRotation;
     Quaternion endRotation;
     float totalRotation;
+    string facingQ;
     //movement
     bool isMoving = false;
     Vector3 finalPosition = Vector3.zero;
@@ -76,6 +77,7 @@ public class InputHandler : MonoBehaviour
             {
                 isRotating = false;
                 Player.playerObject.transform.rotation = endRotation;
+                //finished rotating, now check if ui elements need to be displayed
             }
 
 
@@ -94,6 +96,8 @@ public class InputHandler : MonoBehaviour
             if ( Mathf.Abs(dist.x) < (.01f*speedMultiplier) && Mathf.Abs(dist.z) < (.01f * speedMultiplier))
             {
                 isMoving = false;
+                //update player facing
+                Player.updateFacing();
                 Player.playerObject.transform.position = finalPosition;
             }
         }
@@ -335,6 +339,17 @@ public class InputHandler : MonoBehaviour
         else
         {
             Player.teleportPlayer(new Vector3(cellX, .25f, cellY));
+        }
+    }
+
+
+    
+    void FinishRotation()
+    {
+        //after player finishes rotation we want to check if the tile in front of the player is interactable
+        if(grid.getCellInDirection(grid.getCell( (Player.getPos())), Player.facing).entity.interactable)
+        {
+            //display interaction prompt
         }
     }
 }

@@ -31,6 +31,11 @@ public class DungeonGrid
         return cellGrid[y][x];
     }
 
+    public DungeonCell getCell(Vector2 pos)
+    {
+        return cellGrid[(int)pos.y][(int)pos.x];
+    }
+
     public void printGrid()
     {
         Debug.Log(width);
