@@ -33,6 +33,10 @@ public class InputHandler : MonoBehaviour
     const int bufferLifetime = 30; //frames that the buffered input should be held for
     int bufferCounter = 0; //count lifetime of buffered input
 
+    //ui stuff
+    [SerializeField] GameObject interactWindow;
+    [SerializeField] GameObject mapperGrid;
+
     void Start()
     {
         Player.playerObject = gameObject;
@@ -78,6 +82,8 @@ public class InputHandler : MonoBehaviour
                 isRotating = false;
                 Player.playerObject.transform.rotation = endRotation;
                 //finished rotating, now check if ui elements need to be displayed
+                Player.updateFacing();
+                OnMoveEnd();
             }
 
 
@@ -95,10 +101,9 @@ public class InputHandler : MonoBehaviour
             Vector3 dist = (Player.playerObject.transform.position - finalPosition);
             if ( Mathf.Abs(dist.x) < (.01f*speedMultiplier) && Mathf.Abs(dist.z) < (.01f * speedMultiplier))
             {
-                isMoving = false;
-                //update player facing
-                Player.updateFacing();
+                isMoving = false;          
                 Player.playerObject.transform.position = finalPosition;
+                OnMoveEnd();
             }
         }
     }
@@ -121,6 +126,7 @@ public class InputHandler : MonoBehaviour
 
     void movePlayer(char inputKey)
     {
+
         //store last pressed input as buffered input
         bufferedInput = ']';
         if(isRotating || isMoving)
@@ -172,6 +178,7 @@ public class InputHandler : MonoBehaviour
                         startRotation = Player.playerObject.transform.rotation;
                         endRotation = Quaternion.AngleAxis(90f, Vector3.up) * startRotation;
                         totalRotation = 0f;
+                        OnMoveBegin();
                     }
                     break;
                 case 'a':
@@ -182,6 +189,7 @@ public class InputHandler : MonoBehaviour
                         startRotation = Player.playerObject.transform.rotation;
                         endRotation = Quaternion.AngleAxis(-90f, Vector3.up) * startRotation;
                         totalRotation = 0f;
+                        OnMoveBegin();
 
                     }
                     break;
@@ -231,6 +239,7 @@ public class InputHandler : MonoBehaviour
 
     void movePlayer(bool moveForwards, float dirOffset = 0)
     {
+        
         //180 && -180 = south (-y)
         //-90 = west (-x)
         //0 = north (+y)
@@ -260,6 +269,7 @@ public class InputHandler : MonoBehaviour
                     moveDir = new Vector3(0, 0, -1);
                     isMoving = true;
                     Player.updatePos(playerPos - new Vector2(0, 1));
+                    OnMoveBegin();
                 }
                 else
                 {
@@ -276,7 +286,7 @@ public class InputHandler : MonoBehaviour
                     moveDir = new Vector3(-1, 0, 0);
                     isMoving = true;
                     Player.updatePos(playerPos - new Vector2(1, 0));
-
+                    OnMoveBegin();
                 }
                 else
                 {
@@ -292,6 +302,7 @@ public class InputHandler : MonoBehaviour
                     moveDir = new Vector3(0, 0, 1);
                     Player.updatePos(playerPos + new Vector2(0, 1));
                     isMoving = true;
+                    OnMoveBegin();
                 }
                 else
                 {
@@ -307,6 +318,7 @@ public class InputHandler : MonoBehaviour
                     moveDir = new Vector3(1, 0, 0);
                     Player.updatePos(playerPos + new Vector2(1, 0));
                     isMoving = true;
+                    OnMoveBegin();
                 }
                 else
                 {
@@ -343,13 +355,22 @@ public class InputHandler : MonoBehaviour
     }
 
 
-    
-    void FinishRotation()
+    void OnMoveBegin()
     {
-        //after player finishes rotation we want to check if the tile in front of the player is interactable
+        //disable popup windows tied to entities when movement begins
+        UIUtils.popOut(interactWindow);
+        
+        
+    }
+    void OnMoveEnd()
+    {
+        //after player finishes movement we want to check if the tile in front of the player is interactable
         if(grid.getCellInDirection(grid.getCell( (Player.getPos())), Player.facing).entity.interactable)
         {
             //display interaction prompt
+            UIUtils.popIn(interactWindow);
         }
+        //update minimap every time player moves
+        UIUtils.updateMap(mapperGrid, grid);
     }
 }

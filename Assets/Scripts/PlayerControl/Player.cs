@@ -18,8 +18,7 @@ public static class Player
     static public void updatePos(Vector2 newpos)
     {
         gridPos = newpos;
-        Debug.Log("player moved to ");
-        Debug.Log(gridPos);
+
     }
 
     static public Vector2 getPos()

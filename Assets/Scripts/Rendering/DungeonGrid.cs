@@ -79,7 +79,6 @@ public class DungeonGrid
             //check for entrance cell
             if (cells[i].type == "Entrance")
             {
-                Debug.Log("entrance found");
                 startpos = new Vector2(cells[i].gridX, cells[i].gridY);
                 //Player.updatePos(startpos);
             }
@@ -193,5 +192,10 @@ public class DungeonGrid
         }
         //invalid direction given
         return null;
+    }
+
+    public bool cellOutOfBounds(Vector2Int pos)
+    {
+        return(pos.x < 0 || pos.y < 0 || pos.x >=  width || pos.y >= height);
     }
 }

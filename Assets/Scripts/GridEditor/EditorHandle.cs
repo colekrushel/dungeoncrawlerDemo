@@ -348,6 +348,7 @@ public class EditorHandle : MonoBehaviour
                             entity.ypos = cell.gridY;
                             entity.facing = menu.transform.Find("Facing").gameObject.GetComponent<TMP_InputField>().text;
                             cell.entity = entity;
+                            entity.interactable = true;
                             //menu.SetActive(false);
 
                         } 
