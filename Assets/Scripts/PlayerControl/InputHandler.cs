@@ -332,11 +332,13 @@ public class InputHandler : MonoBehaviour
 
     void OnInteract(InputValue value)
     {
-        if (value.isPressed)
+       // Debug.Log("interact");
+        if (value.isPressed && !isMoving && !isRotating)
         {
             Debug.Log("interact");
         }
     }
+
 
 
     void SnapPlayer(int cellX, int cellY)

@@ -28,8 +28,9 @@ public class RenderGrid : MonoBehaviour
             renderCellGrid(grids[i], newlayer);
             newlayer.transform.position = gameObject.transform.position + new Vector3(0, i, 0);
         }
-        
 
+        //prompt map update
+        UIUtils.updateMap(GameObject.Find("MapGrid"), grids[Player.currentLayer]);
         
     }
 
