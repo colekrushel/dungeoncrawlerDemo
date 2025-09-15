@@ -197,6 +197,7 @@ public class RenderGrid : MonoBehaviour
         //get model from dict
         GameObject model = Instantiate(GridDicts.typeToModel[cell.type]);
         model.transform.SetParent(cellObject.transform);
+        cell.entity.entityInScene = model;
         //rotate 
         switch (cell.entity.facing)
         {
@@ -215,19 +216,23 @@ public class RenderGrid : MonoBehaviour
         }
 
         //assign subclass
-        //switch (cell.type)
-        //{
-        //    case "OpenDoor":
-        //        Door door = (Door)cell.entity; 
-        //        door.open = true;
-        //        cell.entity = door;
-        //        break;
-        //    case "ClosedDoor":
-        //        Door cdoor = (Door)cell.entity;
-        //        cdoor.open = true;
-        //        cell.entity = cdoor;
-        //        break;
-        //}
+        switch (cell.type)
+        {
+            case "OpenDoor":
+                Door door = new Door(cell.entity);
+                door.open = true;
+                cell.entity = door;
+                break;
+            case "ClosedDoor":
+                Door cdoor = new Door(cell.entity);
+                cdoor.open = false;
+                cell.entity = cdoor;
+                break;
+            case "Stairs":
+                cell.entity.interactable = false;
+                cell.traversible = true;
+                break;
+        }
     }
 
     public DungeonGrid getGrid(int layer)

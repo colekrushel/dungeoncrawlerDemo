@@ -1,10 +1,8 @@
-using System;
-using System.Globalization;
 using UnityEngine;
 
-[Serializable]
-public class CellEntity 
+public class MonoEntity : MonoBehaviour
 {
+
     public int xpos; //ints for serializing (cant serialize vectors... i think)
     public int ypos;
     public int targetx; //'target' position - used for entities that need to reference another position, like a teleporter or lever
@@ -17,7 +15,7 @@ public class CellEntity
 
 
     //method called; delegate to entity subclasses
-    virtual public void interact() {Debug.Log("default interact");}
+    virtual public void interact() { Debug.Log("default interact"); }
 
-    
-}
+
+    }

@@ -1,3 +1,5 @@
+using System;
+using System.Collections.Generic;
 using Unity.VisualScripting;
 using UnityEngine;
 
@@ -7,7 +9,11 @@ public static class Player
     private static Vector2 gridPos = Vector2.zero;
     public static GameObject playerObject;
     public static int currentLayer = 0;
+    public static bool betweenLayers = false;
+    public static Tuple<int, int> between;
     public static string facing;
+    public static bool inputLock = false;
+    public static List<char> actionQueue = new List<char>();
 
 
     static public void teleportPlayer(Vector3 pos)

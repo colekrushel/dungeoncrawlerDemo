@@ -1,11 +1,34 @@
 using System.Collections;
 using System.Linq;
+using TMPro;
+using Unity.VisualScripting;
 using UnityEngine;
 using UnityEngine.UI;
 using UnityEngine.UIElements.Experimental;
 
-public static class UIUtils 
+public class UIUtils : MonoBehaviour 
 {
+
+    public static MonoBehaviour Instance { get; private set; }
+
+    private void Awake()
+    {
+        // If there is an instance, and it's not me, delete myself.
+
+        if (Instance != null && Instance != this)
+        {
+            Destroy(this);
+        }
+        else
+        {
+            Instance = this;
+        }
+    }
+
+    //static vars so only have to be loaded once
+    static public GameObject logWindow = GameObject.Find("LogContent").gameObject;
+    static public GameObject entry = Resources.Load<GameObject>("Prefabs/Entry");
+
     //'pops' in the window by toggling it and performing a little animation
     public static void popIn(GameObject window)
     {
@@ -201,6 +224,20 @@ public static class UIUtils
         }
         //when finished hiding canvas group, disable it
         if (mode == 5 && !fadeIn) objectToFade.GetComponent<Canvas>().enabled = false;
+    }
+
+    public static void addMessageToLog(string message, Color color)
+    {
+        GameObject newEntry = Instantiate(entry);
+        newEntry.name = "newmessage";
+        newEntry.GetComponent<TextMeshProUGUI>().text = message;
+        newEntry.GetComponent<TextMeshProUGUI>().color = color;
+        newEntry.transform.SetParent(logWindow.transform, false);
+        //newEntry.transform.parent = logWindow.transform;
+        //adjust content height by adding height of new message entry to window content height
+        logWindow.GetComponent<RectTransform>().sizeDelta = new Vector2(800, logWindow.GetComponent<RectTransform>().sizeDelta.y + newEntry.GetComponent<RectTransform>().sizeDelta.y);
+        //scroll to bottom
+        logWindow.transform.parent.gameObject.GetComponent<ScrollRect>().normalizedPosition = new Vector2(0, 0);
     }
 
 }

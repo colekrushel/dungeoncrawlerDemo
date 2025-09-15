@@ -154,6 +154,8 @@ MonoBehaviour:
   gridParent: {fileID: 1029283032}
   isCreator: 1
   startpos: {x: 0, y: 0}
+  interactWindow: {fileID: 0}
+  mapperGrid: {fileID: 0}
 --- !u!114 &88525243
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -4761,7 +4763,19 @@ MonoBehaviour:
   m_TargetGraphic: {fileID: 1432108139}
   m_OnClick:
     m_PersistentCalls:
-      m_Calls: []
+      m_Calls:
+      - m_Target: {fileID: 928486608}
+        m_TargetAssemblyTypeName: EditorHandle, Assembly-CSharp
+        m_MethodName: iconSelect
+        m_Mode: 1
+        m_Arguments:
+          m_ObjectArgument: {fileID: 0}
+          m_ObjectArgumentAssemblyTypeName: UnityEngine.Object, UnityEngine
+          m_IntArgument: 0
+          m_FloatArgument: 0
+          m_StringArgument: 
+          m_BoolArgument: 0
+        m_CallState: 2
 --- !u!114 &1432108137
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -4815,15 +4829,15 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   m_Material: {fileID: 0}
-  m_Color: {r: 1, g: 1, b: 1, a: 0.392}
+  m_Color: {r: 1, g: 1, b: 1, a: 1}
   m_RaycastTarget: 1
   m_RaycastPadding: {x: 0, y: 0, z: 0, w: 0}
   m_Maskable: 1
   m_OnCullStateChanged:
     m_PersistentCalls:
       m_Calls: []
-  m_Sprite: {fileID: 10907, guid: 0000000000000000f000000000000000, type: 0}
-  m_Type: 1
+  m_Sprite: {fileID: 1659629877, guid: 616ab3fa3bf99e045a713e396346bc4c, type: 3}
+  m_Type: 0
   m_PreserveAspect: 0
   m_FillCenter: 1
   m_FillMethod: 4

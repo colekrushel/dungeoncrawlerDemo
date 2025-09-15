@@ -1,5 +1,7 @@
 using NUnit.Framework.Constraints;
 using System.Collections;
+using System.Collections.Generic;
+using System.Net;
 using Unity.VisualScripting;
 using UnityEngine;
 using UnityEngine.InputSystem;
@@ -27,11 +29,18 @@ public class InputHandler : MonoBehaviour
     bool isMoving = false;
     Vector3 finalPosition = Vector3.zero;
     Vector3 moveDir = Vector3.zero;
+    
 
     //input buffer
     char bufferedInput; //hold buffered input
     const int bufferLifetime = 30; //frames that the buffered input should be held for
     int bufferCounter = 0; //count lifetime of buffered input
+
+
+    //verticality
+    //int verticalO
+
+    
 
     //ui stuff
     [SerializeField] GameObject interactWindow;
@@ -50,6 +59,7 @@ public class InputHandler : MonoBehaviour
     // Update is called once per frame
     void Update()
     {
+        
         //only decrement count when an input is held in the buffer
         if(bufferedInput != ']')bufferCounter -= 1;
         //remove buffered input after its lifetime expires
@@ -60,8 +70,17 @@ public class InputHandler : MonoBehaviour
         //execute buffered input when not performing action and empty buffer
         if(!isMoving && !isRotating)
         {
-            movePlayer(bufferedInput);
-            bufferedInput = ']';
+            //if any items are in the action queue then execute them as soon as possible, prioritizing over all other inputs
+            if(Player.actionQueue.Count > 0)
+            {
+                movePlayer(Player.actionQueue[0], true);
+                Player.actionQueue.RemoveAt(0);
+            } else
+            {
+                movePlayer(bufferedInput);
+                bufferedInput = ']';
+            }
+
         }
         if (isRotating)
         {
@@ -113,6 +132,7 @@ public class InputHandler : MonoBehaviour
     {
         if (value.isPressed)
         {
+            //Debug.Log(value);
             if (!loaded) //load grid into input script on first input 
             {
                 RenderGrid gridScript = gridParent.GetComponent<RenderGrid>();
@@ -124,9 +144,10 @@ public class InputHandler : MonoBehaviour
         }
     }
 
-    void movePlayer(char inputKey)
+    void movePlayer(char inputKey, bool priority = false)
     {
-
+        //if player is input locked then ignore all incoming inputs
+        if (Player.inputLock) { return; }
         //store last pressed input as buffered input
         bufferedInput = ']';
         if(isRotating || isMoving)
@@ -142,25 +163,25 @@ public class InputHandler : MonoBehaviour
                 case 'w':
                     if (!isMoving)
                     {
-                        movePlayer(true);
+                        movePlayer(true, 0, priority);
                     }
                     break;
                 case 'a':
                     if (!isMoving)
                     {
-                        movePlayer(false, 90);
+                        movePlayer(false, 90, priority);
                     }
                     break;
                 case 's':
                     if (!isMoving)
                     {
-                        movePlayer(false);
+                        movePlayer(false, 0, priority);
                     }
                     break;
                 case 'd':
                     if (!isMoving)
                     {
-                        movePlayer(false, -90);
+                        movePlayer(false, -90, priority);
                     }
                     break;
             }
@@ -197,25 +218,25 @@ public class InputHandler : MonoBehaviour
                 case 'w': //move forwards
                     if (!isRotating && !isMoving)
                     {
-                        movePlayer(true);
+                        movePlayer(true, 0, priority);
                     }
                     break;
                 case 's': //move backwards
                     if (!isRotating && !isMoving)
                     {
-                        movePlayer(false);
+                        movePlayer(false, 0, priority);
                     }
                     break;
                 case 'e': //move right but keep camera fowards
                     if (!isRotating && !isMoving)
                     {
-                        movePlayer(false, -90);
+                        movePlayer(false, -90, priority);
                     }
                     break;
                 case 'q': //move left but keep camera forwaards
                     if (!isRotating && !isMoving)
                     {
-                        movePlayer(false, 90);
+                        movePlayer(false, 90, priority);
                     }
                     break;
 
@@ -237,7 +258,7 @@ public class InputHandler : MonoBehaviour
         
     }
 
-    void movePlayer(bool moveForwards, float dirOffset = 0)
+    void movePlayer(bool moveForwards, float dirOffset = 0, bool priority = false)
     {
         
         //180 && -180 = south (-y)
@@ -257,14 +278,16 @@ public class InputHandler : MonoBehaviour
             dir = Mathf.Abs(dir - 180);
             
         }
+        float vOffset = determineVerticalOffset();
 
         switch (dir)
         {
             case 180:
                 //check if possible to move that way
                 canMove = grid.canMoveBetween(playerPos, playerPos - new Vector2(0, 1), 'S');
-                if (canMove)
+                if (canMove || priority)
                 {
+                    //handle verticality (move to & from in-betweens)
                     finalPosition = Player.playerObject.transform.position + new Vector3(0, 0, -1) * cellWidth;
                     moveDir = new Vector3(0, 0, -1);
                     isMoving = true;
@@ -280,7 +303,7 @@ public class InputHandler : MonoBehaviour
             case 270:
                 //check if possible to move that way
                 canMove = grid.canMoveBetween(playerPos, playerPos - new Vector2(1, 0), 'W');
-                if (canMove)
+                if (canMove || priority)
                 {
                     finalPosition = Player.playerObject.transform.position + new Vector3(-1, 0, 0) * cellWidth;
                     moveDir = new Vector3(-1, 0, 0);
@@ -296,7 +319,7 @@ public class InputHandler : MonoBehaviour
             case 0:
                 //check if possible to move that way
                 canMove = grid.canMoveBetween(playerPos, playerPos + new Vector2(0, 1), 'N');
-                if (canMove)
+                if (canMove || priority)
                 {
                     finalPosition = Player.playerObject.transform.position + new Vector3(0, 0, 1) * cellWidth;
                     moveDir = new Vector3(0, 0, 1);
@@ -312,8 +335,9 @@ public class InputHandler : MonoBehaviour
             case 90:
                 //check if possible to move that way
                 canMove = grid.canMoveBetween(playerPos, playerPos + new Vector2(1, 0), 'E');
-                if (canMove)
+                if (canMove || priority)
                 {
+                    
                     finalPosition = Player.playerObject.transform.position + new Vector3(1, 0, 0) * cellWidth;
                     moveDir = new Vector3(1, 0, 0);
                     Player.updatePos(playerPos + new Vector2(1, 0));
@@ -330,12 +354,30 @@ public class InputHandler : MonoBehaviour
         
     }
 
+    float determineVerticalOffset()
+    {
+        float returnval = 0f;
+        //check if in-between already
+
+        //if in-between, check if going up again (moving in direction opposite of stair facing), going down (moving in direction of stair facing) or neither (can't move)
+
+        //otherwise, check if moving onto stairs on same layer or stairs on bottom layer + empty on current layer
+
+        return returnval;
+    }
+
     void OnInteract(InputValue value)
     {
        // Debug.Log("interact");
         if (value.isPressed && !isMoving && !isRotating)
         {
-            Debug.Log("interact");
+            
+            //call entity in cell's interact method
+            DungeonCell infront = grid.getCellInDirection(grid.getCell(Player.getPos()), Player.facing);
+            if (infront != null && infront.entity != null && infront.entity.interactable)
+            {
+                infront.entity.interact();
+            }
         }
     }
 
