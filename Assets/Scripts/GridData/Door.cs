@@ -27,8 +27,17 @@ public class Door : CellEntity
         //first check if door is open; if open then continue; otherwise 
         if (!open)
         {
-            //door not open; display text to the player indicating such
-            UIUtils.addMessageToLog("DOOROPENERROR: Insufficient Permissions", Color.red);
+            //if player facing matches door facing then unlock door
+            if (Player.facing == facing)
+            {
+                unlock();
+            } else
+            {
+                //door not open; display text to the player indicating such
+                UIUtils.addMessageToLog("DOOROPENERROR: Insufficient Permissions", Color.red);
+            }
+                
+            
 
         } else
         {
@@ -44,6 +53,16 @@ public class Door : CellEntity
             //Debug.Log("animation finished");
         }
 
+    }
+
+    public void unlock()
+    {
+        //unlocks this door
+        UIUtils.addMessageToLog("Door Unlocked.", Color.blue);
+        open = true;
+        GridUtils.getCell(xpos, ypos, layer).type = "OpenDoor";
+        //force map update to reflect status change
+        UIUtils.updateMap();
     }
 
 }

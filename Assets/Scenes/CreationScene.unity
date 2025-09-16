@@ -3259,6 +3259,7 @@ MonoBehaviour:
   currSelected: {fileID: 2133323266}
   nullsprite: {fileID: 1460657098, guid: 02014b9c896994f4aa7b809cbf2314de, type: 3}
   restrictedsprite: {fileID: 21300000, guid: 93bb5c4f3a68c8d4a8afdd786678cb47, type: 3}
+  downstairssprite: {fileID: -946682127, guid: 4e04ffb4e99a951439fd7a00d16ab892, type: 3}
 --- !u!1 &1006607006
 GameObject:
   m_ObjectHideFlags: 0
@@ -4836,7 +4837,7 @@ MonoBehaviour:
   m_OnCullStateChanged:
     m_PersistentCalls:
       m_Calls: []
-  m_Sprite: {fileID: 1659629877, guid: 616ab3fa3bf99e045a713e396346bc4c, type: 3}
+  m_Sprite: {fileID: -371002157, guid: 4e04ffb4e99a951439fd7a00d16ab892, type: 3}
   m_Type: 0
   m_PreserveAspect: 0
   m_FillCenter: 1

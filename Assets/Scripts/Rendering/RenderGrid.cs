@@ -28,9 +28,10 @@ public class RenderGrid : MonoBehaviour
             renderCellGrid(grids[i], newlayer);
             newlayer.transform.position = gameObject.transform.position + new Vector3(0, i, 0);
         }
-
+        //asign grid to utils
+        GridUtils.grids = grids;
         //prompt map update
-        UIUtils.updateMap(GameObject.Find("MapGrid"), grids[Player.currentLayer]);
+        UIUtils.updateMap();
         
     }
 
@@ -62,6 +63,12 @@ public class RenderGrid : MonoBehaviour
         string floorURL = "Prefabs/" + cell.getFloorToAssign();
         GameObject floor = Instantiate(Resources.Load<GameObject>(floorURL));
         floor.transform.parent = cellObject.transform;
+        //types that want data but dont want rendering
+        if (cell.type == "StairsDown")
+        {
+            floor.SetActive(false);
+        }
+
         //assign walls
 
         //assign doorways (between ceiling and non ceiling tiles
@@ -193,26 +200,29 @@ public class RenderGrid : MonoBehaviour
 
     public void initializeEntity(DungeonCell cell, GameObject cellObject)
     {
-        
-        //get model from dict
-        GameObject model = Instantiate(GridDicts.typeToModel[cell.type]);
-        model.transform.SetParent(cellObject.transform);
-        cell.entity.entityInScene = model;
-        //rotate 
-        switch (cell.entity.facing)
+        //exclude types that dont have models
+        if(cell.type != "StairsDown")
         {
-            case "N":
-                model.transform.Rotate(0, 180, 0); //xyz
-                break;
-            case "E":
-                model.transform.Rotate(0, 270, 0); //xyz
-                break;
-            case "S":
-                model.transform.Rotate(0, 0, 0); //xyz
-                break;
-            case "W":
-                model.transform.Rotate(0, 90, 0); //xyz
-                break;
+            //get model from dict
+            GameObject model = Instantiate(GridDicts.typeToModel[cell.type]);
+            model.transform.SetParent(cellObject.transform);
+            cell.entity.entityInScene = model;
+            //rotate 
+            switch (cell.entity.facing)
+            {
+                case "N":
+                    model.transform.Rotate(0, 180, 0); //xyz
+                    break;
+                case "E":
+                    model.transform.Rotate(0, 270, 0); //xyz
+                    break;
+                case "S":
+                    model.transform.Rotate(0, 0, 0); //xyz
+                    break;
+                case "W":
+                    model.transform.Rotate(0, 90, 0); //xyz
+                    break;
+            }
         }
 
         //assign subclass
@@ -228,17 +238,27 @@ public class RenderGrid : MonoBehaviour
                 cdoor.open = false;
                 cell.entity = cdoor;
                 break;
-            case "Stairs":
+            case "StairsUp":
+                cell.entity.interactable = false;
+                cell.traversible = true;
+                break;
+            case "StairsDown":
                 cell.entity.interactable = false;
                 cell.traversible = true;
                 break;
         }
+        cell.entity.layer = cell.layer;
     }
 
     public DungeonGrid getGrid(int layer)
     {
         Debug.Log("getting layer " + layer);
         return grids[layer];
+    }
+
+    public DungeonGrid[] getGrids()
+    {
+        return grids;
     }
 
 }    

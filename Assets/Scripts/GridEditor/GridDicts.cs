@@ -28,6 +28,7 @@ public static class GridDicts
         //add spritesheet icons to dict
         Sprite[] spritesheet = Resources.LoadAll<Sprite>("Tiles/iconsWIPTransparentNoBorder");
         Sprite[] spritesheet2 = Resources.LoadAll<Sprite>("Tiles/iconsWIPTransparentNoBorder2");
+        Sprite[] spritesheet3 = Resources.LoadAll<Sprite>("Tiles/iconsWIPTransparentNoBorder3");
 
         foreach (var s in spritesheet)
         {
@@ -37,7 +38,6 @@ public static class GridDicts
             if (s.name == "iconsWIPTransparentNoBorder_3") spriteToType.Add(s, "ClosedDoor");
             if (s.name == "iconsWIPTransparentNoBorder_4") spriteToType.Add(s, "OneWay");
             if (s.name == "iconsWIPTransparentNoBorder_5") spriteToType.Add(s, "Entrance");
-            if (s.name == "iconsWIPTransparentNoBorder2_9") spriteToType.Add(s, "Stairs");
             if (s.name == "iconsWIPTransparentNoBorder_7") spriteToType.Add(s, "None");
 
         }
@@ -46,6 +46,13 @@ public static class GridDicts
         {
             if (s.name == "iconsWIPTransparentNoBorder2_9") spriteToType.Add(s, "Stairs");
         }
+
+        foreach (var s in spritesheet3)
+        {
+            if (s.name == "iconsWIPTransparentNoBorder3_10") spriteToType.Add(s, "StairsUp");
+            if (s.name == "iconsWIPTransparentNoBorder3_11") spriteToType.Add(s, "StairsDown");
+        }
+
         spriteToType.Add(Resources.Load<Sprite>("Tiles/restricted"), "Empty");
         spriteToType.Add(Resources.Load<Sprite>("Tiles/playerIcon"), "Player");
         typeToSprite = spriteToType.ToDictionary(x => x.Value, x => x.Key);
@@ -56,7 +63,7 @@ public static class GridDicts
         typeToModel.Add("Entrance", Resources.Load<GameObject>("Prefabs/Door1"));
         typeToModel.Add("Item", Resources.Load<GameObject>("Prefabs/Item1"));
         typeToModel.Add("Rest", Resources.Load<GameObject>("Prefabs/Rest1"));
-        typeToModel.Add("Stairs", Resources.Load<GameObject>("Prefabs/Stairs1"));
+        typeToModel.Add("StairsUp", Resources.Load<GameObject>("Prefabs/Stairs1"));
     }
 
 }

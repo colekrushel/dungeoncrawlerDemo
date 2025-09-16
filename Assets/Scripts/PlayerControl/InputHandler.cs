@@ -1,8 +1,10 @@
+using JetBrains.Annotations;
 using NUnit.Framework.Constraints;
 using System.Collections;
 using System.Collections.Generic;
 using System.Net;
 using Unity.VisualScripting;
+using UnityEditor.Tilemaps;
 using UnityEngine;
 using UnityEngine.InputSystem;
 using UnityEngine.UIElements;
@@ -12,6 +14,7 @@ public class InputHandler : MonoBehaviour
     [SerializeField] GameObject gridParent;
     [SerializeField] bool isCreator = false;
     [SerializeField] Vector2Int startpos;
+    DungeonGrid[] grids;
     DungeonGrid grid;
     //Player player;
     const int cellWidth = 1;
@@ -51,8 +54,6 @@ public class InputHandler : MonoBehaviour
         Player.playerObject = gameObject;
         Player.currentLayer = 0;
         SnapPlayer(startpos.x, startpos.y);
-        //get grid info from script
-
         //move player onto 0,0 tile
     }
 
@@ -113,7 +114,7 @@ public class InputHandler : MonoBehaviour
         {
             float moveAmount = 1f * speedMultiplier * Time.deltaTime;
             //move player towards new cell
-            Player.playerObject.transform.position += new Vector3(moveAmount * moveDir.x, 0, moveAmount * moveDir.z);
+            Player.playerObject.transform.position += new Vector3(moveAmount * moveDir.x, moveAmount * moveDir.y, moveAmount * moveDir.z);
             
 
             //check if movement complete
@@ -136,7 +137,9 @@ public class InputHandler : MonoBehaviour
             if (!loaded) //load grid into input script on first input 
             {
                 RenderGrid gridScript = gridParent.GetComponent<RenderGrid>();
-                grid = gridScript.getGrid(Player.currentLayer);
+                grids = gridScript.getGrids();
+                grid = grids[Player.currentLayer];
+                
                 loaded = true;
                 
             }
@@ -248,8 +251,7 @@ public class InputHandler : MonoBehaviour
                     SnapPlayer(0, 0);
                     break;
                 case 'z':
-                    Debug.Log(isMoving);
-                    Debug.Log(isRotating);
+                    Debug.Log(Player.currentLayer);
                     break;
 
 
@@ -278,7 +280,12 @@ public class InputHandler : MonoBehaviour
             dir = Mathf.Abs(dir - 180);
             
         }
-        float vOffset = determineVerticalOffset();
+        
+        float vOffset = 0;
+
+        //grant priority if player is on stairs and moving in direction opposite of stair facing
+        if (grid.getCell(Player.getPos()).type == "StairsUp" && GridUtils.getOppositeDirection(grid.getCell(Player.getPos()).entity.facing) == GridUtils.getDirectionFromDegrees((int)dir)) priority = true;
+        
 
         switch (dir)
         {
@@ -288,8 +295,9 @@ public class InputHandler : MonoBehaviour
                 if (canMove || priority)
                 {
                     //handle verticality (move to & from in-betweens)
-                    finalPosition = Player.playerObject.transform.position + new Vector3(0, 0, -1) * cellWidth;
-                    moveDir = new Vector3(0, 0, -1);
+                    vOffset = determineVerticalOffset(moveForwards, dirOffset);
+                    finalPosition = Player.playerObject.transform.position + new Vector3(0, vOffset, -1) * cellWidth;
+                    moveDir = new Vector3(0, vOffset, -1);
                     isMoving = true;
                     Player.updatePos(playerPos - new Vector2(0, 1));
                     OnMoveBegin();
@@ -305,8 +313,9 @@ public class InputHandler : MonoBehaviour
                 canMove = grid.canMoveBetween(playerPos, playerPos - new Vector2(1, 0), 'W');
                 if (canMove || priority)
                 {
-                    finalPosition = Player.playerObject.transform.position + new Vector3(-1, 0, 0) * cellWidth;
-                    moveDir = new Vector3(-1, 0, 0);
+                    vOffset = determineVerticalOffset(moveForwards, dirOffset);
+                    finalPosition = Player.playerObject.transform.position + new Vector3(-1, vOffset, 0) * cellWidth;
+                    moveDir = new Vector3(-1, vOffset, 0);
                     isMoving = true;
                     Player.updatePos(playerPos - new Vector2(1, 0));
                     OnMoveBegin();
@@ -321,8 +330,9 @@ public class InputHandler : MonoBehaviour
                 canMove = grid.canMoveBetween(playerPos, playerPos + new Vector2(0, 1), 'N');
                 if (canMove || priority)
                 {
-                    finalPosition = Player.playerObject.transform.position + new Vector3(0, 0, 1) * cellWidth;
-                    moveDir = new Vector3(0, 0, 1);
+                    vOffset = determineVerticalOffset(moveForwards, dirOffset);
+                    finalPosition = Player.playerObject.transform.position + new Vector3(0, vOffset, 1) * cellWidth;
+                    moveDir = new Vector3(0, vOffset, 1);
                     Player.updatePos(playerPos + new Vector2(0, 1));
                     isMoving = true;
                     OnMoveBegin();
@@ -337,9 +347,9 @@ public class InputHandler : MonoBehaviour
                 canMove = grid.canMoveBetween(playerPos, playerPos + new Vector2(1, 0), 'E');
                 if (canMove || priority)
                 {
-                    
-                    finalPosition = Player.playerObject.transform.position + new Vector3(1, 0, 0) * cellWidth;
-                    moveDir = new Vector3(1, 0, 0);
+                    vOffset = determineVerticalOffset(moveForwards, dirOffset);
+                    finalPosition = Player.playerObject.transform.position + new Vector3(1, vOffset, 0) * cellWidth;
+                    moveDir = new Vector3(1, vOffset, 0);
                     Player.updatePos(playerPos + new Vector2(1, 0));
                     isMoving = true;
                     OnMoveBegin();
@@ -354,14 +364,52 @@ public class InputHandler : MonoBehaviour
         
     }
 
-    float determineVerticalOffset()
+    float determineVerticalOffset(bool moveForwards, float dirOffset)
     {
         float returnval = 0f;
+        int dirnum = (int)Player.playerObject.transform.rotation.eulerAngles.y + (int)dirOffset; 
+
+        string dir = GridUtils.getDirectionFromDegrees(dirnum);
+        if (!moveForwards) dir = GridUtils.getOppositeDirection(dir);
         //check if in-between already
+        if (Player.between.Item1 != Player.between.Item2)
+        {
+            Debug.Log("moving while between layers!");
+            //if in-between, check if going up again (moving in direction opposite of stair facing), going down (moving in direction of stair facing) or neither (can't move)
+            string sfacing = grid.getCell(Player.getPos()).entity.facing;
+            if (dir == sfacing)
+            {
+                //if directions are equal then going down (maintaining current layer)
+                returnval = -0.75f;
+                Player.between = new System.Tuple<float, float>(Player.currentLayer, Player.currentLayer);
+            } else if (dir == GridUtils.getOppositeDirection(sfacing))
+            {
+                //if directions are opposite then going up (increment current layer)
+                returnval = 0.25f;
+                Player.currentLayer += 1;
+                grid = grids[Player.currentLayer];
+                Player.between = new System.Tuple<float, float>(Player.currentLayer, Player.currentLayer);
 
-        //if in-between, check if going up again (moving in direction opposite of stair facing), going down (moving in direction of stair facing) or neither (can't move)
-
+            }
+        }
         //otherwise, check if moving onto stairs on same layer or stairs on bottom layer + empty on current layer
+        //separate checks for up stairs and down stairs
+        else if (grid.getCellInDirection(grid.getCell(Player.getPos()), dir).type == "StairsUp")
+        {
+            //moving up onto stairs present on current layer
+            Debug.Log("moving onto stairs on current layer!");
+            returnval = 0.75f;
+            Player.between = new System.Tuple<float, float>(Player.currentLayer, Player.currentLayer + 1);
+        } else if (Player.currentLayer != 0 && grids[Player.currentLayer].getCellInDirection(grids[Player.currentLayer].getCell(Player.getPos()), dir).type == "StairsDown")
+        {
+            //moving down onto stairs on lower layer
+            Debug.Log("moving onto stairs on lower layer!");
+            returnval = -0.25f;
+            //decrement player layer when moving down
+            Player.currentLayer -= 1;
+            grid = grids[Player.currentLayer];
+            Player.between = new System.Tuple<float, float>(Player.currentLayer, Player.currentLayer + 1);
+        }
 
         return returnval;
     }
@@ -374,7 +422,7 @@ public class InputHandler : MonoBehaviour
             
             //call entity in cell's interact method
             DungeonCell infront = grid.getCellInDirection(grid.getCell(Player.getPos()), Player.facing);
-            if (infront != null && infront.entity != null && infront.entity.interactable)
+            if (infront != null && infront.entity != null && infront.entity.interactable && !grid.getCell(Player.getPos()).hasWall(Player.facing) && !infront.hasWall(GridUtils.getOppositeDirection(Player.facing)))
             {
                 infront.entity.interact();
             }
@@ -394,7 +442,7 @@ public class InputHandler : MonoBehaviour
         }
         else
         {
-            Player.teleportPlayer(new Vector3(cellX, .25f, cellY));
+            Player.teleportPlayer(new Vector3(cellX, .5f, cellY));
         }
     }
 
@@ -408,13 +456,14 @@ public class InputHandler : MonoBehaviour
     }
     void OnMoveEnd()
     {
-        //after player finishes movement we want to check if the tile in front of the player is interactable
-        if(grid.getCellInDirection(grid.getCell( (Player.getPos())), Player.facing).entity.interactable)
+        //after player finishes movement we want to check if the tile in front of the player is interactable and not blocked by a wall
+        DungeonCell infront = grid.getCellInDirection(grid.getCell((Player.getPos())), Player.facing);
+        if (infront != null && infront.entity.interactable && !grid.getCell(Player.getPos()).hasWall(Player.facing) && !infront.hasWall(GridUtils.getOppositeDirection(Player.facing)))
         {
             //display interaction prompt
             UIUtils.popIn(interactWindow);
         }
         //update minimap every time player moves
-        UIUtils.updateMap(mapperGrid, grid);
+        UIUtils.updateMap();
     }
 }

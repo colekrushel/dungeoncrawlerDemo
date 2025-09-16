@@ -9,8 +9,7 @@ public static class Player
     private static Vector2 gridPos = Vector2.zero;
     public static GameObject playerObject;
     public static int currentLayer = 0;
-    public static bool betweenLayers = false;
-    public static Tuple<int, int> between;
+    public static Tuple<float, float> between = new Tuple<float, float>(0, 0); //left number is lower layer, right is upper layer
     public static string facing;
     public static bool inputLock = false;
     public static List<char> actionQueue = new List<char>();
@@ -45,22 +44,25 @@ public static class Player
         //0 = north (+y)
         //90 = east (+x)
         float dir = Player.playerObject.transform.rotation.eulerAngles.y;
-        switch (dir)
-        {
-            case 180:
-                facing = "S";
-                break;
-            case 270:
-                facing = "W";
-                break;
-            case 0:
-                facing = "N";
-                break;
-            case 90:
-                facing = "E";
-                break;
-        }
+        facing = GridUtils.getDirectionFromDegrees((int)dir);
+        //switch (dir)
+        //{
+        //    case 180:
+        //        facing = "S";
+        //        break;
+        //    case 270:
+        //        facing = "W";
+        //        break;
+        //    case 0:
+        //        facing = "N";
+        //        break;
+        //    case 90:
+        //        facing = "E";
+        //        break;
+        //}
     }
+
+    
 
 }
 

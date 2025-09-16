@@ -14,6 +14,7 @@ public class CellEntity
     public bool interactOnTile = false; //whether this entity is interactable from a neighboring tile or when standing at same pos (+ direction?) (mutually exclusive)
     public string interactText = "placeholder";
     public GameObject entityInScene;
+    public int layer;
 
 
     //method called; delegate to entity subclasses

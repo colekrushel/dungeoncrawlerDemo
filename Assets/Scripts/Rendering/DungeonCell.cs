@@ -11,6 +11,7 @@ public class DungeonCell
     //attributes
     public int gridX; //xpos of cell on grid
     public int gridY; //ypos of cell on grid
+    public int layer;
     public int width = 1; //width and height of cell in scene
     public string type; //type of cell (entrance, item, door
     public string modelToAssign; //string telling what model to assign to this cell when loading from json
@@ -51,6 +52,11 @@ public class DungeonCell
         for (int i = 0; i < walls.Length; i++)
         {
             if (walls[i] == dir) hasWall = true;
+        }
+        //treat areas around stairs that are not enter/exit directions as wells
+        if(type == "StairsUp" || type == "StairsDown")
+        {
+            if(dir != entity.facing && GridUtils.getOppositeDirection(dir) != entity.facing) hasWall = true;
         }
         return hasWall;
     }

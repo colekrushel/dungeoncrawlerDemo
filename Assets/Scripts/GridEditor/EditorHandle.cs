@@ -27,6 +27,7 @@ public class EditorHandle : MonoBehaviour
     bool hasCeiling = false;
     [SerializeField] Sprite nullsprite;
     [SerializeField] Sprite restrictedsprite;
+    [SerializeField] Sprite downstairssprite;
     int currLayer = 1;
 
     
@@ -148,6 +149,13 @@ public class EditorHandle : MonoBehaviour
                 GameObject aboveGrid = tileGridParent.transform.GetChild(currLayer).gameObject;
                 GameObject aboveTile = aboveGrid.transform.GetChild(index).gameObject;
                 aboveTile.transform.Find("Icon").GetComponent<Image>().sprite = restrictedsprite;
+                //Debug.Log(tileImg.sprite.name);
+                //if stairsup is selected, then add a stairsdown to the above tile. if not possible then prevent stairs from being places
+                if (tileImg.sprite.name == "iconsWIPTransparentNoBorder3_10")
+                {
+                    Debug.Log("setting above");
+                    aboveTile.transform.Find("Icon").GetComponent<Image>().sprite = downstairssprite;
+                }
             }
         }
 

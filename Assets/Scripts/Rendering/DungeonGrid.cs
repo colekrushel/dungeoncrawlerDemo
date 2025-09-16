@@ -75,6 +75,7 @@ public class DungeonGrid
             DungeonCell cell = cells[i];
             int yPos = cell.gridY;
             int xPos = cell.gridX;
+            cell.layer = layer;
             cellGrid[yPos][xPos] = cell;
             //check for entrance cell
             if (cells[i].type == "Entrance")

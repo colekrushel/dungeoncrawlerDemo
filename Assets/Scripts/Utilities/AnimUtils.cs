@@ -30,9 +30,7 @@ public class AnimUtils : MonoBehaviour
     {
         //wait for the transition to end
         yield return new WaitUntil(() => animator.GetCurrentAnimatorStateInfo(0).normalizedTime <= 1.0f);
-        Debug.Log("finish 1");
         yield return new WaitWhile(() => animator.GetCurrentAnimatorStateInfo(0).normalizedTime <= 1.0f);
-        Debug.Log("finishd 2");
         //now animation has ended, call the appropriate end behavior
         switch (behavior)
         {
