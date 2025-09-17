@@ -27,7 +27,6 @@ public class InputHandler : MonoBehaviour
     Quaternion startRotation;
     Quaternion endRotation;
     float totalRotation;
-    string facingQ;
     //movement
     bool isMoving = false;
     Vector3 finalPosition = Vector3.zero;

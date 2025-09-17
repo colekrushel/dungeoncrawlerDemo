@@ -32,6 +32,8 @@ public class RenderGrid : MonoBehaviour
         GridUtils.grids = grids;
         //prompt map update
         UIUtils.updateMap();
+        //spawn enemies
+        EnemyManager.initializeEnemies();
         
     }
 
