@@ -1,5 +1,6 @@
 using NUnit.Framework;
 using System.Collections.Generic;
+using System.Linq;
 using Unity.VisualScripting;
 using UnityEngine;
 using static UnityEditor.PlayerSettings;
@@ -8,7 +9,7 @@ public class MovementManager : MonoBehaviour
 {
     //handles moving entities from 1 point to another and rotating entities from 1 rotation to another
     //keeps track of 'Movement Entries' and updates each one every frame 
-    
+
     private static List<MovementEntry> entries = new List<MovementEntry>();
     public static MonoBehaviour Instance { get; private set; }
 
@@ -21,7 +22,7 @@ public class MovementManager : MonoBehaviour
     void Update()
     {
         //for each object
-        foreach (var entry in entries)
+        foreach (var entry in entries.ToList())
         {
             //if not rotating or moving, remove entry as it has finished
             if (!entry.isMoving && !entry.isRotating)
@@ -37,7 +38,7 @@ public class MovementManager : MonoBehaviour
                 if (entry.totalRotation < 90f)
                 {
                     float step = rotationSpeed * Time.deltaTime;
-                    transform.rotation = Quaternion.RotateTowards(transform.rotation, entry.endRotation, step);
+                    entry.objectBeingMoved.transform.rotation = Quaternion.RotateTowards(entry.objectBeingMoved.transform.rotation, entry.endRotation, step);
                     entry.totalRotation += step;
                 }
 
@@ -53,7 +54,7 @@ public class MovementManager : MonoBehaviour
             {
                 float moveAmount = 1f * entry.movementSpeed * Time.deltaTime;
                 //move player towards new pos
-                Vector3 newpos = Vector3.MoveTowards(entry.objectBeingMoved.transform.position, entry.finalPosition, entry.movementSpeed);
+                entry.objectBeingMoved.transform.position = Vector3.MoveTowards(entry.objectBeingMoved.transform.position, entry.finalPosition, entry.movementSpeed);
 
 
                 //check if movement complete
@@ -66,6 +67,7 @@ public class MovementManager : MonoBehaviour
                 }
             }
         }
+        //cleanup
     }
 
     public static void moveObject(GameObject objectToMove, Vector3 targetPos, float speed)
@@ -87,20 +89,24 @@ public class MovementManager : MonoBehaviour
     public static Vector3 directionToVector3(string dir)
     {
         Vector3 direction = Vector3.zero;
-        switch (dir)
+        //handle compound directions like NE
+        foreach (char c in dir)
         {
-            case "S":
-                direction = new Vector3(0, 0, -1);
-                break;
-            case "W":
-                direction = new Vector3(-1, 0, 0);
-                break;
-            case "N":
-                direction = new Vector3(0, 0, 1);
-                break;
-            case "E":
-                direction = new Vector3(1, 0, 0);
-                break;
+            switch (c)
+            {
+                case 'S':
+                    direction += new Vector3(0, 0, -1);
+                    break;
+                case 'W':
+                    direction += new Vector3(-1, 0, 0);
+                    break;
+                case 'N':
+                    direction += new Vector3(0, 0, 1);
+                    break;
+                case 'E':
+                    direction += new Vector3(1, 0, 0);
+                    break;
+            }
         }
         return direction;
     }

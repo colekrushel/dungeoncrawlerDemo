@@ -11,8 +11,8 @@ public class Drone : Enemy
         //layer = l;
         HP = 10;
         attackRange = 1;
-        alertRange = 2;
-        ICDBase = 1;
+        alertRange = 3;
+        ICDBase = 1f;
         ICD = ICDBase;
         animator = gameObject.GetComponent<Animator>();
         

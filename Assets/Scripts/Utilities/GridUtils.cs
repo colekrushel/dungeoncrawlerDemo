@@ -77,4 +77,24 @@ public static class GridUtils
         }
         return canMove;
     }
+
+    static public string getDirectionBetween(Vector3 p1, Vector3 p2)
+    {
+        //can return compound directions ie NE or SW
+        Vector3 diff = p1 - p2;
+        string returnStr = "";
+        //x indicates E/W, +x is W, -x is E
+        //z indicaes N/S; +Z is S, -z is N
+        if (diff.z != 0)
+        {
+            if (diff.z < 0) returnStr += "N";
+            else if (diff.z > 0) returnStr += "S";
+        }
+        if (diff.x != 0)
+        {
+            if (diff.x < 0) returnStr += "E";
+            else if (diff.x > 0) returnStr += "W";
+        }
+        return returnStr;
+    }
 }

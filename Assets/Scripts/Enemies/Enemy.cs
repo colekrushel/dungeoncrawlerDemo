@@ -15,7 +15,7 @@ public class Enemy : MonoBehaviour
     protected float ICDBase; //number ICD is set to when reset; smaller number means faster enemy behavior 
     protected Animator animator; //this enemy's animator in the scene; also acts as the enemy's state machine
     public GameObject positionObject; //parent object used to control the enemy's position - because animation transforms are local, the enemy's transforms cant be manipulated directly
-    enum enemyState { Idle, Active, Charging, Attacking, Stunned, Moving };
+    enum enemyState { Idle, Charging, Attacking, Stunned, Moving };
     enemyState currentState = enemyState.Idle;
 
     //vals set and used within script
@@ -36,7 +36,6 @@ public class Enemy : MonoBehaviour
         ICD -= Time.deltaTime;
         if (ICD < 0)
         {
-            Debug.Log("TRIGGER ACTION");
             triggerAction();
             ICD = ICDBase;
         }
@@ -47,19 +46,28 @@ public class Enemy : MonoBehaviour
         //state machine to decide what to do next
         switch (currentState)
         {
-            //if enemy is idle, move it to a random nearby tile and then check if player is within alert range
+            //if enemy is idle, move it 
             case enemyState.Idle:
-                move();
-                break;
-            //if enemy is active, then start charging an attack 
-            case enemyState.Active:
-                animator.SetTrigger("Charge");
-                StartCoroutine(waitForAnim());
+                //check if the player is within range first; if so, then queue an attack. otherwise just move
+                RaycastHit hit = playerCheck();
+                if (hit.collider.gameObject && hit.collider.gameObject.name == "Player" && hit.distance < attackRange)
+                {
+                    animator.Play("ChargeAttack");
+                    currentState = enemyState.Charging;
+                    //StartCoroutine(waitForAnim());
+                } else {
+                    move(hit);
+                }
+                    
                 break;
             //if enemy is charging an attack, then play the attack animation and handling
             case enemyState.Charging:
-                animator.SetTrigger("Attack");
-                StartCoroutine(waitForAnim());
+                animator.Play("Attack1");
+                currentState = enemyState.Attacking;
+                //StartCoroutine(waitForAnim());
+                break;
+            case enemyState.Attacking:
+                currentState = enemyState.Idle;
                 break;
             //if enemy is stunned, un-stun it (back to active)
             case enemyState.Stunned:
@@ -68,31 +76,67 @@ public class Enemy : MonoBehaviour
         }
     }
 
-    private void move()
+    private void move(RaycastHit hit)
     {
-        //get first random legal move by picking a random direction and attempting to move in that direction until a legal move is found
-        List<string> dirs = new List<string>();
-        dirs[0] = "N"; dirs[1] = "E"; dirs[2] = "S"; dirs[3] = "W";
-        bool canmove = false;
-        string ranDir = "N";
-        while (!canmove)
+        //at the start of movement, cast a line to see if the enemy should move towards the player or randomly
+        bool playerFound = (hit.collider.gameObject.name == "Player" && hit.distance < alertRange);
+        //different movement behavior based on whether enemy is active or not; unactive enemy moves randomly but active enemy follows player
+        if (!playerFound)
         {
-            int ranIndex = Random.Range(0, dirs.Count);
-            ranDir = dirs[ranIndex];
-            canmove = GridUtils.canMoveInDirection(pos, layer, ranDir);
+            //get first random legal move by picking a random direction and attempting to move in that direction until a legal move is found
+            List<string> dirs = new List<string>();
+            dirs.Add("N"); dirs.Add("S"); dirs.Add("E"); dirs.Add("W");
+            bool canmove = false;
+            string ranDir = "N";
+            while (!canmove)
+            {
+                int ranIndex = Random.Range(0, dirs.Count);
+                ranDir = dirs[ranIndex];
+                canmove = GridUtils.canMoveInDirection(pos, layer, ranDir);
+            }
+            //now that a valid direction has been found, move enemy in direction (and rotate it?)
+            Vector3 newPos = positionObject.transform.position + MovementManager.directionToVector3(ranDir);
+            MovementManager.moveObject(positionObject, newPos, .01f);
+            //update pos 
+            pos.x = newPos.x; pos.y = newPos.z;
+            
+        } else
+        {
+            Debug.Log("move toward player");
+            //if a player was found, use the offset in positions between the player and enemy to determine what direction to move 
+            string dir = GridUtils.getDirectionBetween(positionObject.transform.position, Player.playerObject.transform.position);
+            Vector3 newPos = positionObject.transform.position + MovementManager.directionToVector3(dir);
+            MovementManager.moveObject(positionObject, newPos, .01f);
+            //update pos 
+            pos.x = newPos.x; pos.y = newPos.z;
         }
-        //now that a valid direction has been found, move enemy in direction (and rotate it?)
-        Vector3 newPos = positionObject.transform.position + MovementManager.directionToVector3(ranDir);
-        MovementManager.moveObject(positionObject, newPos, .1f);
 
     }
 
+    RaycastHit playerCheck()
+    {
+        //do a linecast to the player and return its hit info
+        RaycastHit hit;
+        //move cast out of the floor
+        Physics.Linecast(positionObject.transform.position + new Vector3(0, .5f, 0), Player.playerObject.transform.position, out hit);
+        return hit;
+    }
     public void snap(Vector2 p, int l)
     {
         //snap enemy to position on grid
         pos = p;
         layer = l;
         positionObject.transform.position = new Vector3(pos.x, l, pos.y);
+    }
+
+    public void attackHit()
+    {
+        //check if attack actually hit player
+
+
+        
+        UIUtils.addMessageToLog("Enemy hit player for X damage", Color.red);
+        //do other stuff
     }
 
     private IEnumerator waitForAnim()
@@ -105,11 +149,11 @@ public class Enemy : MonoBehaviour
         {
             //after enemy is done charging, play attack animation
             case enemyState.Charging:
-
+                Debug.Log("finished charging");
                 break;
-            //after enemy is done attacking, deal damage and return to active state
+            //after enemy is done attacking, return to idle
             case enemyState.Attacking:
-
+                Debug.Log("finished attacking");
                 break;
         }
         //reset icd?
