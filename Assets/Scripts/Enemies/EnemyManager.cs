@@ -33,4 +33,13 @@ public class EnemyManager : MonoBehaviour
         e.snap(new Vector2(x, y), layer);
         enemies.Add(e);
     }
+
+    public static void updateMapWithEnemyInfo()
+    {
+        //pass each enemy in the list into the map's update single cell method; to avoid looping through the enemy list multiple times in updatemap
+        foreach (Enemy enemy in enemies)
+        {
+            UIUtils.updateSingleMapCell((int) enemy.getPos().x, (int) enemy.getPos().y, GridDicts.typeToSprite["Enemy"]);
+        }
+    }
 }

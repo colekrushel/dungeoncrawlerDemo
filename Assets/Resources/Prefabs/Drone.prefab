@@ -285,6 +285,9 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   positionObject: {fileID: 0}
+  enemyActions:
+  - {fileID: 11400000, guid: 637ed9bd61e2a174b8bd606f7702f15f, type: 2}
+  - {fileID: 11400000, guid: 3603571678da6564d9bda2797ac88cd8, type: 2}
 --- !u!1 &2421027852139255706
 GameObject:
   m_ObjectHideFlags: 0

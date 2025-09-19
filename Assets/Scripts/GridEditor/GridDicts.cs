@@ -55,6 +55,7 @@ public static class GridDicts
 
         spriteToType.Add(Resources.Load<Sprite>("Tiles/restricted"), "Empty");
         spriteToType.Add(Resources.Load<Sprite>("Tiles/playerIcon"), "Player");
+        spriteToType.Add(Resources.Load<Sprite>("Tiles/enemyIcon"), "Enemy");
         typeToSprite = spriteToType.ToDictionary(x => x.Value, x => x.Key);
 
         //entity models

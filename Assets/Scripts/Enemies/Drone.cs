@@ -10,7 +10,8 @@ public class Drone : Enemy
         //pos = p;
         //layer = l;
         HP = 10;
-        attackRange = 1;
+        baseDamage = 2;
+        actionRange = 1;
         alertRange = 3;
         ICDBase = 1f;
         ICD = ICDBase;

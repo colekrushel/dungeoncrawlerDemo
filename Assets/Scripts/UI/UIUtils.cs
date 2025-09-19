@@ -5,6 +5,7 @@ using Unity.VisualScripting;
 using UnityEngine;
 using UnityEngine.UI;
 using UnityEngine.UIElements.Experimental;
+using static UnityEditor.Experimental.GraphView.GraphView;
 
 public class UIUtils : MonoBehaviour 
 {
@@ -58,6 +59,25 @@ public class UIUtils : MonoBehaviour
     {
         Debug.Log("selected layer " + layer);
     }
+
+    //update a single cell on the map given a grid pos, mainly used to update enemy pos on map
+    public static void updateSingleMapCell(int gridx, int gridy, Sprite spriteToPlace)
+    {
+        //assuming item is on current layer
+        //get corresponding index on map 
+        int cellX = (gridx - (int)Player.getPos().x) + 2; //[0 - 4]
+        int cellY = (gridy - (int)Player.getPos().y) + 2; //[0 - 4]
+        cellY = Mathf.Abs(cellY - 4); //first object in mapgrid is in the topleft corner so inverse y to get the right cell from the grid data 
+        //if either item is not between 0 - 4 then dont update map
+        if (cellX < 0 || cellY < 0 || cellX > 4 || cellY > 4){
+            return;
+        } else
+        {
+            //update map with given sprite
+            GameObject mapCell = mapGrid.transform.GetChild(cellY * 5 + cellX).gameObject;
+            mapCell.transform.Find("Icon").gameObject.GetComponent<Image>().sprite = spriteToPlace;
+        }
+    }
     public static void updateMap()
     {
         DungeonGrid grid = GridUtils.grids[Player.currentLayer];
@@ -96,7 +116,8 @@ public class UIUtils : MonoBehaviour
                     //cell on map - assign sprite from typeToSprite dict and background from floorToColor dict
 
                     mapCell.transform.Find("Icon").gameObject.GetComponent<Image>().sprite = GridDicts.typeToSprite[realCell.type];
-                    mapCell.transform.Find("Background").gameObject.GetComponent<Image>().color = GridDicts.floorToColor[realCell.floorToAssign];
+                    //mapCell.transform.Find("Background").gameObject.GetComponent<Image>().color = GridDicts.floorToColor[realCell.floorToAssign];
+                    mapCell.transform.Find("Background").gameObject.GetComponent<Image>().color = new Color(0, 0, 0, .1f);
                     //assign walls - overlap should be fine visually?
                     foreach (string wall in walls)
                     {
@@ -111,6 +132,8 @@ public class UIUtils : MonoBehaviour
                     }
                 }              
             }
+            //also call enemy updates
+            EnemyManager.updateMapWithEnemyInfo();
         }
         //asign player sprite, along with rotation
         GameObject playerCell = mapGrid.transform.GetChild(2 * 5 + 2).gameObject;

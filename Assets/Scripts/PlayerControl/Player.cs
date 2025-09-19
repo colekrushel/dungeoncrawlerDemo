@@ -13,6 +13,9 @@ public static class Player
     public static string facing;
     public static bool inputLock = false;
     public static List<char> actionQueue = new List<char>();
+    //combat values
+    private static int totalHP = 50;
+    private static int currentHP = 50;
 
 
     static public void teleportPlayer(Vector3 pos)
@@ -60,6 +63,14 @@ public static class Player
         //        facing = "E";
         //        break;
         //}
+    }
+
+    static public void hitPlayer(int damage)
+    {
+        //deal damage to the player and perform feedback operations
+        currentHP = currentHP - damage;
+        Debug.Log("current hp: " + currentHP + " total hp: " + totalHP);
+        AnimateUI.updateHPMonitor(((float)currentHP / (float)totalHP));
     }
 
     

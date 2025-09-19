@@ -9,12 +9,16 @@ public class Enemy : MonoBehaviour
     protected Vector2 pos; //position on grid
     protected int layer; //current layer
     protected int HP; //hit points
-    protected int attackRange; //tiles player must be within to initiate an attack
+    protected int baseDamage;
+    protected int actionRange; //tiles player must be within to initiate an action
     protected int alertRange; //tiles player must be within to initiate chase
     protected float ICD;  //internal cool down - when this number gets below 0, triggers an action - goes down by around 1 per second
     protected float ICDBase; //number ICD is set to when reset; smaller number means faster enemy behavior 
+    protected float ICDDelay; //multiplier to delay between states; used for adjusting charge/attack times
     protected Animator animator; //this enemy's animator in the scene; also acts as the enemy's state machine
     public GameObject positionObject; //parent object used to control the enemy's position - because animation transforms are local, the enemy's transforms cant be manipulated directly
+    [SerializeField] protected EnemyAction[] enemyActions;
+    protected EnemyAction currentAction;
     enum enemyState { Idle, Charging, Attacking, Stunned, Moving };
     enemyState currentState = enemyState.Idle;
 
@@ -37,7 +41,7 @@ public class Enemy : MonoBehaviour
         if (ICD < 0)
         {
             triggerAction();
-            ICD = ICDBase;
+            ICD = ICDBase * ICDDelay;
         }
     }
 
@@ -50,10 +54,10 @@ public class Enemy : MonoBehaviour
             case enemyState.Idle:
                 //check if the player is within range first; if so, then queue an attack. otherwise just move
                 RaycastHit hit = playerCheck();
-                if (hit.collider.gameObject && hit.collider.gameObject.name == "Player" && hit.distance < attackRange)
+                if (hit.collider.gameObject && hit.collider.gameObject.name == "Player" && hit.distance < actionRange)
                 {
-                    animator.Play("ChargeAttack");
-                    currentState = enemyState.Charging;
+                    setupAction();
+
                     //StartCoroutine(waitForAnim());
                 } else {
                     move(hit);
@@ -62,7 +66,8 @@ public class Enemy : MonoBehaviour
                 break;
             //if enemy is charging an attack, then play the attack animation and handling
             case enemyState.Charging:
-                animator.Play("Attack1");
+                animator.Play("Action");
+                ICDDelay = currentAction.attackDelay;
                 currentState = enemyState.Attacking;
                 //StartCoroutine(waitForAnim());
                 break;
@@ -74,6 +79,25 @@ public class Enemy : MonoBehaviour
 
                 break;
         }
+    }
+
+    private void setupAction()
+    {
+        Debug.Log("Setup");
+        //pick action from the list
+        int ranIndex = Random.Range(0, enemyActions.Length);
+        EnemyAction selectedAction = enemyActions[ranIndex];
+        currentAction = selectedAction;
+        //set up override animator and attack values
+        Debug.Log(selectedAction.name + " " + selectedAction.chargeAnim.name);
+        AnimatorOverrideController overrideController = new AnimatorOverrideController(animator.runtimeAnimatorController);
+        overrideController["DroneCharge"] = selectedAction.chargeAnim;
+        overrideController["DroneAttack"] = selectedAction.actionAnim;
+        ICDDelay = currentAction.chargeDelay;
+        animator.runtimeAnimatorController = overrideController;
+        //Debug.Log(animator["ChargeAction"].name);
+        animator.Play("ChargeAction");
+        currentState = enemyState.Charging;
     }
 
     private void move(RaycastHit hit)
@@ -97,19 +121,25 @@ public class Enemy : MonoBehaviour
             //now that a valid direction has been found, move enemy in direction (and rotate it?)
             Vector3 newPos = positionObject.transform.position + MovementManager.directionToVector3(ranDir);
             MovementManager.moveObject(positionObject, newPos, .01f);
-            //update pos 
+            //update pos and clear old pos on map
+            //UIUtils.updateSingleMapCell((int)pos.x, (int)pos.y, GridDicts.typeToSprite["None"]);
             pos.x = newPos.x; pos.y = newPos.z;
             
         } else
         {
-            Debug.Log("move toward player");
+            //Debug.Log("move toward player");
             //if a player was found, use the offset in positions between the player and enemy to determine what direction to move 
             string dir = GridUtils.getDirectionBetween(positionObject.transform.position, Player.playerObject.transform.position);
             Vector3 newPos = positionObject.transform.position + MovementManager.directionToVector3(dir);
             MovementManager.moveObject(positionObject, newPos, .01f);
             //update pos 
+            //update pos and clear old pos on map
+            //UIUtils.updateSingleMapCell((int)pos.x, (int)pos.y, GridDicts.typeToSprite["None"]);
             pos.x = newPos.x; pos.y = newPos.z;
         }
+        //after movement update the map
+        UIUtils.updateMap();
+        //UIUtils.updateSingleMapCell((int)pos.x, (int)pos.y, GridDicts.typeToSprite["Enemy"]);
 
     }
 
@@ -134,9 +164,9 @@ public class Enemy : MonoBehaviour
         //check if attack actually hit player
 
 
-        
-        UIUtils.addMessageToLog("Enemy hit player for X damage", Color.red);
-        //do other stuff
+        int damage = baseDamage * 1; //attacks will have some kind of attack damage modifier
+        UIUtils.addMessageToLog("Enemy hit player for " + damage + " damage", Color.red);
+        Player.hitPlayer(damage);
     }
 
     private IEnumerator waitForAnim()
@@ -157,5 +187,10 @@ public class Enemy : MonoBehaviour
                 break;
         }
         //reset icd?
+    }
+
+    public Vector2 getPos()
+    {
+        return pos;
     }
 }
