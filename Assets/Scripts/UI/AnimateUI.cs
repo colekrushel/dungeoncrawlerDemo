@@ -31,6 +31,9 @@ public class AnimateUI : MonoBehaviour
     [SerializeField] private RawImage _imageToScroll;
     [SerializeField] private float _x, _y;
     [SerializeField] private static float scrollSpeed = 1f;
+    // effect object
+    private static RawImage effectImage;
+    private static bool playEffect = false;
     // vars for camera shake
     [SerializeField] private new Camera camera; // set this via inspector
     static float shake = 0;
@@ -56,8 +59,27 @@ public class AnimateUI : MonoBehaviour
             //reset position
             camera.transform.localPosition = Vector3.zero;
         }
+        //animate effects
+        if (playEffect)
+        {
+            effectImage.uvRect = new Rect(effectImage.uvRect.position + new Vector2(1, 0) * Time.deltaTime * 10, effectImage.uvRect.size);
+            if(effectImage.uvRect.x > 1)
+            {
+                //if effect has done a complete pass then stop animating it
+                playEffect = false;
+            }
+        }
+
     }
 
+    public static void setEffect(RawImage img)
+    {
+        effectImage = img;
+        effectImage.uvRect = new Rect(new Vector2(-1, 0), effectImage.uvRect.size);
+        effectImage.transform.localPosition = Vector3.zero;
+        playEffect = true;
+        
+    }
     public static void updateHPMonitor(float healthPercent)
     {
         //perform feedback operations on hit by attack

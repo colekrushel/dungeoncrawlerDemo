@@ -83,13 +83,11 @@ public class Enemy : MonoBehaviour
 
     private void setupAction()
     {
-        Debug.Log("Setup");
         //pick action from the list
         int ranIndex = Random.Range(0, enemyActions.Length);
         EnemyAction selectedAction = enemyActions[ranIndex];
         currentAction = selectedAction;
         //set up override animator and attack values
-        Debug.Log(selectedAction.name + " " + selectedAction.chargeAnim.name);
         AnimatorOverrideController overrideController = new AnimatorOverrideController(animator.runtimeAnimatorController);
         overrideController["DroneCharge"] = selectedAction.chargeAnim;
         overrideController["DroneAttack"] = selectedAction.actionAnim;

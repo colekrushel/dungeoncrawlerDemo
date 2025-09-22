@@ -13,6 +13,7 @@ public class UIUtils : MonoBehaviour
     static public GameObject logWindow;
     static public GameObject mapGrid;
     static public GameObject entry;
+    static public GameObject attackContainer;
     public static MonoBehaviour Instance { get; private set; }
 
     private void Awake()
@@ -20,6 +21,7 @@ public class UIUtils : MonoBehaviour
         logWindow = GameObject.Find("LogContent").gameObject;
         mapGrid = GameObject.Find("MapGrid").gameObject;
         entry = Resources.Load<GameObject>("Prefabs/Entry");
+        attackContainer = GameObject.Find("AttackContainer").gameObject;
        
         if (!Instance)
         {
@@ -293,6 +295,29 @@ public class UIUtils : MonoBehaviour
             textComponent.text = currentText;
             yield return new WaitForSeconds(0.03f);
         }
+    }
+
+    public static void drawAttack(Vector2 startPos, Vector2 endPos, float range, Texture effectImg)
+    {
+        //set effect
+        RawImage img = attackContainer.transform.Find("Mask").Find("RawImage").GetComponent<RawImage>();
+        img.texture = effectImg;
+
+        Debug.Log(startPos);
+        Debug.Log(endPos);
+        //move vfx window to attack location 
+        attackContainer.transform.position = startPos;
+        Vector2 diff = startPos - endPos;
+        float angle = Mathf.Atan2(diff.y, diff.x) * Mathf.Rad2Deg;
+        attackContainer.transform.localEulerAngles = new Vector3(0, 0, angle);
+        //Vector3 rot = new Vector3(startPos.x - endPos.x, startPos.y - endPos.y, 0);
+        // attackContainer.transform.rotation = Quaternion.LookRotation(rot, Vector3.forward) * Quaternion.Euler(0, 0, 1);
+
+
+        AnimateUI.setEffect(img);
+
+
+        //resize mask according to size?
     }
 
 }

@@ -16,6 +16,9 @@ public static class Player
     //combat values
     private static int totalHP = 50;
     private static int currentHP = 50;
+    //items
+    public static EquipmentItem leftItem = Resources.Load<EquipmentItem>("Equipment/Slasher");
+    public static EquipmentItem rightItem = Resources.Load<EquipmentItem>("Equipment/Blocker");
 
 
     static public void teleportPlayer(Vector3 pos)
@@ -69,7 +72,6 @@ public static class Player
     {
         //deal damage to the player and perform feedback operations
         currentHP = currentHP - damage;
-        Debug.Log("current hp: " + currentHP + " total hp: " + totalHP);
         AnimateUI.updateHPMonitor(((float)currentHP / (float)totalHP));
     }
 

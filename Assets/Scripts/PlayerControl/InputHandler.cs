@@ -4,9 +4,11 @@ using System.Collections;
 using System.Collections.Generic;
 using System.Net;
 using Unity.VisualScripting;
+using UnityEditor;
 using UnityEditor.Tilemaps;
 using UnityEngine;
 using UnityEngine.InputSystem;
+using UnityEngine.UI;
 using UnityEngine.UIElements;
 
 public class InputHandler : MonoBehaviour
@@ -14,6 +16,7 @@ public class InputHandler : MonoBehaviour
     [SerializeField] GameObject gridParent;
     [SerializeField] bool isCreator = false;
     [SerializeField] Vector2Int startpos;
+    [SerializeField] new Camera camera;
     DungeonGrid[] grids;
     DungeonGrid grid;
     //Player player;
@@ -39,8 +42,10 @@ public class InputHandler : MonoBehaviour
     int bufferCounter = 0; //count lifetime of buffered input
 
 
-    //verticality
-    //int verticalO
+    //attacking
+    Vector2 leftStartPos;
+    Vector2 leftEndPos;
+    bool leftDown = false;
 
     
 
@@ -123,6 +128,19 @@ public class InputHandler : MonoBehaviour
                 isMoving = false;          
                 Player.playerObject.transform.position = finalPosition;
                 OnMoveEnd();
+            }
+        }
+        Vector2 startPos = Mouse.current.position.ReadValue();
+        //handle mouse movement inputs
+        if (leftDown)
+        {
+            //check if position is different from startpos
+            if(startPos != leftStartPos)
+            {
+                //if they are different then calculate the angle towards the new pos and perform an attack in that direction
+                float angleDeg = Vector2.SignedAngle(leftStartPos, startPos);
+                //Debug.Log(angleDeg);
+                executeAttack(leftStartPos, startPos, false);
             }
         }
     }
@@ -427,6 +445,70 @@ public class InputHandler : MonoBehaviour
             }
         }
     }
+
+    //0
+    void OnLeftDown(InputValue value)
+    {
+        leftDown = true;
+        //save initial cursor position
+        leftStartPos = Mouse.current.position.ReadValue();
+        //if (value.isPressed)
+        //{
+        //    {
+        //        Ray ray = camera.ScreenPointToRay(Mouse.current.position.ReadValue());
+        //        RaycastHit hit;
+
+        //        if (Physics.Raycast(ray, out hit))
+        //        {
+        //            Debug.Log("Hit object name: " + hit.collider.gameObject.name);
+        //        }
+        //        else
+        //        {
+        //            Debug.Log("No object hit.");
+        //        }
+
+        //    }
+        //}
+
+    }
+
+    void OnLeftUp(InputValue value)
+    {
+        Debug.Log("attack up");
+        leftDown = false;
+
+
+    }
+
+    //perform an attack when the mouse is lifted or when the mouse's position changes while it is being held down
+    void executeAttack(Vector2 startPos, Vector2 endPos, bool rightEquip)
+    {
+        //get params from player data
+        float range = 0;
+        float damage = 0;
+        float recoil = 0;
+        float cooldown = 0;
+        Texture effect = null;
+        if (rightEquip)
+        {
+            range = Player.leftItem.range;
+            damage = Player.leftItem.baseDamage;
+            recoil = Player.leftItem.recoil;
+            cooldown = Player.leftItem.cooldown;
+            effect = Player.leftItem.effect;
+        } else
+        {
+            range = Player.rightItem.range;
+            damage = Player.rightItem.baseDamage;
+            recoil = Player.rightItem.recoil;
+            cooldown = Player.rightItem.cooldown;
+            effect = Player.rightItem.effect;
+        }
+        //draw the ui element for the attack
+        UIUtils.drawAttack(startPos, endPos, range, effect);
+        //perform calculations to find what was hit by the attack
+    }
+
 
 
 
