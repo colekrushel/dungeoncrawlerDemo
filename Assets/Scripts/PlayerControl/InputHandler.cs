@@ -132,17 +132,19 @@ public class InputHandler : MonoBehaviour
         }
         Vector2 startPos = Mouse.current.position.ReadValue();
         //handle mouse movement inputs
-        if (leftDown)
+        if (leftDown && Player.cooldown < 0)
         {
             //check if position is different from startpos
             if(startPos != leftStartPos)
             {
+                //wait for a little bit to more accurately get the position the player is moving the mouse as the first change grabbed will always be the smallest change
                 //if they are different then calculate the angle towards the new pos and perform an attack in that direction
-                float angleDeg = Vector2.SignedAngle(leftStartPos, startPos);
+                //float angleDeg = Vector2.SignedAngle(leftStartPos, startPos);
                 //Debug.Log(angleDeg);
-                executeAttack(leftStartPos, startPos, false);
+                //executeAttack(leftStartPos, startPos, false);
             }
         }
+        Player.cooldown -= Time.deltaTime;
     }
 
 
@@ -474,10 +476,9 @@ public class InputHandler : MonoBehaviour
 
     void OnLeftUp(InputValue value)
     {
-        Debug.Log("attack up");
         leftDown = false;
-
-
+        Vector2 startPos = Mouse.current.position.ReadValue();
+        executeAttack(leftStartPos, startPos, false);
     }
 
     //perform an attack when the mouse is lifted or when the mouse's position changes while it is being held down
@@ -489,7 +490,7 @@ public class InputHandler : MonoBehaviour
         float recoil = 0;
         float cooldown = 0;
         Texture effect = null;
-        if (rightEquip)
+        if (!rightEquip)
         {
             range = Player.leftItem.range;
             damage = Player.leftItem.baseDamage;
@@ -507,6 +508,60 @@ public class InputHandler : MonoBehaviour
         //draw the ui element for the attack
         UIUtils.drawAttack(startPos, endPos, range, effect);
         //perform calculations to find what was hit by the attack
+        Vector2 diff = endPos - startPos;
+        //get point range * 10 units in diff direction
+        Vector2 endPoint = diff.normalized * (range*10) + startPos;
+        //line cast at that point and x amount of intermediary points
+        float intermediaryPointCnt = 10;
+
+        List<GameObject> objectsHit = new List<GameObject>();
+        for(float i = 0; i < intermediaryPointCnt; i++)
+        {
+            Vector2 newPoint = (diff.normalized * (range*10) * (i/intermediaryPointCnt)) + startPos;
+            Ray ray = camera.ScreenPointToRay(newPoint);
+            RaycastHit hit;
+            if (Physics.Raycast(ray, out hit))
+            {
+                //Debug.Log("Hit object name: " + hit.collider.gameObject.name);
+                float dist = hit.distance;
+
+                if(dist < 1)
+                {
+                    //gather all unique models hit into a list and perform a 'hit' on each one
+                    GameObject objectHit = hit.collider.gameObject;
+                    if (!objectsHit.Contains(objectHit))
+                    {
+                        objectsHit.Add(objectHit);
+                    }
+                }
+            }
+        }
+        //try to hit every unique object in list
+        Enemy enemyHit = null;
+        foreach (GameObject objectHit in objectsHit)
+        {
+            //try to get an enemy component from parents
+            Enemy enemyScript = objectHit.GetComponentInParent<Enemy>();
+            if (enemyScript != null)
+            {
+                enemyHit = enemyScript;
+                //we want to deal damage to each part but only hit the enemy once; some effects we only want to happen once
+                enemyScript.hitPart(damage, objectHit);
+            } else
+            {
+                //just play an effect
+            }
+        }
+
+        //now perform the actual hit on the enemy (if necessary)
+        if (enemyHit != null)
+        {
+            enemyHit.hitByPlayer(damage);
+        }
+
+
+        //now apply recoil and cooldown to the player's hit action and display an indicator for this
+        Player.cooldown = cooldown;
     }
 
 

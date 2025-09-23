@@ -22,3 +22,7 @@ MonoBehaviour:
   actionRange: 1
   associatedObject: {fileID: 0}
   weight: 1
+  associatedParts:
+  - Arm1
+  - Arm2
+  - Arm3

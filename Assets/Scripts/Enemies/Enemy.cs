@@ -1,6 +1,7 @@
 using NUnit.Framework;
 using System.Collections;
 using System.Collections.Generic;
+using System.Linq;
 using UnityEngine;
 
 //base enemy class
@@ -8,34 +9,24 @@ public class Enemy : MonoBehaviour
 {
     protected Vector2 pos; //position on grid
     protected int layer; //current layer
-    protected int HP; //hit points
+    protected float HP; //hit points
     protected int baseDamage;
     protected int actionRange; //tiles player must be within to initiate an action
     protected int alertRange; //tiles player must be within to initiate chase
     protected float ICD;  //internal cool down - when this number gets below 0, triggers an action - goes down by around 1 per second
     protected float ICDBase; //number ICD is set to when reset; smaller number means faster enemy behavior 
-    protected float ICDDelay; //multiplier to delay between states; used for adjusting charge/attack times
+    protected float ICDDelay = 1; //multiplier to delay between states; used for adjusting charge/attack times
     protected Animator animator; //this enemy's animator in the scene; also acts as the enemy's state machine
     public GameObject positionObject; //parent object used to control the enemy's position - because animation transforms are local, the enemy's transforms cant be manipulated directly
     [SerializeField] protected EnemyAction[] enemyActions;
+    //all enemies also have parts. parts are tied to gameobjects on the enemy model and have their own hp bar. they are also tied to specific actions, such that some actions cannot be performed if one or all parts are dead.
+    [SerializeField] protected EnemyPart[] parts;
     protected EnemyAction currentAction;
-    enum enemyState { Idle, Charging, Attacking, Stunned, Moving };
+    enum enemyState { Idle, Charging, Attacking, Stunned};
     enemyState currentState = enemyState.Idle;
-
-    //vals set and used within script
-
- 
-
-
 
     private void Update()
     {
-        //handle movement animation
-        if (currentState == enemyState.Moving)
-        {
-            //if moving then increment in direction and check if done
-        }
-
         //handle ICD
         ICD -= Time.deltaTime;
         if (ICD < 0)
@@ -57,8 +48,6 @@ public class Enemy : MonoBehaviour
                 if (hit.collider.gameObject && hit.collider.gameObject.name == "Player" && hit.distance < actionRange)
                 {
                     setupAction();
-
-                    //StartCoroutine(waitForAnim());
                 } else {
                     move(hit);
                 }
@@ -76,7 +65,7 @@ public class Enemy : MonoBehaviour
                 break;
             //if enemy is stunned, un-stun it (back to active)
             case enemyState.Stunned:
-
+                currentState = enemyState.Idle;
                 break;
         }
     }
@@ -167,24 +156,62 @@ public class Enemy : MonoBehaviour
         Player.hitPlayer(damage);
     }
 
-    private IEnumerator waitForAnim()
+    public void hitPart(float damage, GameObject partHit)
     {
-        //wait for the transition to end
-        yield return new WaitUntil(() => animator.GetCurrentAnimatorStateInfo(0).normalizedTime <= 1.0f);
-        yield return new WaitWhile(() => animator.GetCurrentAnimatorStateInfo(0).normalizedTime <= 1.0f);
-        //now animation has ended, call the appropriate end behavior
-        switch (currentState)
+        EnemyPart part = getPartFromObject(partHit);
+        if (part != null)
         {
-            //after enemy is done charging, play attack animation
-            case enemyState.Charging:
-                Debug.Log("finished charging");
-                break;
-            //after enemy is done attacking, return to idle
-            case enemyState.Attacking:
-                Debug.Log("finished attacking");
-                break;
+            part.currentHP -= damage;
+            if (part.currentHP < 0)
+            {
+                //broke the part; now apply an effect and change the part to its broken appearance
+                part.partModel.GetComponent<MeshRenderer>().enabled = false;
+                part.isBroken = true;
+                //if a part was broken while the current action uses it, stagger the enemy
+                if (currentAction.associatedParts.Contains(part.name)) //doesnt work
+                {
+                    Debug.Log("stagger enemy");
+                    animator.Play("Stagger");
+                    currentState = enemyState.Stunned;
+                }
+
+            }
         }
-        //reset icd?
+    }
+    public void hitByPlayer(float damage)
+    {
+
+        UIUtils.addMessageToLog("player hit enemy for " + damage + " damage", Color.green);
+
+        //apply the onhit effect (shake object)
+        MovementManager.shakeObject(positionObject, .04f, 1f, .5f, positionObject.transform.position);
+        //check if enemy was killed 
+        HP -= damage;
+        if(HP < 0)
+        {
+            //play death animation/fx
+
+            //destroy object
+        }
+    }
+
+    private EnemyPart getPartFromObject(GameObject obj)
+    {
+        //loop through parts and check if they match the partname of the given game object
+        EnemyPart objPart = obj.GetComponent<EnemyPart>();
+        EnemyPart returnVal = null;
+        if(objPart != null)
+        {
+            foreach (EnemyPart part in parts)
+            {
+                if (part == objPart)
+                {
+                    returnVal = part;
+                }
+            }
+        }
+        return returnVal;
+ 
     }
 
     public Vector2 getPos()

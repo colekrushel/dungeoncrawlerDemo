@@ -66,23 +66,55 @@ public class MovementManager : MonoBehaviour
                     //movement complete
                 }
             }
+            if (entry.isShaking)
+            {
+                if (entry.shake > 0)
+                {
+                    entry.objectBeingMoved.transform.position = Random.insideUnitSphere * entry.shakeAmount + entry.originalPosition;
+                    entry.shake -= Time.deltaTime * entry.decreaseFactor;
+
+                }
+                else
+                {
+                    //never reaching here?
+                    Debug.Log("Reset shake");
+                    entry.shake = 0f;
+                    //reset position
+                    entry.objectBeingMoved.transform.position = entry.originalPosition;
+                    entry.isShaking = false;
+                    //entries.Remove(entry);
+                }
+            }
         }
-        //cleanup
+        //cleanup; remove finished entries
+
     }
 
     public static void moveObject(GameObject objectToMove, Vector3 targetPos, float speed)
     {
         //check if object already present - no dupes allowed
-
+        
         //create a movement entry
         MovementEntry entry = new MovementEntry(objectToMove.gameObject, targetPos, speed);
-        entries.Add(entry);
+        if (entries.Contains(entry)) { 
+        
+        }
+        else
+        {
+            entries.Add(entry);
+        }
     }
 
     public static void rotateObject(GameObject objectToMove, Quaternion targetRotation, float speed)
     {
         //create a movement entry
         MovementEntry entry = new MovementEntry(objectToMove.gameObject, targetRotation, speed);
+        entries.Add(entry);
+    }
+
+    public static void shakeObject(GameObject obj, float shakeAmt, float decreaseFact, float shakeLength, Vector3 originalPosition)
+    {
+        MovementEntry entry = new MovementEntry(obj, shakeAmt, decreaseFact, shakeLength, originalPosition);
         entries.Add(entry);
     }
 

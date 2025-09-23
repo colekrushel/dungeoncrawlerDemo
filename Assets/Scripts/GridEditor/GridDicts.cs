@@ -61,7 +61,7 @@ public static class GridDicts
         //entity models
         typeToModel.Add("OpenDoor", Resources.Load<GameObject>("Prefabs/Door1"));
         typeToModel.Add("ClosedDoor", Resources.Load<GameObject>("Prefabs/Door1"));
-        typeToModel.Add("Entrance", Resources.Load<GameObject>("Prefabs/Door1"));
+        typeToModel.Add("Entrance", Resources.Load<GameObject>("Prefabs/Rest1"));
         typeToModel.Add("Item", Resources.Load<GameObject>("Prefabs/Item1"));
         typeToModel.Add("Rest", Resources.Load<GameObject>("Prefabs/Rest1"));
         typeToModel.Add("StairsUp", Resources.Load<GameObject>("Prefabs/Stairs1"));

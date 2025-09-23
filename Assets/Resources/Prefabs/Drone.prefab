@@ -65,7 +65,7 @@ MeshRenderer:
   m_RenderingLayerMask: 1
   m_RendererPriority: 0
   m_Materials:
-  - {fileID: 2100000, guid: 31321ba15b8f8eb4c954353edc038b1d, type: 2}
+  - {fileID: 2100000, guid: 29bd96e9052a6034c8ecfa00bd5eb2c6, type: 2}
   m_StaticBatchInfo:
     firstSubMesh: 0
     subMeshCount: 0
@@ -120,6 +120,7 @@ GameObject:
   - component: {fileID: 2345383719123383269}
   - component: {fileID: 5149206516964450656}
   - component: {fileID: 7301833987851603527}
+  - component: {fileID: 6857154446776167441}
   m_Layer: 0
   m_Name: Cube (1)
   m_TagString: Untagged
@@ -173,7 +174,7 @@ MeshRenderer:
   m_RenderingLayerMask: 1
   m_RendererPriority: 0
   m_Materials:
-  - {fileID: 2100000, guid: 31321ba15b8f8eb4c954353edc038b1d, type: 2}
+  - {fileID: 2100000, guid: 29bd96e9052a6034c8ecfa00bd5eb2c6, type: 2}
   m_StaticBatchInfo:
     firstSubMesh: 0
     subMeshCount: 0
@@ -216,6 +217,23 @@ BoxCollider:
   serializedVersion: 3
   m_Size: {x: 1, y: 1, z: 1}
   m_Center: {x: 0, y: 0, z: 0}
+--- !u!114 &6857154446776167441
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 2003417989489759344}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: acb1b6fb9ada60749b0400301790b696, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  currentHP: 5
+  maxHP: 5
+  partName: Arm1
+  partModel: {fileID: 2003417989489759344}
+  isBroken: 0
 --- !u!1 &2248482894946250300
 GameObject:
   m_ObjectHideFlags: 0
@@ -288,6 +306,10 @@ MonoBehaviour:
   enemyActions:
   - {fileID: 11400000, guid: 637ed9bd61e2a174b8bd606f7702f15f, type: 2}
   - {fileID: 11400000, guid: 3603571678da6564d9bda2797ac88cd8, type: 2}
+  parts:
+  - {fileID: 6857154446776167441}
+  - {fileID: 1350832974005773245}
+  - {fileID: 5143144570380783192}
 --- !u!1 &2421027852139255706
 GameObject:
   m_ObjectHideFlags: 0
@@ -338,6 +360,7 @@ GameObject:
   - component: {fileID: 6796801214620158052}
   - component: {fileID: 4327002494198771473}
   - component: {fileID: 1608362448130266214}
+  - component: {fileID: 5143144570380783192}
   m_Layer: 0
   m_Name: Cube (3)
   m_TagString: Untagged
@@ -391,7 +414,7 @@ MeshRenderer:
   m_RenderingLayerMask: 1
   m_RendererPriority: 0
   m_Materials:
-  - {fileID: 2100000, guid: 31321ba15b8f8eb4c954353edc038b1d, type: 2}
+  - {fileID: 2100000, guid: 29bd96e9052a6034c8ecfa00bd5eb2c6, type: 2}
   m_StaticBatchInfo:
     firstSubMesh: 0
     subMeshCount: 0
@@ -434,6 +457,23 @@ BoxCollider:
   serializedVersion: 3
   m_Size: {x: 1, y: 1, z: 1}
   m_Center: {x: 0, y: 0, z: 0}
+--- !u!114 &5143144570380783192
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 2578855814761461409}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: acb1b6fb9ada60749b0400301790b696, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  currentHP: 5
+  maxHP: 5
+  partName: Arm3
+  partModel: {fileID: 2578855814761461409}
+  isBroken: 0
 --- !u!1 &2944958526668638707
 GameObject:
   m_ObjectHideFlags: 0
@@ -499,7 +539,7 @@ MeshRenderer:
   m_RenderingLayerMask: 1
   m_RendererPriority: 0
   m_Materials:
-  - {fileID: 2100000, guid: 31321ba15b8f8eb4c954353edc038b1d, type: 2}
+  - {fileID: 2100000, guid: 29bd96e9052a6034c8ecfa00bd5eb2c6, type: 2}
   m_StaticBatchInfo:
     firstSubMesh: 0
     subMeshCount: 0
@@ -607,7 +647,7 @@ MeshRenderer:
   m_RenderingLayerMask: 1
   m_RendererPriority: 0
   m_Materials:
-  - {fileID: 2100000, guid: 31321ba15b8f8eb4c954353edc038b1d, type: 2}
+  - {fileID: 2100000, guid: 29bd96e9052a6034c8ecfa00bd5eb2c6, type: 2}
   m_StaticBatchInfo:
     firstSubMesh: 0
     subMeshCount: 0
@@ -662,6 +702,7 @@ GameObject:
   - component: {fileID: 6974157766488968922}
   - component: {fileID: 5649716907465001494}
   - component: {fileID: 3451050511013543583}
+  - component: {fileID: 1350832974005773245}
   m_Layer: 0
   m_Name: Cube (2)
   m_TagString: Untagged
@@ -715,7 +756,7 @@ MeshRenderer:
   m_RenderingLayerMask: 1
   m_RendererPriority: 0
   m_Materials:
-  - {fileID: 2100000, guid: 31321ba15b8f8eb4c954353edc038b1d, type: 2}
+  - {fileID: 2100000, guid: 29bd96e9052a6034c8ecfa00bd5eb2c6, type: 2}
   m_StaticBatchInfo:
     firstSubMesh: 0
     subMeshCount: 0
@@ -758,6 +799,23 @@ BoxCollider:
   serializedVersion: 3
   m_Size: {x: 1, y: 1, z: 1}
   m_Center: {x: 0, y: 0, z: 0}
+--- !u!114 &1350832974005773245
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 4516445266089371826}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: acb1b6fb9ada60749b0400301790b696, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  currentHP: 5
+  maxHP: 5
+  partName: Arm2
+  partModel: {fileID: 4516445266089371826}
+  isBroken: 0
 --- !u!1 &7958768044093664110
 GameObject:
   m_ObjectHideFlags: 0
@@ -823,7 +881,7 @@ MeshRenderer:
   m_RenderingLayerMask: 1
   m_RendererPriority: 0
   m_Materials:
-  - {fileID: 2100000, guid: 31321ba15b8f8eb4c954353edc038b1d, type: 2}
+  - {fileID: 2100000, guid: 761d8e1f988ed2345a28312145c79c6e, type: 2}
   m_StaticBatchInfo:
     firstSubMesh: 0
     subMeshCount: 0

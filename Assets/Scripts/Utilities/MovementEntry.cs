@@ -2,6 +2,7 @@ using UnityEngine;
 
 public class MovementEntry
 {
+    //for all
     public GameObject objectBeingMoved;
     //movement data
     public bool isMoving = false;
@@ -13,6 +14,12 @@ public class MovementEntry
     public Quaternion endRotation;
     public float totalRotation = 0f;
     public float rotationSpeed;
+    //shaking data
+    public Vector3 originalPosition;
+    public bool isShaking = false;
+    public float shake = 0;
+    public float shakeAmount = 0.02f;
+    public float decreaseFactor = 1f;
 
     //separate constructors for moving and rotating (and both
     public MovementEntry(GameObject obj, Vector3 finalpos, float speed)
@@ -41,5 +48,13 @@ public class MovementEntry
         endRotation = end;
         rotationSpeed = rspeed;
         isRotating = true;
+    }
+
+    public MovementEntry(GameObject obj, float shakeAmt, float decreaseFact, float shakeLength, Vector3 originalPos){
+        objectBeingMoved = obj;
+        shakeAmount = shakeAmt;    
+        shake = shakeLength;
+        isShaking = true;
+        originalPosition = originalPos;
     }
 }

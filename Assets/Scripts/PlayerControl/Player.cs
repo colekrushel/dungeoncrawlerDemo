@@ -16,6 +16,8 @@ public static class Player
     //combat values
     private static int totalHP = 50;
     private static int currentHP = 50;
+    public static float cooldown = 0;
+    public static float recoil = 0;
     //items
     public static EquipmentItem leftItem = Resources.Load<EquipmentItem>("Equipment/Slasher");
     public static EquipmentItem rightItem = Resources.Load<EquipmentItem>("Equipment/Blocker");

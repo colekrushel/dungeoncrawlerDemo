@@ -299,25 +299,21 @@ public class UIUtils : MonoBehaviour
 
     public static void drawAttack(Vector2 startPos, Vector2 endPos, float range, Texture effectImg)
     {
+        GameObject RawImage = attackContainer.transform.Find("Mask").Find("RawImage").gameObject;
         //set effect
-        RawImage img = attackContainer.transform.Find("Mask").Find("RawImage").GetComponent<RawImage>();
+        RawImage img = RawImage.GetComponent<RawImage>();
         img.texture = effectImg;
-
-        Debug.Log(startPos);
-        Debug.Log(endPos);
+        //adjust size based on range * 10
+        RawImage.GetComponent<RectTransform>().sizeDelta = new Vector2(range * 10, RawImage.GetComponent<RectTransform>().sizeDelta.y);
+        attackContainer.transform.Find("Mask").GetComponent<RectTransform>().sizeDelta = new Vector2(range * 10, RawImage.GetComponent<RectTransform>().sizeDelta.y);
         //move vfx window to attack location 
         attackContainer.transform.position = startPos;
         Vector2 diff = startPos - endPos;
+        attackContainer.transform.Find("Mask").localPosition = new Vector2(range * -5, 0);
+        //calc angle
         float angle = Mathf.Atan2(diff.y, diff.x) * Mathf.Rad2Deg;
         attackContainer.transform.localEulerAngles = new Vector3(0, 0, angle);
-        //Vector3 rot = new Vector3(startPos.x - endPos.x, startPos.y - endPos.y, 0);
-        // attackContainer.transform.rotation = Quaternion.LookRotation(rot, Vector3.forward) * Quaternion.Euler(0, 0, 1);
-
-
         AnimateUI.setEffect(img);
-
-
-        //resize mask according to size?
     }
 
 }

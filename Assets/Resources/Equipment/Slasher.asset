@@ -15,7 +15,7 @@ MonoBehaviour:
   equipType: 1
   baseDamage: 2
   shieldHealth: 0
-  range: 10
+  range: 40
   recoil: 0.5
   cooldown: 1
   model: {fileID: 0}
