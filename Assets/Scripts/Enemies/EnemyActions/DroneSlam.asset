@@ -14,7 +14,7 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   chargeAnim: {fileID: 7400000, guid: 8846f5e828b4cfe4f8afab0d76b89857, type: 2}
   chargeDelay: 2
-  actionAnim: {fileID: 7400000, guid: dcf37b9bcc7ac6b4fb1f44e51e5f9b3a, type: 2}
+  actionAnim: {fileID: 7400000, guid: ae56bd63fc99dba419845fc189e6353b, type: 2}
   attackDelay: 1
   damage: 3
   actionType: 0
@@ -22,3 +22,4 @@ MonoBehaviour:
   actionRange: 1
   associatedObject: {fileID: 0}
   weight: 1
+  associatedParts: []

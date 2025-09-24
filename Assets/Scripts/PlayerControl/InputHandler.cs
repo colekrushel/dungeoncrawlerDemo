@@ -10,6 +10,7 @@ using UnityEngine;
 using UnityEngine.InputSystem;
 using UnityEngine.UI;
 using UnityEngine.UIElements;
+using static UnityEditor.Experimental.GraphView.GraphView;
 
 public class InputHandler : MonoBehaviour
 {
@@ -44,13 +45,13 @@ public class InputHandler : MonoBehaviour
 
     //attacking
     Vector2 leftStartPos;
-    Vector2 leftEndPos;
-    bool leftDown = false;
+    Vector2 rightStartPos;
 
-    
+
 
     //ui stuff
     [SerializeField] GameObject interactWindow;
+    [SerializeField] GameObject firewall;
     [SerializeField] GameObject mapperGrid;
 
     void Start()
@@ -131,20 +132,31 @@ public class InputHandler : MonoBehaviour
             }
         }
         Vector2 startPos = Mouse.current.position.ReadValue();
-        //handle mouse movement inputs
-        if (leftDown && Player.cooldown < 0)
+        if(Player.rightCooldown > 0)Player.rightCooldown -= Time.deltaTime;
+        if(Player.leftCooldown > 0)Player.leftCooldown -= Time.deltaTime;
+        //if player is blocking then decrease shield health; otherwise restore it
+        if (Player.leftItem.equipType == EquipmentItem.type.Shield)
         {
-            //check if position is different from startpos
-            if(startPos != leftStartPos)
+            if (Player.isBlocking && Player.currentBlockHP > 0)
             {
-                //wait for a little bit to more accurately get the position the player is moving the mouse as the first change grabbed will always be the smallest change
-                //if they are different then calculate the angle towards the new pos and perform an attack in that direction
-                //float angleDeg = Vector2.SignedAngle(leftStartPos, startPos);
-                //Debug.Log(angleDeg);
-                //executeAttack(leftStartPos, startPos, false);
+                Player.currentBlockHP -= Time.deltaTime * Player.leftItem.shieldDecay;
+            } else if(Player.currentBlockHP < Player.maxBlockHP)
+            {
+                Player.currentBlockHP += Time.deltaTime * Player.leftItem.shieldRegen;
+            }
+        } else if (Player.rightItem.equipType == EquipmentItem.type.Shield)
+        {
+            if (Player.isBlocking && Player.currentBlockHP > 0)
+            {
+                Player.currentBlockHP -= Time.deltaTime * Player.rightItem.shieldDecay;
+            }
+            else if(Player.currentBlockHP < Player.maxBlockHP)
+            {
+                Player.currentBlockHP += Time.deltaTime * Player.rightItem.shieldRegen;
             }
         }
-        Player.cooldown -= Time.deltaTime;
+            
+
     }
 
 
@@ -451,34 +463,41 @@ public class InputHandler : MonoBehaviour
     //0
     void OnLeftDown(InputValue value)
     {
-        leftDown = true;
-        //save initial cursor position
-        leftStartPos = Mouse.current.position.ReadValue();
-        //if (value.isPressed)
-        //{
-        //    {
-        //        Ray ray = camera.ScreenPointToRay(Mouse.current.position.ReadValue());
-        //        RaycastHit hit;
-
-        //        if (Physics.Raycast(ray, out hit))
-        //        {
-        //            Debug.Log("Hit object name: " + hit.collider.gameObject.name);
-        //        }
-        //        else
-        //        {
-        //            Debug.Log("No object hit.");
-        //        }
-
-        //    }
-        //}
+        if (Player.leftItem.equipType == EquipmentItem.type.Shield)
+        {
+            startBlock();
+        } else
+        {
+            //save initial cursor position
+            leftStartPos = Mouse.current.position.ReadValue();
+        }
 
     }
 
     void OnLeftUp(InputValue value)
     {
-        leftDown = false;
         Vector2 startPos = Mouse.current.position.ReadValue();
-        executeAttack(leftStartPos, startPos, false);
+        if(Player.leftCooldown <= 0) executeAttack(leftStartPos, startPos, false);
+    }
+
+    void OnRightDown(InputValue value)
+    {
+        //if shield equipped then handle it now
+        if (Player.rightItem.equipType == EquipmentItem.type.Shield)
+        {
+            startBlock();
+        } else
+        {
+            //save initial cursor position
+            rightStartPos = Mouse.current.position.ReadValue();
+        }
+
+    }
+
+    void OnRightUp(InputValue value)
+    {
+        Vector2 startPos = Mouse.current.position.ReadValue();
+        if (Player.rightCooldown <= 0) executeAttack(rightStartPos, startPos, true);
     }
 
     //perform an attack when the mouse is lifted or when the mouse's position changes while it is being held down
@@ -490,6 +509,7 @@ public class InputHandler : MonoBehaviour
         float recoil = 0;
         float cooldown = 0;
         Texture effect = null;
+        EquipmentItem.type type;
         if (!rightEquip)
         {
             range = Player.leftItem.range;
@@ -497,6 +517,7 @@ public class InputHandler : MonoBehaviour
             recoil = Player.leftItem.recoil;
             cooldown = Player.leftItem.cooldown;
             effect = Player.leftItem.effect;
+            type = Player.leftItem.equipType;
         } else
         {
             range = Player.rightItem.range;
@@ -504,7 +525,27 @@ public class InputHandler : MonoBehaviour
             recoil = Player.rightItem.recoil;
             cooldown = Player.rightItem.cooldown;
             effect = Player.rightItem.effect;
+            type = Player.rightItem.equipType;
         }
+        //different handling types
+        switch (type)
+        {
+            case EquipmentItem.type.Strike:
+
+                break;
+            case EquipmentItem.type.Slash:
+
+                break;
+            case EquipmentItem.type.Pierce:
+
+                break;
+            case EquipmentItem.type.Shield:
+                //end the blocking effect and dont execute any attack
+                endBlock();
+                return;
+                //break;
+        }
+
         //draw the ui element for the attack
         UIUtils.drawAttack(startPos, endPos, range, effect);
         //perform calculations to find what was hit by the attack
@@ -561,10 +602,25 @@ public class InputHandler : MonoBehaviour
 
 
         //now apply recoil and cooldown to the player's hit action and display an indicator for this
-        Player.cooldown = cooldown;
+        if(rightEquip)Player.rightCooldown = cooldown;
+        else Player.leftCooldown = cooldown;
     }
 
+    void startBlock()
+    {
+        Player.isBlocking = true;
 
+        //display block fx
+        UIUtils.popIn(firewall);
+    }
+
+    void endBlock()
+    {
+        Player.isBlocking = false;
+
+        //stop block fx
+        UIUtils.popOut(firewall);
+    }
 
 
     void SnapPlayer(int cellX, int cellY)

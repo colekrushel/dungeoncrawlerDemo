@@ -22,7 +22,7 @@ public class Enemy : MonoBehaviour
     //all enemies also have parts. parts are tied to gameobjects on the enemy model and have their own hp bar. they are also tied to specific actions, such that some actions cannot be performed if one or all parts are dead.
     [SerializeField] protected EnemyPart[] parts;
     protected EnemyAction currentAction;
-    enum enemyState { Idle, Charging, Attacking, Stunned};
+    enum enemyState { Idle, Charging, Attacking, Stunned, None};
     enemyState currentState = enemyState.Idle;
 
     private void Update()
@@ -75,6 +75,15 @@ public class Enemy : MonoBehaviour
         //pick action from the list
         int ranIndex = Random.Range(0, enemyActions.Length);
         EnemyAction selectedAction = enemyActions[ranIndex];
+        //check if action is possible to be performed (parts are not broken; all associated parts must be broken for the action to be disabled)
+        int c = 0;
+        while(!canPerformAction(selectedAction) && c < 100)
+        {
+            //if cant perform the action then pick a new one until one we can perform has been picked
+            ranIndex = Random.Range(0, enemyActions.Length);
+            selectedAction = enemyActions[ranIndex];
+            c++;
+        }
         currentAction = selectedAction;
         //set up override animator and attack values
         AnimatorOverrideController overrideController = new AnimatorOverrideController(animator.runtimeAnimatorController);
@@ -85,6 +94,20 @@ public class Enemy : MonoBehaviour
         //Debug.Log(animator["ChargeAction"].name);
         animator.Play("ChargeAction");
         currentState = enemyState.Charging;
+    }
+
+    private bool canPerformAction(EnemyAction action)
+    {
+        bool retval = false;
+        if (action.associatedParts.Length == 0) return true;
+        //return true if a single part is not broken or action has no parts; false otherwise
+        foreach (EnemyPart part in parts)
+        {
+            if (action.associatedParts.Contains(part.partName) && !part.isBroken){
+                retval = true; break;
+            }
+        }
+        return retval;
     }
 
     private void move(RaycastHit hit)
@@ -114,18 +137,27 @@ public class Enemy : MonoBehaviour
             
         } else
         {
-            //Debug.Log("move toward player");
+            //TODO
+            //prevent diagonal movements, instead just check both directions if possible and take the first one possible
+            //prevent moving into player's pos under any circumstances
+            //rework facing system (maybe do this later when an enemy with a proper 'face' is implemented
+
+            //sometimes enemy will continue to move even though the player is right in front of them?
+
+
             //if a player was found, use the offset in positions between the player and enemy to determine what direction to move 
             string dir = GridUtils.getDirectionBetween(positionObject.transform.position, Player.playerObject.transform.position);
             Vector3 newPos = positionObject.transform.position + MovementManager.directionToVector3(dir);
             MovementManager.moveObject(positionObject, newPos, .01f);
-            //update pos 
             //update pos and clear old pos on map
             //UIUtils.updateSingleMapCell((int)pos.x, (int)pos.y, GridDicts.typeToSprite["None"]);
             pos.x = newPos.x; pos.y = newPos.z;
+            //look at player when following player
+            positionObject.transform.LookAt(Player.playerObject.transform.position);
         }
         //after movement update the map
         UIUtils.updateMap();
+        
         //UIUtils.updateSingleMapCell((int)pos.x, (int)pos.y, GridDicts.typeToSprite["Enemy"]);
 
     }
@@ -159,22 +191,23 @@ public class Enemy : MonoBehaviour
     public void hitPart(float damage, GameObject partHit)
     {
         EnemyPart part = getPartFromObject(partHit);
-        if (part != null)
+        if (part != null && currentAction != null)
         {
+            //only deal damage if part hit is associated with the current action 
+            bool inUse = currentAction.associatedParts.Contains(part.partName);
+            if (!inUse) return;
             part.currentHP -= damage;
+
             if (part.currentHP < 0)
             {
                 //broke the part; now apply an effect and change the part to its broken appearance
                 part.partModel.GetComponent<MeshRenderer>().enabled = false;
                 part.isBroken = true;
-                //if a part was broken while the current action uses it, stagger the enemy
-                if (currentAction.associatedParts.Contains(part.name)) //doesnt work
-                {
-                    Debug.Log("stagger enemy");
-                    animator.Play("Stagger");
-                    currentState = enemyState.Stunned;
-                }
-
+                //if a part was broken then stagger the enemy
+                animator.Play("Stagger");
+                ICD = ICDBase * 2;
+                currentState = enemyState.Stunned;
+                currentAction = null;
             }
         }
     }
@@ -184,15 +217,23 @@ public class Enemy : MonoBehaviour
         UIUtils.addMessageToLog("player hit enemy for " + damage + " damage", Color.green);
 
         //apply the onhit effect (shake object)
-        MovementManager.shakeObject(positionObject, .04f, 1f, .5f, positionObject.transform.position);
+        MovementManager.shakeObject(positionObject, .04f, 1f, .2f, positionObject.transform.position);
         //check if enemy was killed 
         HP -= damage;
         if(HP < 0)
         {
-            //play death animation/fx
-
-            //destroy object
+            //play death animation
+            animator.Play("Death");
+            currentState = enemyState.None;
+            
         }
+    }
+
+    //called from point in death animation where death should be handled
+    public void onDeath()
+    {
+        //tell manager to destroy object
+        EnemyManager.killEnemy(this);
     }
 
     private EnemyPart getPartFromObject(GameObject obj)
@@ -202,8 +243,11 @@ public class Enemy : MonoBehaviour
         EnemyPart returnVal = null;
         if(objPart != null)
         {
+            //ignore broken parts
+            if (objPart.isBroken) return null;
             foreach (EnemyPart part in parts)
             {
+               
                 if (part == objPart)
                 {
                     returnVal = part;

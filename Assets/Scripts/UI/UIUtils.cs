@@ -14,6 +14,7 @@ public class UIUtils : MonoBehaviour
     static public GameObject mapGrid;
     static public GameObject entry;
     static public GameObject attackContainer;
+    static public GameObject firewall;
     public static MonoBehaviour Instance { get; private set; }
 
     private void Awake()
@@ -22,6 +23,7 @@ public class UIUtils : MonoBehaviour
         mapGrid = GameObject.Find("MapGrid").gameObject;
         entry = Resources.Load<GameObject>("Prefabs/Entry");
         attackContainer = GameObject.Find("AttackContainer").gameObject;
+        
        
         if (!Instance)
         {

@@ -1,5 +1,6 @@
 using NUnit.Framework;
 using System.Collections.Generic;
+using Unity.VisualScripting;
 using UnityEngine;
 
 public class EnemyManager : MonoBehaviour
@@ -32,6 +33,13 @@ public class EnemyManager : MonoBehaviour
         e.positionObject = enemyParent;
         e.snap(new Vector2(x, y), layer);
         enemies.Add(e);
+    }
+
+    public static void killEnemy(Enemy enemy)
+    {
+        enemies.Remove(enemy);
+        Destroy(enemy.positionObject);
+        //handle on death fx and drops
     }
 
     public static void updateMapWithEnemyInfo()

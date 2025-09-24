@@ -16,11 +16,15 @@ public static class Player
     //combat values
     private static int totalHP = 50;
     private static int currentHP = 50;
-    public static float cooldown = 0;
+    public static float leftCooldown = 0;
+    public static float rightCooldown = 0;
     public static float recoil = 0;
+    public static bool isBlocking = false;
     //items
     public static EquipmentItem leftItem = Resources.Load<EquipmentItem>("Equipment/Slasher");
     public static EquipmentItem rightItem = Resources.Load<EquipmentItem>("Equipment/Blocker");
+    public static float currentBlockHP = rightItem.shieldHealth;
+    public static float maxBlockHP = rightItem.shieldHealth;
 
 
     static public void teleportPlayer(Vector3 pos)
@@ -73,8 +77,19 @@ public static class Player
     static public void hitPlayer(int damage)
     {
         //deal damage to the player and perform feedback operations
-        currentHP = currentHP - damage;
-        AnimateUI.updateHPMonitor(((float)currentHP / (float)totalHP));
+        //check if blocking, if so then deal damage to the block instead
+        if (isBlocking && currentBlockHP > 0)
+        {
+            //deal shield damage
+            currentBlockHP -= damage;
+            GameObject block = GameObject.Find("Firewall");
+            MovementManager.shakeObject(block, 20f, 1f, .3f, block.transform.position);
+        } else
+        {
+            currentHP = currentHP - damage;
+            AnimateUI.updateHPMonitor(((float)currentHP / (float)totalHP));
+        }
+
     }
 
     

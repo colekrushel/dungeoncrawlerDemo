@@ -229,8 +229,8 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: acb1b6fb9ada60749b0400301790b696, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  currentHP: 5
-  maxHP: 5
+  currentHP: 2
+  maxHP: 2
   partName: Arm1
   partModel: {fileID: 2003417989489759344}
   isBroken: 0
@@ -469,8 +469,8 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: acb1b6fb9ada60749b0400301790b696, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  currentHP: 5
-  maxHP: 5
+  currentHP: 2
+  maxHP: 2
   partName: Arm3
   partModel: {fileID: 2578855814761461409}
   isBroken: 0
@@ -811,8 +811,8 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: acb1b6fb9ada60749b0400301790b696, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  currentHP: 5
-  maxHP: 5
+  currentHP: 2
+  maxHP: 2
   partName: Arm2
   partModel: {fileID: 4516445266089371826}
   isBroken: 0

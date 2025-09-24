@@ -3,6 +3,7 @@ using System.Collections.Generic;
 using TMPro.Examples;
 using UnityEditor;
 using UnityEngine;
+using UnityEngine.InputSystem;
 using UnityEngine.UI;
 
 public class AnimateUI : MonoBehaviour
@@ -23,8 +24,10 @@ public class AnimateUI : MonoBehaviour
                 //Debug.Log("component found " +  child.gameObject.name);
                 components.Add(child.gameObject);
             }
+            if(child.name == "Firewall") firewall = child.gameObject;
         }
-        
+        attackMaskImage = attackIndicator.GetComponentInChildren<Image>();
+
     }
 
     // values for health bar animation
@@ -42,6 +45,10 @@ public class AnimateUI : MonoBehaviour
     // grab every UI component window
     static private List<GameObject> components;
     static private Image monitorBackground;
+    static private GameObject firewall;
+    //attack indicator
+    [SerializeField] private GameObject attackIndicator;
+     private Image attackMaskImage;
     void Update()
     {
         //Debug.Log(scrollSpeed);
@@ -69,6 +76,14 @@ public class AnimateUI : MonoBehaviour
                 playEffect = false;
             }
         }
+        //scale size of firewall proportionally to its health
+        firewall.transform.localScale = new Vector3(Player.currentBlockHP / Player.maxBlockHP, Player.currentBlockHP / Player.maxBlockHP, 1);
+        if (firewall.transform.localScale.x < 0) firewall.transform.localScale = new Vector3(0, 0, 1);
+        //scale fill ratio of attack indicator proportionally to player cooldown and move it on top of mouse
+        attackMaskImage.fillAmount = Mathf.Abs(1 - Player.leftCooldown);
+        attackIndicator.transform.position = Mouse.current.position.ReadValue();
+        //if it is 0 then remove indicator
+        if(Player.leftCooldown <= 0) attackMaskImage.fillAmount = 0;
 
     }
 

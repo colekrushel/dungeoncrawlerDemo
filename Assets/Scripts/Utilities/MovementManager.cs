@@ -3,6 +3,7 @@ using System.Collections.Generic;
 using System.Linq;
 using Unity.VisualScripting;
 using UnityEngine;
+using UnityEngine.Rendering.Universal;
 using static UnityEditor.PlayerSettings;
 
 public class MovementManager : MonoBehaviour
@@ -25,7 +26,7 @@ public class MovementManager : MonoBehaviour
         foreach (var entry in entries.ToList())
         {
             //if not rotating or moving, remove entry as it has finished
-            if (!entry.isMoving && !entry.isRotating)
+            if (!entry.isMoving && !entry.isRotating && !entry.isShaking)
             {
                 entries.Remove(entry);
             }
@@ -76,18 +77,13 @@ public class MovementManager : MonoBehaviour
                 }
                 else
                 {
-                    //never reaching here?
-                    Debug.Log("Reset shake");
                     entry.shake = 0f;
                     //reset position
                     entry.objectBeingMoved.transform.position = entry.originalPosition;
                     entry.isShaking = false;
-                    //entries.Remove(entry);
                 }
             }
         }
-        //cleanup; remove finished entries
-
     }
 
     public static void moveObject(GameObject objectToMove, Vector3 targetPos, float speed)
