@@ -17,7 +17,6 @@ public class Door : CellEntity
         facing = e.facing;
         interactable = e.interactable;
         interactOnTile = e.interactOnTile;
-        interactText = "i am a door!";
         entityInScene = e.entityInScene;
         doorAnimator = entityInScene.GetComponent<Animator>();
     }

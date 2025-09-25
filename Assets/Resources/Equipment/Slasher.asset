@@ -13,8 +13,10 @@ MonoBehaviour:
   m_Name: Slasher
   m_EditorClassIdentifier: 
   equipType: 1
-  baseDamage: 2
+  baseDamage: 20
   shieldHealth: 0
+  shieldDecay: 0
+  shieldRegen: 0
   range: 40
   recoil: 0.5
   cooldown: 1

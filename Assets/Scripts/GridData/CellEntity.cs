@@ -12,7 +12,7 @@ public class CellEntity
     public string facing; // N/E/S/W direction entity is facing (should align with model in game scene)
     public bool interactable = false; //whether player can interact with this entity to do something
     public bool interactOnTile = false; //whether this entity is interactable from a neighboring tile or when standing at same pos (+ direction?) (mutually exclusive)
-    public string interactText = "placeholder";
+    public string dataString = ""; //string used to associate data with this entity, like enemy names or item names
     public GameObject entityInScene;
     public int layer;
 

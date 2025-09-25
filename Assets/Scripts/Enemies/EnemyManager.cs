@@ -22,6 +22,7 @@ public class EnemyManager : MonoBehaviour
 
     public static void spawnEnemy(int x, int y, int layer, string type)
     {
+        return;
         //insantiate object; object already has enemy class on it so we just need to instantiate and move it
         //create a parent object because the animations have local coordinates pre-set
         GameObject enemyParent = new GameObject();
@@ -40,6 +41,15 @@ public class EnemyManager : MonoBehaviour
         enemies.Remove(enemy);
         Destroy(enemy.positionObject);
         //handle on death fx and drops
+    }
+
+    public static bool enemyOnPos(Vector2 pos, int layer)
+    {
+        foreach (Enemy enemy in enemies)
+        {
+            if(enemy.getPos() == pos && enemy.getLayer() == layer) return true;
+        }
+        return false;
     }
 
     public static void updateMapWithEnemyInfo()

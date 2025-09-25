@@ -20,11 +20,11 @@ public class RenderGrid : MonoBehaviour
             //load rooms
             grids[i] = JsonUtility.FromJson<DungeonGrid>(file.text);
             grids[i].fillGridVariable();
-            grids[i].layer = i+1;
+            grids[i].layer = i;
             //render cell objects ; cant be rendered in a class function as serializable objects cannot inherit monobehavior to be loaded from json
             GameObject newlayer = new GameObject();
             newlayer.transform.SetParent(gameObject.transform);
-            newlayer.name = "layer" + (i + 1);
+            newlayer.name = "layer" + (i );
             renderCellGrid(grids[i], newlayer);
             newlayer.transform.position = gameObject.transform.position + new Vector3(0, i, 0);
         }
@@ -60,6 +60,8 @@ public class RenderGrid : MonoBehaviour
         //parent container for cell
         GameObject cellObject = new GameObject();
         string[] walls = cell.getWalls();
+
+        cell.layer = grid.layer;
 
         //assign floor
         string floorURL = "Prefabs/" + cell.getFloorToAssign();
@@ -203,7 +205,7 @@ public class RenderGrid : MonoBehaviour
     public void initializeEntity(DungeonCell cell, GameObject cellObject)
     {
         //exclude types that dont have models
-        if(cell.type != "StairsDown")
+        if(cell.type != "StairsDown" && cell.type != "Enemy")
         {
             //get model from dict
             GameObject model = Instantiate(GridDicts.typeToModel[cell.type]);
@@ -245,6 +247,14 @@ public class RenderGrid : MonoBehaviour
                 cell.traversible = true;
                 break;
             case "StairsDown":
+                cell.entity.interactable = false;
+                cell.traversible = true;
+                //grab facing direction from the paired stairsup below the tile
+                cell.entity.facing = grids[cell.layer - 1].getCell(cell.gridX, cell.gridY).entity.facing;
+                break;
+            case "Enemy":
+                //spawn an enemy here
+                EnemyManager.spawnEnemy(cell.gridX, cell.gridY, cell.layer, cell.entity.dataString);
                 cell.entity.interactable = false;
                 cell.traversible = true;
                 break;

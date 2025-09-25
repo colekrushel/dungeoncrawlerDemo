@@ -8,7 +8,7 @@ using UnityEngine;
 public class Enemy : MonoBehaviour
 {
     protected Vector2 pos; //position on grid
-    protected int layer; //current layer
+    protected int layer = 0; //current layer
     protected float HP; //hit points
     protected int baseDamage;
     protected int actionRange; //tiles player must be within to initiate an action
@@ -33,6 +33,9 @@ public class Enemy : MonoBehaviour
         {
             triggerAction();
             ICD = ICDBase * ICDDelay;
+            //look at player after every action?
+            positionObject.transform.LookAt(Player.playerObject.transform.position);
+
         }
     }
 
@@ -45,7 +48,10 @@ public class Enemy : MonoBehaviour
             case enemyState.Idle:
                 //check if the player is within range first; if so, then queue an attack. otherwise just move
                 RaycastHit hit = playerCheck();
-                if (hit.collider.gameObject && hit.collider.gameObject.name == "Player" && hit.distance < actionRange)
+                //use positions for checking attack range instead of the raycast length as we dont know where on the player the hit might have been [and attack ranges are tile-based]
+                Vector3 distanceBetween = (Player.playerObject.transform.position - positionObject.transform.position); distanceBetween.y = 0;
+                float magn = distanceBetween.magnitude;
+                if (hit.collider.gameObject && hit.collider.gameObject.name == "Player" && magn <= actionRange)
                 {
                     setupAction();
                 } else {
@@ -114,47 +120,51 @@ public class Enemy : MonoBehaviour
     {
         //at the start of movement, cast a line to see if the enemy should move towards the player or randomly
         bool playerFound = (hit.collider.gameObject.name == "Player" && hit.distance < alertRange);
+        Vector3 newPos = Vector3.zero;
+        char dir;
         //different movement behavior based on whether enemy is active or not; unactive enemy moves randomly but active enemy follows player
-        if (!playerFound)
+        if (!playerFound) //determine movement direction
         {
             //get first random legal move by picking a random direction and attempting to move in that direction until a legal move is found
             List<string> dirs = new List<string>();
             dirs.Add("N"); dirs.Add("S"); dirs.Add("E"); dirs.Add("W");
             bool canmove = false;
             string ranDir = "N";
-            while (!canmove)
+            int c = 100;
+            while (!canmove && c > 0)
             {
                 int ranIndex = Random.Range(0, dirs.Count);
                 ranDir = dirs[ranIndex];
                 canmove = GridUtils.canMoveInDirection(pos, layer, ranDir);
+                c--;
             }
             //now that a valid direction has been found, move enemy in direction (and rotate it?)
-            Vector3 newPos = positionObject.transform.position + MovementManager.directionToVector3(ranDir);
-            MovementManager.moveObject(positionObject, newPos, .01f);
-            //update pos and clear old pos on map
-            //UIUtils.updateSingleMapCell((int)pos.x, (int)pos.y, GridDicts.typeToSprite["None"]);
-            pos.x = newPos.x; pos.y = newPos.z;
+            dir = ranDir[0];
             
         } else
         {
             //TODO
-            //prevent diagonal movements, instead just check both directions if possible and take the first one possible
-            //prevent moving into player's pos under any circumstances
             //rework facing system (maybe do this later when an enemy with a proper 'face' is implemented
-
             //sometimes enemy will continue to move even though the player is right in front of them?
+            //enemies can still move into each other sometimes (has to do with when theyre attacking?)
 
 
             //if a player was found, use the offset in positions between the player and enemy to determine what direction to move 
-            string dir = GridUtils.getDirectionBetween(positionObject.transform.position, Player.playerObject.transform.position);
-            Vector3 newPos = positionObject.transform.position + MovementManager.directionToVector3(dir);
-            MovementManager.moveObject(positionObject, newPos, .01f);
-            //update pos and clear old pos on map
-            //UIUtils.updateSingleMapCell((int)pos.x, (int)pos.y, GridDicts.typeToSprite["None"]);
-            pos.x = newPos.x; pos.y = newPos.z;
-            //look at player when following player
-            positionObject.transform.LookAt(Player.playerObject.transform.position);
+            string playerdir = GridUtils.getDirectionBetween(positionObject.transform.position, Player.playerObject.transform.position);
+            //if direction found is a compound direction then pick one and check if it is legal; if not then pick the other one.
+            dir = playerdir[0];
+            if (playerdir.Length >= 2 && !GridUtils.canMoveInDirection(pos, layer, dir.ToString())) dir = playerdir[1];
+
         }
+        //check if move is legal or not
+        if (!GridUtils.canMoveInDirection(pos, layer, dir.ToString()))
+        {
+            //if move would be illegal then dont move
+            return;
+        }
+        newPos = positionObject.transform.position + MovementManager.directionToVector3(dir.ToString());
+        pos.x = newPos.x; pos.y = newPos.z;
+        MovementManager.moveObject(positionObject, newPos, .01f);
         //after movement update the map
         UIUtils.updateMap();
         
@@ -181,11 +191,19 @@ public class Enemy : MonoBehaviour
     public void attackHit()
     {
         //check if attack actually hit player
+        Vector3 distanceBetween = (Player.playerObject.transform.position - positionObject.transform.position);
+        distanceBetween.y = 0;
+        float magn = distanceBetween.magnitude;
+        if(magn > actionRange)
+        {
+            //if out of range then dont apply attack
+        } else
+        {
+            int damage = baseDamage * 1; //attacks will have some kind of attack damage modifier
+            UIUtils.addMessageToLog("Enemy hit player for " + damage + " damage", Color.red);
+            Player.hitPlayer(damage);
+        }
 
-
-        int damage = baseDamage * 1; //attacks will have some kind of attack damage modifier
-        UIUtils.addMessageToLog("Enemy hit player for " + damage + " damage", Color.red);
-        Player.hitPlayer(damage);
     }
 
     public void hitPart(float damage, GameObject partHit)
@@ -261,5 +279,10 @@ public class Enemy : MonoBehaviour
     public Vector2 getPos()
     {
         return pos;
+    }
+
+    public int getLayer()
+    {
+        return layer;
     }
 }

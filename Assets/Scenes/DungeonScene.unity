@@ -508,7 +508,7 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   gridParent: {fileID: 993281072}
   isCreator: 0
-  startpos: {x: 0, y: 6}
+  startpos: {x: 0, y: 11}
   camera: {fileID: 890660339}
   interactWindow: {fileID: 209323962}
   firewall: {fileID: 1471878254}
@@ -4825,9 +4825,9 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   gridFiles:
-  - {fileID: 4900000, guid: 1d0d6b8dff472494395d72f7674f68f3, type: 3}
-  - {fileID: 4900000, guid: 90d2734f1f02be14c99e9bfb108c2625, type: 3}
-  - {fileID: 4900000, guid: 347fa5d751db3a647b61d10dd4d4000d, type: 3}
+  - {fileID: 4900000, guid: 31cfb9d138e2ea84384fe9be248b182f, type: 3}
+  - {fileID: 4900000, guid: ea701c6f83166e544be9026209043b7a, type: 3}
+  - {fileID: 4900000, guid: 69730aca376d04d4c95fe8986778b979, type: 3}
 --- !u!1 &994060017
 GameObject:
   m_ObjectHideFlags: 0

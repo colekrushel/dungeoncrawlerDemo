@@ -53,17 +53,19 @@ public class DungeonCell
         {
             if (walls[i] == dir) hasWall = true;
         }
-        //treat areas around stairs that are not enter/exit directions as wells
+        //treat areas around stairs that are not enter/exit directions as walls
         if(type == "StairsUp" || type == "StairsDown")
         {
             if(dir != entity.facing && GridUtils.getOppositeDirection(dir) != entity.facing) hasWall = true;
+            if (dir == entity.facing || dir == GridUtils.getOppositeDirection(entity.facing)) hasWall = false;
         }
         return hasWall;
     }
 
     public bool isTraversible()
     {
-        return traversible;
+        //also check if cell has an enemy or player on it
+        return (traversible && !EnemyManager.enemyOnPos(new Vector2(gridX, gridY), layer) && Player.getPos() != new Vector2(gridX, gridY));
     }
 
 

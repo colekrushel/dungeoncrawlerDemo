@@ -1,3 +1,4 @@
+using System;
 using System.Collections;
 using System.Collections.Generic;
 using System.IO;
@@ -42,6 +43,7 @@ public class EditorHandle : MonoBehaviour
         float w = tileGrid.GetComponent<RectTransform>().rect.width;
         blankTile = Resources.Load<Tile>("Tiles/blankTile");
         tileSize = w / gridSize - wallSize * 2;
+        //tileSize = 50;
         tileGridParent = tileGrid.transform.parent.gameObject;
         foreach (Transform child in tileGridParent.transform)
         {
@@ -80,12 +82,16 @@ public class EditorHandle : MonoBehaviour
 
                     panel.transform.Find("N").GetComponent<Button>().onClick.AddListener(tileGridWallPress);
                     panel.transform.Find("N").GetComponent<RectTransform>().sizeDelta = new Vector2(tileSize, wallSize);
+                    panel.transform.Find("N").GetComponent<RectTransform>().localPosition = new Vector3(0, wallSize/2, 0);
                     panel.transform.Find("E").GetComponent<Button>().onClick.AddListener(tileGridWallPress);
                     panel.transform.Find("E").GetComponent<RectTransform>().sizeDelta = new Vector2(wallSize, tileSize);
+                    panel.transform.Find("E").GetComponent<RectTransform>().localPosition = new Vector3(wallSize/2, 0, 0);
                     panel.transform.Find("S").GetComponent<Button>().onClick.AddListener(tileGridWallPress);
                     panel.transform.Find("S").GetComponent<RectTransform>().sizeDelta = new Vector2(tileSize, wallSize);
+                    panel.transform.Find("S").GetComponent<RectTransform>().localPosition = new Vector3(0, -wallSize / 2, 0);
                     panel.transform.Find("W").GetComponent<Button>().onClick.AddListener(tileGridWallPress);
                     panel.transform.Find("W").GetComponent<RectTransform>().sizeDelta = new Vector2(wallSize, tileSize);
+                    panel.transform.Find("W").GetComponent<RectTransform>().localPosition = new Vector3(-wallSize / 2, 0, 0);
                     panel.GetComponent<Button>().onClick.AddListener(tileGridPress);
                     //assign right click listening functionality to grid items (why isnt this default...)
                     EventTrigger trigger = panel.AddComponent<EventTrigger>(); 
@@ -221,6 +227,22 @@ public class EditorHandle : MonoBehaviour
         currLayer = layer;
     }
 
+    public void scrollGrid(bool scrollUp)
+    {
+        //'scroll' the grid by adjusting its top position to see tiles that cant be seen when the grid is too big to display every tile at once
+
+        //scroll all of them at once
+        foreach (Transform child in tileGridParent.transform)
+        {
+            GameObject cgrid = child.gameObject;
+            //set top param of each recttransform to be +- 200 depending on scroll direction
+            RectTransform rect = child.GetComponent<RectTransform>();
+            int offset = 200;
+            if (scrollUp) offset = -200;
+            rect.offsetMax = new Vector2(rect.offsetMax.x, rect.offsetMax.y + offset);
+        }
+    }
+
     public void importGrid()
     {
         GameObject selectedObject = EventSystem.current.currentSelectedGameObject;
@@ -272,6 +294,7 @@ public class EditorHandle : MonoBehaviour
                         menu.transform.Find("linkX").gameObject.GetComponent<TMP_InputField>().text = entity.targetx.ToString();
                         menu.transform.Find("linkY").gameObject.GetComponent<TMP_InputField>().text = entity.targety.ToString();//invert?
                         menu.transform.Find("Facing").gameObject.GetComponent<TMP_InputField>().text = entity.facing;
+                        menu.transform.Find("DataString").gameObject.GetComponent<TMP_InputField>().text = entity.dataString;
                     }
                 }
 
@@ -355,6 +378,7 @@ public class EditorHandle : MonoBehaviour
                             entity.xpos = cell.gridX;
                             entity.ypos = cell.gridY;
                             entity.facing = menu.transform.Find("Facing").gameObject.GetComponent<TMP_InputField>().text;
+                            entity.dataString = menu.transform.Find("DataString").gameObject.GetComponent<TMP_InputField>().text;
                             cell.entity = entity;
                             entity.interactable = true;
                             //menu.SetActive(false);

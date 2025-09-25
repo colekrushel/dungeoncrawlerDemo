@@ -9,7 +9,7 @@ public class Drone : Enemy
         //fill enemy params with Drone's personal stats and animator
         //pos = p;
         //layer = l;
-        HP = 20;
+        HP = 10;
         baseDamage = 2;
         actionRange = 1;
         alertRange = 3;

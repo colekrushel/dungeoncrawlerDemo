@@ -81,7 +81,7 @@ public class InputHandler : MonoBehaviour
             {
                 movePlayer(Player.actionQueue[0], true);
                 Player.actionQueue.RemoveAt(0);
-            } else
+            } else if(bufferedInput != ']')
             {
                 movePlayer(bufferedInput);
                 bufferedInput = ']';
@@ -180,6 +180,7 @@ public class InputHandler : MonoBehaviour
 
     void movePlayer(char inputKey, bool priority = false)
     {
+        //Debug.Log("move player");
         //if player is input locked then ignore all incoming inputs
         if (Player.inputLock) { return; }
         //store last pressed input as buffered input

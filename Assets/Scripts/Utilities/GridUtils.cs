@@ -97,4 +97,10 @@ public static class GridUtils
         }
         return returnStr;
     }
+
+    //static public bool canMoveBetween(Vector2 pos1, Vector2 pos2, char dir, int layer)
+    //{
+    //    return grids[layer].canMoveBetween(pos1, pos2, dir);
+    //}
+
 }

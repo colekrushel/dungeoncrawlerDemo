@@ -80,7 +80,7 @@ public class DungeonGrid
             //check for entrance cell
             if (cells[i].type == "Entrance")
             {
-                startpos = new Vector2(cells[i].gridX, cells[i].gridY);
+                //startpos = new Vector2(cells[i].gridX, cells[i].gridY);
                 //Player.updatePos(startpos);
             }
 
