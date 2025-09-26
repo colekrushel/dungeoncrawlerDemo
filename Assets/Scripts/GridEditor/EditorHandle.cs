@@ -250,7 +250,7 @@ public class EditorHandle : MonoBehaviour
         //for each layer
         for(int i = 0; i < 3; i++)
         {
-            string path = Application.dataPath + "/Scripts/Rendering/" + fileName + (i+1) + ".txt";
+            string path = Application.dataPath + "/Resources/Grids/" + fileName + (i+1) + ".txt";
             //fetch file
             if (File.Exists(path))
             {
@@ -356,7 +356,7 @@ public class EditorHandle : MonoBehaviour
                     else if (i == 5)//icon (type) data
                     {
                         cell.type = GridDicts.spriteToType[p.GetComponent<Image>().sprite];
-                        if (cell.type == "None" || cell.type == "Empty")
+                        if (cell.type == "None" )
                         {
                             cell.traversible = true;
                         }
@@ -401,8 +401,9 @@ public class EditorHandle : MonoBehaviour
             string json = JsonUtility.ToJson(grid);
             Debug.Log(json);
             string cfileName = fileName + clayer + ".txt";
-            string path = Application.dataPath + "/Scripts/Rendering/" + cfileName;
+            string path = Application.dataPath + "/Resources/Grids/" + cfileName;
 
+            //overwrite existing?
             if (File.Exists(path))
             {
                 Debug.Log(cfileName + " already exists.");

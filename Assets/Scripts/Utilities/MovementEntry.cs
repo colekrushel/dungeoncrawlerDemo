@@ -1,3 +1,4 @@
+using System;
 using UnityEngine;
 
 public class MovementEntry
@@ -20,6 +21,8 @@ public class MovementEntry
     public float shake = 0;
     public float shakeAmount = 0.02f;
     public float decreaseFactor = 1f;
+
+    public Action whenFinished;
 
     //separate constructors for moving and rotating (and both
     public MovementEntry(GameObject obj, Vector3 finalpos, float speed)
@@ -56,5 +59,10 @@ public class MovementEntry
         shake = shakeLength;
         isShaking = true;
         originalPosition = originalPos;
+    }
+
+    public void setCallback(Action callback)
+    {
+        whenFinished = callback;
     }
 }

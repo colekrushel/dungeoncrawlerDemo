@@ -17,12 +17,12 @@ public class EnemyManager : MonoBehaviour
 
     public static void initializeEnemies() //called after grid is rendered
     {
-        spawnEnemy(3, 6, 0, "Drone");
+        //spawnEnemy(3, 6, 0, "Drone");
     }
 
     public static void spawnEnemy(int x, int y, int layer, string type)
     {
-        return;
+        //return;
         //insantiate object; object already has enemy class on it so we just need to instantiate and move it
         //create a parent object because the animations have local coordinates pre-set
         GameObject enemyParent = new GameObject();
@@ -32,6 +32,7 @@ public class EnemyManager : MonoBehaviour
         //fetch enemy instance and add to list
         Enemy e = enemy.GetComponent<Enemy>();
         e.positionObject = enemyParent;
+        e.setLayer(layer);
         e.snap(new Vector2(x, y), layer);
         enemies.Add(e);
     }
@@ -52,12 +53,12 @@ public class EnemyManager : MonoBehaviour
         return false;
     }
 
-    public static void updateMapWithEnemyInfo()
+    public static void updateMapWithEnemyInfo(int layer)
     {
         //pass each enemy in the list into the map's update single cell method; to avoid looping through the enemy list multiple times in updatemap
         foreach (Enemy enemy in enemies)
         {
-            UIUtils.updateSingleMapCell((int) enemy.getPos().x, (int) enemy.getPos().y, GridDicts.typeToSprite["Enemy"]);
+            if(enemy.getLayer() == layer)UIUtils.updateSingleMapCell((int) enemy.getPos().x, (int) enemy.getPos().y, GridDicts.typeToSprite["Enemy"]);
         }
     }
 }

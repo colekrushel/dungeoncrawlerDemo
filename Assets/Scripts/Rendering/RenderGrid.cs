@@ -101,7 +101,7 @@ public class RenderGrid : MonoBehaviour
             }
             else
             {
-                wall = Instantiate(Resources.Load<GameObject>("Prefabs/CellWall"));
+                wall = Instantiate(Resources.Load<GameObject>("Prefabs/CellWallBreakable"));
             }
             wall.transform.position = floor.transform.position;
             wall.transform.SetParent(cellObject.transform);
@@ -181,7 +181,11 @@ public class RenderGrid : MonoBehaviour
         }
         //models/entities
         //we have cell type and entity facing position, assign subclasses and open
-        if(cell.type != "None" && cell.type != "Empty") initializeEntity(cell, cellObject);
+        if (cell.type != "None" && cell.type != "Empty")
+        {
+            if (cell.type == "Empty") cell.traversible = false;
+            initializeEntity(cell, cellObject);
+        }
 
        
         
@@ -196,6 +200,18 @@ public class RenderGrid : MonoBehaviour
             model.transform.SetParent(cellObject.transform);
         }
 
+        //set breakable object now that all children have been assigned
+
+        //separate constructs for separate types? [item, wall]
+        BreakablePart[] parts = cellObject.GetComponentsInChildren<BreakablePart>();
+        if(parts .Length > 0)
+        {
+            
+            cell.breakableConstruct = cellObject.AddComponent<BreakableConstruct>();
+            cell.breakableConstruct.setParts(parts);
+            cell.breakableConstruct.onBreak = cell.breakObject;
+
+        }
 
         //add rendered object to global array so it doesnt have to be loaded again
         cellObject.transform.position = new Vector3(cellX, 0, cellY);

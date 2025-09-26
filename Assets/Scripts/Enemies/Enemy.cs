@@ -5,7 +5,7 @@ using System.Linq;
 using UnityEngine;
 
 //base enemy class
-public class Enemy : MonoBehaviour
+public class Enemy : MonoBehaviour, IHittable
 {
     protected Vector2 pos; //position on grid
     protected int layer = 0; //current layer
@@ -284,5 +284,10 @@ public class Enemy : MonoBehaviour
     public int getLayer()
     {
         return layer;
+    }
+
+    public void setLayer(int l)
+    {
+        this.layer = l;
     }
 }

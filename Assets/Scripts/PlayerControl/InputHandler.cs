@@ -180,7 +180,7 @@ public class InputHandler : MonoBehaviour
 
     void movePlayer(char inputKey, bool priority = false)
     {
-        //Debug.Log("move player");
+        inputKey = char.ToLower(inputKey);
         //if player is input locked then ignore all incoming inputs
         if (Player.inputLock) { return; }
         //store last pressed input as buffered input
@@ -582,26 +582,26 @@ public class InputHandler : MonoBehaviour
         Enemy enemyHit = null;
         foreach (GameObject objectHit in objectsHit)
         {
+            
             //try to get an enemy component from parents
             Enemy enemyScript = objectHit.GetComponentInParent<Enemy>();
+            BreakablePart bp = objectHit.GetComponent<BreakablePart>();
             if (enemyScript != null)
             {
                 enemyHit = enemyScript;
                 //we want to deal damage to each part but only hit the enemy once; some effects we only want to happen once
                 enemyScript.hitPart(damage, objectHit);
-            } else
+            } else if(bp != null)
             {
                 //just play an effect
+                bp.hitByPlayer(damage); 
             }
         }
-
         //now perform the actual hit on the enemy (if necessary)
         if (enemyHit != null)
         {
             enemyHit.hitByPlayer(damage);
         }
-
-
         //now apply recoil and cooldown to the player's hit action and display an indicator for this
         if(rightEquip)Player.rightCooldown = cooldown;
         else Player.leftCooldown = cooldown;

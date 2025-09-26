@@ -6,7 +6,7 @@ using UnityEditorInternal;
 using System;
 
 [Serializable]
-public class DungeonCell 
+public class DungeonCell
 {
     //attributes
     public int gridX; //xpos of cell on grid
@@ -25,6 +25,7 @@ public class DungeonCell
     private GameObject cellObject; //rendered model for whole cell
     public bool traversible; //whether the tile can be traversed by players/entities or not
     public CellEntity entity; //entity used to handle interactable cell types (doors, items, levers, ect)
+    public BreakableConstruct breakableConstruct = null;
     //when serializing the dungeon json in, the entity will always be serialized as a CellEntity object. this means that to subtype it, we have to assign subtypes manually.
     public DungeonCell()
     {
@@ -34,6 +35,7 @@ public class DungeonCell
         modelToAssign = "None";
         floorToAssign = "None";
         traversible = false;
+        //breakableConstruct = cellObject.AddComponent<BreakableConstruct>();
     }
 
     //methods:
@@ -54,9 +56,9 @@ public class DungeonCell
             if (walls[i] == dir) hasWall = true;
         }
         //treat areas around stairs that are not enter/exit directions as walls
-        if(type == "StairsUp" || type == "StairsDown")
+        if (type == "StairsUp" || type == "StairsDown")
         {
-            if(dir != entity.facing && GridUtils.getOppositeDirection(dir) != entity.facing) hasWall = true;
+            if (dir != entity.facing && GridUtils.getOppositeDirection(dir) != entity.facing) hasWall = true;
             if (dir == entity.facing || dir == GridUtils.getOppositeDirection(entity.facing)) hasWall = false;
         }
         return hasWall;
@@ -106,6 +108,21 @@ public class DungeonCell
         return walls;
     }
 
+    //breakable handling
+    public void breakObject(){
+        //handle break absed on breakable construct params
+        switch (breakableConstruct.btype)
+        {
+            case BreakableConstruct.breakType.Wall:
+                //remove wall
+                Debug.Log("wall broken");
+                break;
+            case BreakableConstruct.breakType.Item:
+                Debug.Log("item broken");
+                break;
+
+        }
+    }
 
 
 

@@ -118,8 +118,8 @@ public class UIUtils : MonoBehaviour
                 {
                     DungeonCell realCell = grid.getCell(x, y);
                     //cell on map - assign sprite from typeToSprite dict and background from floorToColor dict
-
-                    mapCell.transform.Find("Icon").gameObject.GetComponent<Image>().sprite = GridDicts.typeToSprite[realCell.type];
+                    //ignore some entities used for instantiation
+                    if(realCell.type != "Enemy") mapCell.transform.Find("Icon").gameObject.GetComponent<Image>().sprite = GridDicts.typeToSprite[realCell.type];
                     //mapCell.transform.Find("Background").gameObject.GetComponent<Image>().color = GridDicts.floorToColor[realCell.floorToAssign];
                     mapCell.transform.Find("Background").gameObject.GetComponent<Image>().color = new Color(0, 0, 0, .1f);
                     //assign walls - overlap should be fine visually?
@@ -137,7 +137,7 @@ public class UIUtils : MonoBehaviour
                 }              
             }
             //also call enemy updates
-            EnemyManager.updateMapWithEnemyInfo();
+            EnemyManager.updateMapWithEnemyInfo(grid.layer);
         }
         //asign player sprite, along with rotation
         GameObject playerCell = mapGrid.transform.GetChild(2 * 5 + 2).gameObject;

@@ -1,10 +1,7 @@
-using NUnit.Framework;
+using System;
 using System.Collections.Generic;
 using System.Linq;
-using Unity.VisualScripting;
 using UnityEngine;
-using UnityEngine.Rendering.Universal;
-using static UnityEditor.PlayerSettings;
 
 public class MovementManager : MonoBehaviour
 {
@@ -71,7 +68,7 @@ public class MovementManager : MonoBehaviour
             {
                 if (entry.shake > 0)
                 {
-                    entry.objectBeingMoved.transform.position = Random.insideUnitSphere * entry.shakeAmount + entry.originalPosition;
+                    entry.objectBeingMoved.transform.position = UnityEngine.Random.insideUnitSphere * entry.shakeAmount + entry.originalPosition;
                     entry.shake -= Time.deltaTime * entry.decreaseFactor;
 
                 }
@@ -81,6 +78,8 @@ public class MovementManager : MonoBehaviour
                     //reset position
                     entry.objectBeingMoved.transform.position = entry.originalPosition;
                     entry.isShaking = false;
+                    //execute finished action
+                    if(entry.whenFinished != null )entry.whenFinished();
                 }
             }
         }
@@ -111,6 +110,13 @@ public class MovementManager : MonoBehaviour
     public static void shakeObject(GameObject obj, float shakeAmt, float decreaseFact, float shakeLength, Vector3 originalPosition)
     {
         MovementEntry entry = new MovementEntry(obj, shakeAmt, decreaseFact, shakeLength, originalPosition);
+        entries.Add(entry);
+    }
+
+    public static void shakeObject(GameObject obj, float shakeAmt, float decreaseFact, float shakeLength, Vector3 originalPosition, Action callback)
+    {
+        MovementEntry entry = new MovementEntry(obj, shakeAmt, decreaseFact, shakeLength, originalPosition);
+        entry.setCallback(callback);
         entries.Add(entry);
     }
 
