@@ -14,6 +14,6 @@ public class EquipmentItem : ScriptableObject
     [SerializeField] public float range; //length of slash; radius of strike/pierce
     [SerializeField] public float recoil; //non-actionable time between attacks
     [SerializeField] public float cooldown; //actionable time between attacks
-    [SerializeField] public GameObject model;
+    [SerializeField] public Sprite icon;
     [SerializeField] public Texture effect;
 }

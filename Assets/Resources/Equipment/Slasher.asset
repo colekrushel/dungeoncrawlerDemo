@@ -20,5 +20,5 @@ MonoBehaviour:
   range: 40
   recoil: 0.5
   cooldown: 1
-  model: {fileID: 0}
+  icon: {fileID: 1375392100, guid: 02014b9c896994f4aa7b809cbf2314de, type: 3}
   effect: {fileID: 2800000, guid: 5ca061e373e6c0f46a01fc61cd473168, type: 3}

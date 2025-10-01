@@ -10,15 +10,15 @@ MonoBehaviour:
   m_Enabled: 1
   m_EditorHideFlags: 0
   m_Script: {fileID: 11500000, guid: 09388ffff21d5be429b4953bc852ed3b, type: 3}
-  m_Name: Blocker
+  m_Name: Smasher
   m_EditorClassIdentifier: 
-  equipType: 3
-  baseDamage: 0
-  shieldHealth: 5
-  shieldDecay: 1
-  shieldRegen: 1
-  range: 0
-  recoil: 0
-  cooldown: 1
-  icon: {fileID: 1832343461, guid: 616ab3fa3bf99e045a713e396346bc4c, type: 3}
+  equipType: 0
+  baseDamage: 5
+  shieldHealth: 0
+  shieldDecay: 0
+  shieldRegen: 0
+  range: 30
+  recoil: 0.5
+  cooldown: 1.5
+  icon: {fileID: 86065441, guid: 02014b9c896994f4aa7b809cbf2314de, type: 3}
   effect: {fileID: 2800000, guid: 5ca061e373e6c0f46a01fc61cd473168, type: 3}

@@ -21,11 +21,22 @@ public static class Player
     public static float recoil = 0;
     public static bool isBlocking = false;
     //items
-    public static EquipmentItem leftItem = Resources.Load<EquipmentItem>("Equipment/Slasher");
-    public static EquipmentItem rightItem = Resources.Load<EquipmentItem>("Equipment/Blocker");
-    public static float currentBlockHP = rightItem.shieldHealth;
-    public static float maxBlockHP = rightItem.shieldHealth;
+    public static PlayerInventory inventory = new PlayerInventory();
+    public static EquipmentItem leftItem = null;
+    public static EquipmentItem rightItem = null;
+    public static float currentBlockHP;
+    public static float maxBlockHP;
 
+    static public void loadPlayerInfo()
+    {
+        //load in inventory from json
+        //hardcoded now for testing
+        inventory.addItem("Slasher", "breacher");
+        inventory.addItem("Blocker", "breacher");
+        inventory.addItem("Smasher", "breacher");
+        //Resources.Load<EquipmentItem>("Equipment/Slasher");
+        //Resources.Load<EquipmentItem>("Equipment/Blocker");
+}
 
     static public void teleportPlayer(Vector3 pos)
     {

@@ -1,3 +1,4 @@
+using System;
 using System.Collections;
 using System.Collections.Generic;
 using TMPro.Examples;
@@ -5,6 +6,7 @@ using UnityEditor;
 using UnityEngine;
 using UnityEngine.InputSystem;
 using UnityEngine.UI;
+using static TMPro.SpriteAssetUtilities.TexturePacker_JsonArray;
 
 public class AnimateUI : MonoBehaviour
 {
@@ -30,10 +32,15 @@ public class AnimateUI : MonoBehaviour
 
     }
 
-    // values for health bar animation
-    [SerializeField] private RawImage _imageToScroll;
-    [SerializeField] private float _x, _y;
-    [SerializeField] private static float scrollSpeed = 1f;
+    //animate constant scrolling effects
+    [SerializeField] private static float scrollSpeed = 1f; //rework
+    [SerializeField] private RawImage[] imagesToScroll;
+    [SerializeField] private float[] scrollXSpeeds; //separate because cant serialize tuples
+    [SerializeField] private float[] scrollYSpeeds;
+    //animate constant shaking effects
+    [SerializeField] private GameObject[] boxesToShake;
+    float shakeDelay = .2f; //time between shakes for boxes
+    float shakeCount = 0;
     // effect object
     private static RawImage effectImage;
     private static bool playEffect = false;
@@ -51,12 +58,28 @@ public class AnimateUI : MonoBehaviour
      private Image attackMaskImage;
     void Update()
     {
-        //Debug.Log(scrollSpeed);
-        _imageToScroll.uvRect = new Rect(_imageToScroll.uvRect.position + new Vector2(_x, _y) * Time.deltaTime * scrollSpeed, _imageToScroll.uvRect.size);
+        //scroll rawimages
+        for(int i = 0; i < imagesToScroll.Length; i++)
+        {
+            RawImage image = imagesToScroll[i];
+            Tuple<float, float> scrollBase = Tuple.Create(scrollXSpeeds[i], scrollYSpeeds[i]);
+            image.uvRect = new Rect(image.uvRect.position + new Vector2(scrollBase.Item1, scrollBase.Item2) * Time.deltaTime, image.uvRect.size);
+
+        }
+        //shake boxes
+        if(shakeCount <= 0)
+        {
+            foreach (GameObject box in boxesToShake)
+            {
+                box.transform.localPosition = UnityEngine.Random.insideUnitSphere * 2;
+            }
+            shakeCount = shakeDelay;
+        }
+        shakeCount -= Time.deltaTime;
         //camera shake
         if (shake > 0)
         {
-            camera.transform.localPosition = Random.insideUnitSphere * shakeAmount;
+            camera.transform.localPosition = UnityEngine.Random.insideUnitSphere * shakeAmount;
             shake -= Time.deltaTime * decreaseFactor;
 
         }
@@ -77,8 +100,12 @@ public class AnimateUI : MonoBehaviour
             }
         }
         //scale size of firewall proportionally to its health
-        firewall.transform.localScale = new Vector3(Player.currentBlockHP / Player.maxBlockHP, Player.currentBlockHP / Player.maxBlockHP, 1);
-        if (firewall.transform.localScale.x < 0) firewall.transform.localScale = new Vector3(0, 0, 1);
+        if(Player.maxBlockHP != 0)
+        {
+            firewall.transform.localScale = new Vector3(Player.currentBlockHP / Player.maxBlockHP, Player.currentBlockHP / Player.maxBlockHP, 1);
+            if (firewall.transform.localScale.x < 0) firewall.transform.localScale = new Vector3(0, 0, 1);
+        }
+
         //scale fill ratio of attack indicator proportionally to player cooldown and move it on top of mouse
         attackMaskImage.fillAmount = Mathf.Abs(1 - Player.leftCooldown);
         attackIndicator.transform.position = Mouse.current.position.ReadValue();
