@@ -15,5 +15,6 @@ public class EquipmentItem : ScriptableObject
     [SerializeField] public float recoil; //non-actionable time between attacks
     [SerializeField] public float cooldown; //actionable time between attacks
     [SerializeField] public Sprite icon;
+    [SerializeField] public Sprite logo;
     [SerializeField] public Texture effect;
 }

@@ -21,7 +21,7 @@ public class UIUtils : MonoBehaviour
     {
         logWindow = GameObject.Find("LogContent").gameObject;
         mapGrid = GameObject.Find("MapGrid").gameObject;
-        entry = Resources.Load<GameObject>("Prefabs/Entry");
+        entry = Resources.Load<GameObject>("Prefabs/UI/Entry");
         attackContainer = GameObject.Find("AttackContainer").gameObject;
         
        

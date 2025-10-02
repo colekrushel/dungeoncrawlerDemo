@@ -26,6 +26,7 @@ public class DungeonCell
     public bool traversible; //whether the tile can be traversed by players/entities or not
     public CellEntity entity; //entity used to handle interactable cell types (doors, items, levers, ect)
     public BreakableConstruct breakableConstruct = null;
+    public string breakableWallDirection; //direction of breakable wall if there is one. only one breakable wall allowed on a cell.
     //when serializing the dungeon json in, the entity will always be serialized as a CellEntity object. this means that to subtype it, we have to assign subtypes manually.
     public DungeonCell()
     {
@@ -116,6 +117,13 @@ public class DungeonCell
             case BreakableConstruct.breakType.Wall:
                 //remove wall
                 Debug.Log("wall broken");
+                string[] newwalls = new string[walls.Length-1];
+                for(int i = 0; i < walls.Length; i++)
+                {
+                    if (walls[i] != breakableWallDirection) newwalls[i] = walls[i];
+                }
+                walls = newwalls;
+                UIUtils.updateMap();
                 break;
             case BreakableConstruct.breakType.Item:
                 Debug.Log("item broken");

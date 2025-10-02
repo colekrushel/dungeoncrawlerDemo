@@ -9,6 +9,7 @@ public class BreakableConstruct : MonoBehaviour
     public enum breakType { Wall, Item}
     public breakType btype;
     public Action onBreak;
+    public bool isBroken = false;
 
     public void setParts(BreakablePart[] parts)
     {
@@ -18,6 +19,7 @@ public class BreakableConstruct : MonoBehaviour
 
     public void partBreak(BreakablePart bp)
     {
+        if (isBroken) return; //dont trigger breaks multiple times if multiple parts are broken at once
         bool broken = true;
         //when one part is broken check if whole construct is broken
         foreach (var part in breakableParts)
@@ -28,6 +30,7 @@ public class BreakableConstruct : MonoBehaviour
         if (broken || breakableParts.Length == 0)
         {
             onBreak();
+            isBroken = true;
         }
 
     }

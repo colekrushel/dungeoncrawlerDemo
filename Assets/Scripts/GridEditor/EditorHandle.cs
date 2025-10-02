@@ -69,7 +69,7 @@ public class EditorHandle : MonoBehaviour
                 for (int j = 0; j < gridSize; j++)
                 {
                     //all tiles in layers above 1 will be restricted by default.
-                    GameObject panel = Instantiate(Resources.Load<GameObject>("Prefabs/editorTile"), new Vector3(0, 0, 0), Quaternion.identity);
+                    GameObject panel = Instantiate(Resources.Load<GameObject>("Prefabs/UI/editorTile"), new Vector3(0, 0, 0), Quaternion.identity);
                     panel.transform.SetParent(cgrid.transform, false);
                     panel.transform.Find("Icon").GetComponent<RectTransform>().sizeDelta = new Vector2(tileSize, tileSize);
                     if (index > 1)
@@ -172,13 +172,14 @@ public class EditorHandle : MonoBehaviour
     {
         //toggle the wall's color
         GameObject selectedObject = EventSystem.current.currentSelectedGameObject;
+        Color wallColor = GameObject.Find("walltype").transform.Find("color").GetComponent<Image>().color;
         if (selectedObject.GetComponent<Image>().color == Color.black)
         {
             selectedObject.GetComponent<Image>().color = Color.white;
         }
         else
         {
-            selectedObject.GetComponent<Image>().color = Color.black;
+            selectedObject.GetComponent<Image>().color = wallColor;
         }
 
 
@@ -217,6 +218,19 @@ public class EditorHandle : MonoBehaviour
             hasCeiling = true;
             currSelected.transform.Find("Ceiling").GetComponent<Image>().color = Color.black;
         }
+    }
+
+    public void cycleWall()
+    {
+        //wall type is determined by the color of the indicator;
+        //black is default wall
+        //green is a breakable wall
+        GameObject selectedObject = EventSystem.current.currentSelectedGameObject;
+        Color selectedColor = selectedObject.transform.parent.Find("color").GetComponent<Image>().color;
+        Color nextColor = Color.black;
+        if (selectedColor == Color.black) nextColor = Color.green;
+        else if (selectedColor == Color.green) nextColor = Color.black;
+        selectedObject.transform.parent.Find("color").gameObject.GetComponent<Image>().color = nextColor;
     }
 
     public void switchLayer(int layer)
@@ -275,6 +289,7 @@ public class EditorHandle : MonoBehaviour
                     foreach (string wall in cell.walls){
                         editorCell.transform.Find(wall).gameObject.GetComponent<Image>().color = Color.black;
                     }
+                    if(cell.breakableWallDirection != "")editorCell.transform.Find(cell.breakableWallDirection).gameObject.GetComponent<Image>().color = Color.green;
                     //handle background/floor
                     Color color = GridDicts.floorToColor[cell.floorToAssign];
                     editorCell.transform.Find("Background").gameObject.GetComponent<Image>().color = color;
@@ -345,6 +360,11 @@ public class EditorHandle : MonoBehaviour
                         if (p.GetComponent<Image>().color == Color.black)
                         {
                             walls.Add(p.name);
+                        }
+                        else if(p.GetComponent<Image>().color == Color.green)
+                        {
+                            walls.Add(p.name);
+                            cell.breakableWallDirection = p.name;
                         }
                     }
                     else if (i == 4)//background (floor) data

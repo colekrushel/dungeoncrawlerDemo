@@ -52,7 +52,6 @@ public class InputHandler : MonoBehaviour
     //ui stuff
     [SerializeField] GameObject interactWindow;
     [SerializeField] GameObject firewall;
-    [SerializeField] GameObject mapperGrid;
 
     void Start()
     {
@@ -479,7 +478,8 @@ public class InputHandler : MonoBehaviour
     void OnLeftUp(InputValue value)
     {
         Vector2 startPos = Mouse.current.position.ReadValue();
-        if(Player.leftItem != null && Player.leftCooldown <= 0) executeAttack(leftStartPos, startPos, false);
+        float diff = Mathf.Abs(startPos.x - leftStartPos.x + startPos.y - leftStartPos.y);
+        if(Player.leftItem != null && Player.leftCooldown <= 0 && diff > 5) executeAttack(leftStartPos, startPos, false);
     }
 
     void OnRightDown(InputValue value)
@@ -499,7 +499,8 @@ public class InputHandler : MonoBehaviour
     void OnRightUp(InputValue value)
     {
         Vector2 startPos = Mouse.current.position.ReadValue();
-        if (Player.rightItem != null && Player.rightCooldown <= 0) executeAttack(rightStartPos, startPos, true);
+        float diff = Mathf.Abs(startPos.x - rightStartPos.x + startPos.y - rightStartPos.y);
+        if (Player.rightItem != null && Player.rightCooldown <= 0 && diff > 5) executeAttack(rightStartPos, startPos, true);
     }
 
     //perform an attack when the mouse is lifted or when the mouse's position changes while it is being held down

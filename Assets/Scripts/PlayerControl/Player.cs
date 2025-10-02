@@ -32,10 +32,12 @@ public static class Player
         //load in inventory from json
         //hardcoded now for testing
         inventory.addItem("Slasher", "breacher");
-        inventory.addItem("Blocker", "breacher");
+        //inventory.addItem("Blocker", "breacher");
         inventory.addItem("Smasher", "breacher");
         //Resources.Load<EquipmentItem>("Equipment/Slasher");
         //Resources.Load<EquipmentItem>("Equipment/Blocker");
+        //update equipment display
+        HandleEquipment.displayEquips();
 }
 
     static public void teleportPlayer(Vector3 pos)

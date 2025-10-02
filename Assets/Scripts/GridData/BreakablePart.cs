@@ -11,7 +11,7 @@ public class BreakablePart : MonoBehaviour, IHittable
     {
         //play fx and resolve logic
         HP -= damage;
-        if (HP < 0)
+        if (HP <= 0)
         {
             //if object is broken
             MovementManager.shakeObject(this.gameObject, .04f, 1f, .2f, this.gameObject.transform.position, () =>

@@ -94,14 +94,18 @@ public class RenderGrid : MonoBehaviour
             //determine wall based on whether cell has a ceiling or not
             GameObject wall;
             //handle doorways for cells with a ceiling
-            
-            if (cell.hasCeiling)
+
+            if (walls[0] == cell.breakableWallDirection)
+            {
+                wall = Instantiate(Resources.Load<GameObject>("Prefabs/CellWallBreakable"));
+            }
+            else if (cell.hasCeiling)
             {
                 wall = Instantiate(Resources.Load<GameObject>("Prefabs/BuildingWall1"));
             }
             else
             {
-                wall = Instantiate(Resources.Load<GameObject>("Prefabs/CellWallBreakable"));
+                wall = Instantiate(Resources.Load<GameObject>("Prefabs/CellWall"));
             }
             wall.transform.position = floor.transform.position;
             wall.transform.SetParent(cellObject.transform);
