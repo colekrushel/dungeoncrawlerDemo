@@ -299,23 +299,39 @@ public class UIUtils : MonoBehaviour
         }
     }
 
-    public static void drawAttack(Vector2 startPos, Vector2 endPos, float range, Texture effectImg)
+    public static void drawAttack(Vector2 startPos, Vector2 endPos, float range, Texture effectImg, bool left)
     {
-        GameObject RawImage = attackContainer.transform.Find("Mask").Find("RawImage").gameObject;
+        GameObject mask;
+        if (left) mask = attackContainer.transform.Find("LeftAttackMask").gameObject;
+        else mask = attackContainer.transform.Find("RightAttackMask").gameObject;
+        GameObject RawImage = mask.transform.Find("RawImage").gameObject;
+
+
         //set effect
         RawImage img = RawImage.GetComponent<RawImage>();
         img.texture = effectImg;
         //adjust size based on range * 10
         RawImage.GetComponent<RectTransform>().sizeDelta = new Vector2(range * 10, RawImage.GetComponent<RectTransform>().sizeDelta.y);
-        attackContainer.transform.Find("Mask").GetComponent<RectTransform>().sizeDelta = new Vector2(range * 10, RawImage.GetComponent<RectTransform>().sizeDelta.y);
+        mask.GetComponent<RectTransform>().sizeDelta = new Vector2(range * 10, RawImage.GetComponent<RectTransform>().sizeDelta.y);
         //move vfx window to attack location 
         attackContainer.transform.position = startPos;
         Vector2 diff = startPos - endPos;
-        attackContainer.transform.Find("Mask").localPosition = new Vector2(range * -5, 0);
+        mask.transform.localPosition = new Vector2(range * -5, 0);
         //calc angle
         float angle = Mathf.Atan2(diff.y, diff.x) * Mathf.Rad2Deg;
         attackContainer.transform.localEulerAngles = new Vector3(0, 0, angle);
-        AnimateUI.setEffect(img);
+        AnimateUI.setEffect(img, left);
+    }
+
+    public static void playAttackHitEffect(Vector3 worldPos, EquipmentItem item)
+    {
+        //to play the effect we want to instantiate a gameobject with the item's particle system at the hit location, play it, and then destroy the object when done
+        GameObject particleEffect = Instantiate(item.hitParticles, worldPos, Quaternion.identity);
+        particleEffect.transform.LookAt(Player.playerObject.transform.position);
+        ParticleSystem particleSystem = particleEffect.GetComponent<ParticleSystem>();
+        particleSystem.Play();
+        //destroy when finished playing
+        Destroy(particleEffect, particleSystem.main.duration); 
     }
 
 }

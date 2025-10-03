@@ -23,9 +23,10 @@ public class MovementManager : MonoBehaviour
         foreach (var entry in entries.ToList())
         {
             //if not rotating or moving, remove entry as it has finished
-            if (!entry.isMoving && !entry.isRotating && !entry.isShaking)
+            if ((!entry.isMoving && !entry.isRotating && !entry.isShaking) || entry.objectBeingMoved == null)
             {
                 entries.Remove(entry);
+                continue;
             }
             if (entry.isRotating)
             {

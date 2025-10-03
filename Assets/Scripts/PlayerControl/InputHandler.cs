@@ -23,7 +23,7 @@ public class InputHandler : MonoBehaviour
     //Player player;
     const int cellWidth = 1;
     bool loaded = false;
-    const int speedMultiplier = 2;
+    const int speedMultiplier = 3;
 
     //for animating player & camera movement
     //rotation
@@ -513,23 +513,15 @@ public class InputHandler : MonoBehaviour
         float cooldown = 0;
         Texture effect = null;
         EquipmentItem.type type;
-        if (!rightEquip)
-        {
-            range = Player.leftItem.range;
-            damage = Player.leftItem.baseDamage;
-            recoil = Player.leftItem.recoil;
-            cooldown = Player.leftItem.cooldown;
-            effect = Player.leftItem.effect;
-            type = Player.leftItem.equipType;
-        } else
-        {
-            range = Player.rightItem.range;
-            damage = Player.rightItem.baseDamage;
-            recoil = Player.rightItem.recoil;
-            cooldown = Player.  rightItem.cooldown;
-            effect = Player.rightItem.effect;
-            type = Player.rightItem.equipType;
-        }
+        EquipmentItem item = Player.rightItem;
+        if (!rightEquip) item = Player.leftItem;
+        range = item.range;
+        damage = item.baseDamage;
+        recoil = item.recoil;
+        cooldown = item.cooldown;
+        effect = item.effect;
+        type = item.equipType;
+
         //different handling types
         switch (type)
         {
@@ -550,7 +542,7 @@ public class InputHandler : MonoBehaviour
         }
 
         //draw the ui element for the attack
-        UIUtils.drawAttack(startPos, endPos, range, effect);
+        UIUtils.drawAttack(startPos, endPos, range, effect, !rightEquip);
         //perform calculations to find what was hit by the attack
         Vector2 diff = endPos - startPos;
         //get point range * 10 units in diff direction
@@ -559,6 +551,7 @@ public class InputHandler : MonoBehaviour
         float intermediaryPointCnt = 10;
 
         List<GameObject> objectsHit = new List<GameObject>();
+        List<RaycastHit> hits = new List<RaycastHit>();
         for(float i = 0; i < intermediaryPointCnt; i++)
         {
             Vector2 newPoint = (diff.normalized * (range*10) * (i/intermediaryPointCnt)) + startPos;
@@ -576,15 +569,20 @@ public class InputHandler : MonoBehaviour
                     if (!objectsHit.Contains(objectHit))
                     {
                         objectsHit.Add(objectHit);
+                        hits.Add(hit);
                     }
                 }
             }
         }
         //try to hit every unique object in list
         Enemy enemyHit = null;
-        foreach (GameObject objectHit in objectsHit)
+        for(int i = 0; i < objectsHit.Count;i++)
         {
+            GameObject objectHit = objectsHit[i];
+            //play particle effects on each object
             
+            //item.hitParticles.GetComponent<ParticleSystem>().Play();
+
             //try to get an enemy component from parents
             Enemy enemyScript = objectHit.GetComponentInParent<Enemy>();
             BreakablePart bp = objectHit.GetComponent<BreakablePart>();
@@ -592,10 +590,12 @@ public class InputHandler : MonoBehaviour
             {
                 enemyHit = enemyScript;
                 //we want to deal damage to each part but only hit the enemy once; some effects we only want to happen once
+                UIUtils.playAttackHitEffect(hits[i].point, item);
                 enemyScript.hitPart(damage, objectHit);
             } else if(bp != null)
             {
                 //just play an effect
+                UIUtils.playAttackHitEffect(hits[i].point, item);
                 bp.hitByPlayer(damage); 
             }
         }

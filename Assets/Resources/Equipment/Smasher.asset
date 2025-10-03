@@ -22,4 +22,5 @@ MonoBehaviour:
   cooldown: 1.5
   icon: {fileID: 86065441, guid: 02014b9c896994f4aa7b809cbf2314de, type: 3}
   logo: {fileID: 21300000, guid: a409056a5f1946648a743a302aac6af0, type: 3}
-  effect: {fileID: 2800000, guid: 5ca061e373e6c0f46a01fc61cd473168, type: 3}
+  hitParticles: {fileID: 6397834174913037371, guid: c7b7bbc32f85ba846840d2729512567f, type: 3}
+  effect: {fileID: 2800000, guid: e3203d6eba194c5499920f43ddaaa0ea, type: 3}

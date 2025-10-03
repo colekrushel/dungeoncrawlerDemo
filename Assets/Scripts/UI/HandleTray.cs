@@ -3,6 +3,12 @@ using UnityEngine.UI;
 
 public class HandleTray : MonoBehaviour
 {
+
+    private void Start()
+    {
+        closeWindow("Log");
+    }
+
     public void closeWindow(string windowName) {
         //unactivate corresponding icon
         GameObject icon = gameObject.transform.Find("Icons").transform.Find(windowName + "Icon").gameObject;
@@ -11,15 +17,11 @@ public class HandleTray : MonoBehaviour
         StartCoroutine(UIUtils.fadeObject(background, false, (float) 0.1));
         //disable corresponding window
         GameObject window = gameObject.transform.parent.Find(windowName).gameObject;
-        Debug.Log(window.name);
         StartCoroutine(UIUtils.fadeObject(window, false, (float)0.1));
     }
 
     public void openWindow(string windowName)
     {
-        
-
-        
         GameObject icon = gameObject.transform.Find("Icons").transform.Find(windowName + "Icon").gameObject;
         GameObject window = gameObject.transform.parent.Find(windowName).gameObject;
         if (icon == null) return;

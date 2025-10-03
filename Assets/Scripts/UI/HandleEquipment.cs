@@ -4,6 +4,7 @@ using Unity.VisualScripting;
 using UnityEngine;
 using UnityEngine.EventSystems;
 using UnityEngine.UI;
+using static UnityEditor.Experimental.GraphView.GraphView;
 
 
 public class HandleEquipment : MonoBehaviour
@@ -103,8 +104,7 @@ public class HandleEquipment : MonoBehaviour
         if (e.button == PointerEventData.InputButton.Right) left = false;
 
         //triggered when clicking on an item in the grid;
-        if (left) Player.leftItem = item;
-        else Player.rightItem = item;
+        Player.equipItem(item, left);
 
         //assign clicked item to player equipped
         Debug.Log(left);

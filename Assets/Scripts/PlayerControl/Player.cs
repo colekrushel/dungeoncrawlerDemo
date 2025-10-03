@@ -22,7 +22,7 @@ public static class Player
     public static bool isBlocking = false;
     //items
     public static PlayerInventory inventory = new PlayerInventory();
-    public static EquipmentItem leftItem = null;
+    public static EquipmentItem leftItem = Resources.Load<EquipmentItem>("Equipment/Slasher");
     public static EquipmentItem rightItem = null;
     public static float currentBlockHP;
     public static float maxBlockHP;
@@ -38,7 +38,7 @@ public static class Player
         //Resources.Load<EquipmentItem>("Equipment/Blocker");
         //update equipment display
         HandleEquipment.displayEquips();
-}
+    }
 
     static public void teleportPlayer(Vector3 pos)
     {
@@ -103,6 +103,19 @@ public static class Player
             AnimateUI.updateHPMonitor(((float)currentHP / (float)totalHP));
         }
 
+    }
+
+    static public void equipItem(EquipmentItem equipItem, bool left)
+    {
+        if (left)
+        {
+            leftItem = equipItem;
+            leftCooldown = 0;
+        } else
+        {
+            rightItem = equipItem;
+            rightCooldown = 0;
+        }
     }
 
     
