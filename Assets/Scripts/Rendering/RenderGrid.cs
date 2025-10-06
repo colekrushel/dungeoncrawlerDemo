@@ -77,6 +77,7 @@ public class RenderGrid : MonoBehaviour
 
         //assign doorways (between ceiling and non ceiling tiles
         List<String> doorways = new List<String>();
+        List<String> railings = new List<String>();
         if (cell.hasCeiling)
         {
             DungeonCell N = grid.getCellInDirection(cell, "N");
@@ -89,16 +90,42 @@ public class RenderGrid : MonoBehaviour
             if (W != null && !W.hasCeiling) doorways.Add("W");
 
         }
+        else if(!cell.hasCeiling && cell.layer > 0 && cell.traversible)//assign railings between non-ground level non-ceiling and empty tiles
+        {
+            DungeonCell N = grid.getCellInDirection(cell, "N");
+            if (N == null || N.type == "Empty") railings.Add("N");
+            DungeonCell E = grid.getCellInDirection(cell, "E");
+            if (E == null || E.type == "Empty") railings.Add("E");
+            DungeonCell S = grid.getCellInDirection(cell, "S");
+            if (S == null || S.type == "Empty") railings.Add("S");
+            DungeonCell W = grid.getCellInDirection(cell, "W");
+            if (W == null || W.type == "Empty") railings.Add("W");
+        }
+        
         for (int i = 0; i < walls.Length; i++)
         {
             //determine wall based on whether cell has a ceiling or not
-            GameObject wall;
-            //handle doorways for cells with a ceiling
 
+            //wall types: (in order of priority)
+            //breakable walls
+            //windows (between indoors non-ground level walkable and empty tile where there is a wall)
+            //indoor walls
+            //ground level outdoors (fence)
+
+
+            //model fillers where there are no walls
+            //railings (between non-ground-level walkable and empty tile where there is no wall) [NO-WALL FILLER]
+            //doorways (between ceiling and non-ceiling tiles where there is no wall) [NO-WALL FILLER]
+
+            GameObject wall;
             if (walls[0] == cell.breakableWallDirection)
             {
                 wall = Instantiate(Resources.Load<GameObject>("Prefabs/CellWallBreakable"));
             }
+            //else if (cell.hasCeiling && cell.layer > 0 && grid.getCellInDirection(cell, walls[0]) != null && grid.getCellInDirection(cell, walls[0]).type == "Empty")
+            //{
+            //    wall = Instantiate(Resources.Load<GameObject>("Prefabs/BuildingWindow1"));
+            //}
             else if (cell.hasCeiling)
             {
                 wall = Instantiate(Resources.Load<GameObject>("Prefabs/BuildingWall1"));
@@ -144,7 +171,7 @@ public class RenderGrid : MonoBehaviour
 
 
         }
-        //make doorways
+        //make doorways and/or railings
         for (int i = 0; i < doorways.Count; i++)
         {
 
@@ -154,9 +181,36 @@ public class RenderGrid : MonoBehaviour
             //offset walls to the edge of the tile
             //add or subtract offset of 1/8th of the tile width (1/2 of the post radius)
             float offsetAmt = (float)-cell.getWidth() / 16; ; //indoor wall offset
-
-            //only render a doorway if there is a non-ceiling tile in the direction of the doorway
             switch (doorways[i])
+            {
+                case "N":
+                    wall.transform.Rotate(0, 180, 0); //xyz
+                    wall.transform.position += new Vector3(0, 0, offsetAmt);
+                    break;
+                case "E":
+                    wall.transform.Rotate(0, 270, 0); //xyz
+                    wall.transform.position += new Vector3(offsetAmt, 0, 0);
+                    break;
+                case "S":
+                    wall.transform.Rotate(0, 0, 0); //xyz
+                    wall.transform.position += new Vector3(0, 0, offsetAmt * -1);
+                    break;
+                case "W":
+                    wall.transform.Rotate(0, 90, 0); //xyz
+                    wall.transform.position += new Vector3(offsetAmt * -1, 0, 0);
+                    break;
+            }
+        }
+        for (int i = 0; i < railings.Count; i++)
+        {
+
+            GameObject wall = Instantiate(Resources.Load<GameObject>("Prefabs/Railing1"));
+            wall.transform.position = floor.transform.position;
+            wall.transform.SetParent(cellObject.transform);
+            //offset walls to the edge of the tile
+            //add or subtract offset of 1/8th of the tile width (1/2 of the post radius)
+            float offsetAmt = (float)-cell.getWidth() / 16; ; //indoor wall offset
+            switch (railings[i])
             {
                 case "N":
                     wall.transform.Rotate(0, 180, 0); //xyz
