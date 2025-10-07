@@ -13,7 +13,7 @@ GameObject:
   - component: {fileID: 2631847925471675315}
   - component: {fileID: 397243684992441664}
   m_Layer: 0
-  m_Name: bricks1
+  m_Name: bricks1Indoors
   m_TagString: Untagged
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
@@ -65,7 +65,7 @@ MeshRenderer:
   m_RenderingLayerMask: 1
   m_RendererPriority: 0
   m_Materials:
-  - {fileID: 2100000, guid: ced9a8681fcb97e40b310e77511bc7fc, type: 2}
+  - {fileID: 2100000, guid: 9bbfa58510864184bacd357621170c64, type: 2}
   m_StaticBatchInfo:
     firstSubMesh: 0
     subMeshCount: 0

@@ -1,3 +1,4 @@
+using System.Collections.Generic;
 using Unity.VisualScripting;
 using UnityEngine;
 using UnityEngine.UIElements.Experimental;
@@ -56,6 +57,27 @@ public static class GridUtils
         return facing;
     }
 
+    static public int getDegreesFromDirection(string dir)
+    {
+        int rdeg = 0;
+        switch (dir)
+        {
+            case "N":
+                rdeg = 0;
+                break;
+            case "E":
+                rdeg = 90;
+                break;
+            case "S":
+                rdeg = 180;
+                break;
+            case "W":
+                rdeg = 270;
+                break;
+        }
+        return rdeg;
+    }
+
     static public bool canMoveInDirection(Vector2 pos, int layer, string dir)
     {
         bool canMove = false;
@@ -96,6 +118,48 @@ public static class GridUtils
             else if (diff.x > 0) returnStr += "W";
         }
         return returnStr;
+    }
+
+    static public int getBorderRotation(List<string> matchingNeighbors)
+    {
+        int deg = 0;
+        switch (matchingNeighbors.Count)
+        {
+            case 3:
+                //border is on north side; convert dir to deg
+                //get dir that isnt present in the neighbors
+                string d = "";
+                if(!matchingNeighbors.Contains("N")) d = "N";
+                else if(!matchingNeighbors.Contains("E")) d = "E";
+                else if (!matchingNeighbors.Contains("S")) d = "S";
+                else if (!matchingNeighbors.Contains("W")) d = "W";
+                deg = getDegreesFromDirection(d);
+                break;
+            case 2:
+                //check if parallel or corner
+                if (matchingNeighbors[0] == getOppositeDirection(matchingNeighbors[1]))
+                {
+                    //parallel; rotate 90 if one of the directions is "N" or "S"
+                    if (matchingNeighbors[0] == "E" || matchingNeighbors[0] == "E") deg = 90;
+                    
+                }
+                else
+                {
+
+                    //corner; default corner alignment is between "S" and "E"
+                    matchingNeighbors.Sort(); //array is sorted so order will always be "E" "N" "S" "W"
+                    if (matchingNeighbors[0] == "N" && matchingNeighbors[1] == "W") deg = 180;
+                    else if (matchingNeighbors[0] == "S" && matchingNeighbors[1] == "W") deg = 90;
+                    else if (matchingNeighbors[0] == "E" && matchingNeighbors[1] == "N") deg = 270;
+                }
+                break;
+            case 1:
+                //opening is on south side; rotate by 180 and then convert dir to deg
+                deg = getDegreesFromDirection(matchingNeighbors[0]) + 180;
+                break;
+        }
+
+        return deg;
     }
 
     //static public bool canMoveBetween(Vector2 pos1, Vector2 pos2, char dir, int layer)

@@ -64,8 +64,28 @@ public class RenderGrid : MonoBehaviour
         cell.layer = grid.layer;
 
         //assign floor
-        string floorURL = "Prefabs/" + cell.getFloorToAssign();
-        GameObject floor = Instantiate(Resources.Load<GameObject>(floorURL));
+        string floorURL = "";
+        //use different floors for indoors tiles/ tiles on buildings (layer > 0? maybe should check if floor below has a ceiling instead)
+        if (cell.hasCeiling || cell.layer > 0)
+        {
+            floorURL = "Prefabs/" + cell.getFloorToAssign() + "Indoors";
+        } else
+        {
+            floorURL = "Prefabs/" + cell.getFloorToAssign();
+        }
+
+        //for certain tiles we want to change what tiles is placed on what tiles are bordering it
+        GameObject floor;
+        if (cell.getFloorToAssign() == "grass1")
+        {
+            floor = getBorderedTile(cell);
+
+        } else
+        {
+            floor = Instantiate(Resources.Load<GameObject>(floorURL));
+        }
+
+
         floor.transform.parent = cellObject.transform;
         //types that want data but dont want rendering
         if (cell.type == "StairsDown")
@@ -122,10 +142,10 @@ public class RenderGrid : MonoBehaviour
             {
                 wall = Instantiate(Resources.Load<GameObject>("Prefabs/CellWallBreakable"));
             }
-            //else if (cell.hasCeiling && cell.layer > 0 && grid.getCellInDirection(cell, walls[0]) != null && grid.getCellInDirection(cell, walls[0]).type == "Empty")
-            //{
-            //    wall = Instantiate(Resources.Load<GameObject>("Prefabs/BuildingWindow1"));
-            //}
+            else if (cell.hasCeiling && cell.layer > 0 && grid.getCellInDirection(cell, walls[0]) != null && grid.getCellInDirection(cell, walls[0]).type == "Empty")
+            {
+                wall = Instantiate(Resources.Load<GameObject>("Prefabs/BuildingWindow1"));
+            }
             else if (cell.hasCeiling)
             {
                 wall = Instantiate(Resources.Load<GameObject>("Prefabs/BuildingWall1"));
@@ -334,6 +354,48 @@ public class RenderGrid : MonoBehaviour
                 break;
         }
         cell.entity.layer = cell.layer;
+    }
+
+    GameObject getBorderedTile(DungeonCell cell)
+    {
+        string floorURL = "";
+        //for grass tiles, we want to place a border wherever the neighboring tile is not a grass tile.
+
+        //figure out which neighbors are grass
+        List<string> neighbors = grids[cell.layer].getNighborsMatchingFilters(cell, "", "grass1");
+        //grab the corresponding tile from resources
+        switch (neighbors.Count)
+        {
+            case 0:
+                floorURL = "Prefabs/lawnVariants/" + cell.floorToAssign + "FullBorder";
+                break;
+            case 1:
+                floorURL = "Prefabs/lawnVariants/" + cell.floorToAssign + "ThreeBorder";
+                break;
+            case 2:
+                //determine if corner or parallel
+                //if first direction is opposite to the other direction then we want a parallel border
+                if (neighbors[0] == GridUtils.getOppositeDirection(neighbors[1]))
+                {
+                    floorURL = "Prefabs/lawnVariants/" + cell.floorToAssign + "ParallelBorder";
+                }
+                else
+                {
+                    floorURL = "Prefabs/lawnVariants/" + cell.floorToAssign + "CornerBorder";
+                }
+                break;
+            case 3:
+                floorURL = "Prefabs/lawnVariants/" + cell.floorToAssign + "OneBorder";
+                break;
+            case 4:
+                floorURL = "Prefabs/lawnVariants/" + cell.floorToAssign + "Default";
+                break;
+
+        }
+        //rotate it to match physical appearance
+        GameObject tile = Instantiate(Resources.Load<GameObject>(floorURL));
+        tile.transform.Rotate(0, GridUtils.getBorderRotation(neighbors), 0);
+        return tile;
     }
 
     public DungeonGrid getGrid(int layer)

@@ -23,7 +23,7 @@ public static class Player
     //items
     public static PlayerInventory inventory = new PlayerInventory();
     public static EquipmentItem leftItem = Resources.Load<EquipmentItem>("Equipment/Slasher");
-    public static EquipmentItem rightItem = null;
+    public static EquipmentItem rightItem = Resources.Load<EquipmentItem>("Equipment/Smasher");
     public static float currentBlockHP;
     public static float maxBlockHP;
 

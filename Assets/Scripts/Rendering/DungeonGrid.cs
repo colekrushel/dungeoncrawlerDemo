@@ -3,6 +3,7 @@ using UnityEngine;
 using System.Collections.Generic;
 using Unity.VisualScripting;
 using System;
+using System.Collections;
 
 [Serializable]
 public class DungeonGrid 
@@ -193,6 +194,32 @@ public class DungeonGrid
         }
         //invalid direction given
         return null;
+    }
+
+    public List<string> getNighborsMatchingFilters(DungeonCell centerCell, string typeFilter = "", string floorFilter = "")
+    {
+        //get neighbors of cell passed in that have the specified filters
+        string[] dirs = new string[4];
+        dirs[0] = "N"; dirs[1] = "E"; dirs[2] = "S"; dirs[3] = "W";
+        List<string> ret = new List<string>();
+        for(int i = 0; i < dirs.Length; i++)
+        {
+            DungeonCell neighbor = getCellInDirection(centerCell, dirs[i]);
+            bool matches = true;
+            if (neighbor == null) continue;
+            if(typeFilter != "")
+            {
+                if(neighbor.type != typeFilter) matches = false;
+            }
+            if(floorFilter != "")
+            {
+                if(neighbor.floorToAssign != floorFilter) matches = false;
+            }
+            if (matches) ret.Add(dirs[i]);
+        }
+
+
+        return ret;
     }
 
     public bool cellOutOfBounds(Vector2Int pos)
