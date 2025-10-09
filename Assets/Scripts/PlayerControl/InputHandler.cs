@@ -180,6 +180,7 @@ public class InputHandler : MonoBehaviour
 
     void movePlayer(char inputKey, bool priority = false)
     {
+        Debug.Log("move player " + inputKey);
         inputKey = char.ToLower(inputKey);
         //if player is input locked then ignore all incoming inputs
         if (Player.inputLock) { return; }
@@ -284,6 +285,8 @@ public class InputHandler : MonoBehaviour
                     break;
                 case 'z':
                     Debug.Log(Player.currentLayer);
+                    Debug.Log("is moving: " + isMoving);
+                    Debug.Log("is rotating: " + isRotating);
                     break;
 
 
@@ -453,11 +456,11 @@ public class InputHandler : MonoBehaviour
         {
             
             //call entity in cell's interact method
-            DungeonCell infront = grid.getCellInDirection(grid.getCell(Player.getPos()), Player.facing);
-            if (infront != null && infront.entity != null && infront.entity.interactable && !grid.getCell(Player.getPos()).hasWall(Player.facing) && !infront.hasWall(GridUtils.getOppositeDirection(Player.facing)))
-            {
-                infront.entity.interact();
-            }
+            //DungeonCell infront = grid.getCellInDirection(grid.getCell(Player.getPos()), Player.facing);
+            //if (infront != null && infront.entity != null && infront.entity.interactable && !grid.getCell(Player.getPos()).hasWall(Player.facing) && !infront.hasWall(GridUtils.getOppositeDirection(Player.facing)))
+            //{
+            //    infront.entity.interact();
+            //}
         }
     }
 
@@ -645,19 +648,19 @@ public class InputHandler : MonoBehaviour
     void OnMoveBegin()
     {
         //disable popup windows tied to entities when movement begins
-        UIUtils.popOut(interactWindow);
+        //UIUtils.popOut(interactWindow);
         
         
     }
     void OnMoveEnd()
     {
         //after player finishes movement we want to check if the tile in front of the player is interactable and not blocked by a wall
-        DungeonCell infront = grid.getCellInDirection(grid.getCell((Player.getPos())), Player.facing);
-        if (infront != null && infront.entity.interactable && !grid.getCell(Player.getPos()).hasWall(Player.facing) && !infront.hasWall(GridUtils.getOppositeDirection(Player.facing)))
-        {
-            //display interaction prompt
-            UIUtils.popIn(interactWindow);
-        }
+        //DungeonCell infront = grid.getCellInDirection(grid.getCell((Player.getPos())), Player.facing);
+        //if (infront != null && infront.entity.interactable && !grid.getCell(Player.getPos()).hasWall(Player.facing) && !infront.hasWall(GridUtils.getOppositeDirection(Player.facing)))
+        //{
+        //    //display interaction prompt
+        //    UIUtils.popIn(interactWindow);
+        //}
         //update minimap every time player moves
         UIUtils.updateMap();
     }

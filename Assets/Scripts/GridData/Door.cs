@@ -21,37 +21,45 @@ public class Door : CellEntity
         doorAnimator = entityInScene.GetComponent<Animator>();
     }
 
-    override public void interact()
+    //previous interact implementation
+    //override public void interact()
+    //{
+    //    //first check if door is open; if open then continue; otherwise 
+    //    if (!open)
+    //    {
+    //        //if player facing matches door facing then unlock door
+    //        if (Player.facing == facing)
+    //        {
+    //            unlock();
+    //        } else
+    //        {
+    //            //door not open; display text to the player indicating such
+    //            UIUtils.addMessageToLog("DOOROPENERROR: Insufficient Permissions", Color.red);
+    //        }
+
+
+
+    //    } else
+    //    {
+    //        //when player interacts with an open door, do 2 things: play the door open animation, and move the player 2 tiles in front to the opposite side of the door, one tile at a time
+    //        UIUtils.addMessageToLog("Opening Door", Color.green);
+    //        doorAnimator.SetTrigger("Open");
+    //        //lock player during animation
+    //        Player.inputLock = true;
+    //        //wait for animation to stop
+    //        AnimUtils.waitForAnimationFinish(doorAnimator, "doorOpen");
+    //        //StartCoroutine(PlayAnimationCoroutine());
+    //        //stopped
+    //        //Debug.Log("animation finished");
+    //    }
+
+    //}
+
+    public override void interact()
     {
-        //first check if door is open; if open then continue; otherwise 
-        if (!open)
-        {
-            //if player facing matches door facing then unlock door
-            if (Player.facing == facing)
-            {
-                unlock();
-            } else
-            {
-                //door not open; display text to the player indicating such
-                UIUtils.addMessageToLog("DOOROPENERROR: Insufficient Permissions", Color.red);
-            }
-                
-            
-
-        } else
-        {
-            //when player interacts with an open door, do 2 things: play the door open animation, and move the player 2 tiles in front to the opposite side of the door, one tile at a time
-            UIUtils.addMessageToLog("Opening Door", Color.green);
-            doorAnimator.SetTrigger("Open");
-            //lock player during animation
-            Player.inputLock = true;
-            //wait for animation to stop
-            AnimUtils.waitForAnimationFinish(doorAnimator, "doorOpen");
-            //StartCoroutine(PlayAnimationCoroutine());
-            //stopped
-            //Debug.Log("animation finished");
-        }
-
+        //triggered when door is 'opened' (breakable construct is destroyed)
+        doorAnimator.SetTrigger("Open");
+        unlock();
     }
 
     public void unlock()
@@ -60,6 +68,7 @@ public class Door : CellEntity
         UIUtils.addMessageToLog("Door Unlocked.", Color.blue);
         open = true;
         GridUtils.getCell(xpos, ypos, layer).type = "OpenDoor";
+        GridUtils.getCell(xpos, ypos, layer).traversible = true;
         //force map update to reflect status change
         UIUtils.updateMap();
     }

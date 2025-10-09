@@ -128,6 +128,10 @@ public class DungeonCell
             case BreakableConstruct.breakType.Item:
                 Debug.Log("item broken");
                 break;
+            case BreakableConstruct.breakType.Door:
+                //open door
+                entity.interact();
+                break;
 
         }
     }
