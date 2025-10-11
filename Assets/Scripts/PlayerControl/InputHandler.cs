@@ -102,7 +102,8 @@ public class InputHandler : MonoBehaviour
             }
 
             //snap to final rotation
-            if (Mathf.Abs(totalRotation - 90f) < 1)
+            //add check for bizarre softlock (isRotating is stuck at true even when player rotation is 90)
+            if (Mathf.Abs(totalRotation - 90f) < 2*speedMultiplier || Player.playerObject.transform.rotation.y % 90 == 0)
             {
                 isRotating = false;
                 Player.playerObject.transform.rotation = endRotation;
@@ -180,7 +181,6 @@ public class InputHandler : MonoBehaviour
 
     void movePlayer(char inputKey, bool priority = false)
     {
-        Debug.Log("move player " + inputKey);
         inputKey = char.ToLower(inputKey);
         //if player is input locked then ignore all incoming inputs
         if (Player.inputLock) { return; }
@@ -287,6 +287,8 @@ public class InputHandler : MonoBehaviour
                     Debug.Log(Player.currentLayer);
                     Debug.Log("is moving: " + isMoving);
                     Debug.Log("is rotating: " + isRotating);
+                    isRotating = false;
+                    isMoving = false;
                     break;
 
 
@@ -569,6 +571,7 @@ public class InputHandler : MonoBehaviour
                 {
                     //gather all unique models hit into a list and perform a 'hit' on each one
                     GameObject objectHit = hit.collider.gameObject;
+                    Debug.Log(objectHit.name);
                     if (!objectsHit.Contains(objectHit))
                     {
                         objectsHit.Add(objectHit);
