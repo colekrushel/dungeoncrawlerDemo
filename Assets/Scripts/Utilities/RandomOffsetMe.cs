@@ -9,9 +9,10 @@ public class RandomOffsetMe : MonoBehaviour
     [SerializeField] GameObject obj;
     private void Awake()
     {
-        float xRange = Random.Range(offsetMin.x, offsetMax.x);
-        float yRange = Random.Range(offsetMin.y, offsetMax.y);
-        float zRange = Random.Range(offsetMin.z, offsetMax.z);
-        obj.transform.localPosition += new Vector3(xRange, yRange, zRange);
+        //return;
+        //float xRange = Random.Range(offsetMin.x, offsetMax.x);
+        //float yRange = Random.Range(offsetMin.y, offsetMax.y);
+        //float zRange = Random.Range(offsetMin.z, offsetMax.z);
+        //obj.transform.localPosition += new Vector3(xRange, yRange, zRange);
     }
 }

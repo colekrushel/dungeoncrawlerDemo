@@ -21,6 +21,20 @@ public class Door : CellEntity
         doorAnimator = entityInScene.GetComponent<Animator>();
     }
 
+    public Door(CellEntity e, Animator danimator)
+    {
+        //copy over params from entity loaded from json
+        xpos = e.xpos;
+        ypos = e.ypos;
+        targetx = e.targetx;
+        targety = e.targety;
+        facing = e.facing;
+        interactable = e.interactable;
+        interactOnTile = e.interactOnTile;
+        entityInScene = e.entityInScene;
+        doorAnimator = danimator;
+    }
+
     //previous interact implementation
     //override public void interact()
     //{

@@ -1,13 +1,15 @@
+using System;
+using System.Collections.Generic;
+using Unity.VisualScripting;
 using UnityEditor;
 using UnityEngine;
-using System.Collections.Generic;
-using System;
-using Unity.VisualScripting;
+using static UnityEditor.Experimental.GraphView.GraphView;
 
 public class RenderGrid : MonoBehaviour
 {
     private DungeonGrid[] grids;
     [SerializeField] TextAsset[] gridFiles;
+    [SerializeField] GameObject RenderedGrids;
     private void Start()
     {
         gameObject.transform.position = Vector3.zero;
@@ -22,19 +24,86 @@ public class RenderGrid : MonoBehaviour
             grids[i].fillGridVariable();
             grids[i].layer = i;
             //render cell objects ; cant be rendered in a class function as serializable objects cannot inherit monobehavior to be loaded from json
-            GameObject newlayer = new GameObject();
-            newlayer.transform.SetParent(gameObject.transform);
-            newlayer.name = "layer" + (i );
-            renderCellGrid(grids[i], newlayer);
+
+            GameObject newlayer;
+            if (RenderedGrids != null)
+            {
+                Debug.Log("pre-rendered layer" + i);
+                //if a pre-rendered object is attached to this script then use that instead
+                //newlayer = Instantiate(RenderedGrids.gameObject.transform.GetChild(i).gameObject);
+                newlayer = RenderedGrids.gameObject.transform.GetChild(i).gameObject;
+                //newlayer.transform.SetParent(gameObject.transform);
+                //newlayer.name = "layer" + (i);
+                loadGridData(grids[i], newlayer);
+            } else
+            {
+                Debug.Log("rendering layer " + i);
+                newlayer = new GameObject();
+                newlayer.transform.SetParent(gameObject.transform);
+                newlayer.name = "layer" + (i);
+                renderCellGrid(grids[i], newlayer);
+            }
             newlayer.transform.position = gameObject.transform.position + new Vector3(0, i, 0);
         }
         //asign grid to utils
         GridUtils.grids = grids;
         //prompt map update
         UIUtils.updateMap();
-        //spawn enemies
-        EnemyManager.initializeEnemies();
-        
+
+
+    }
+
+    //called for pre-rendered grids only
+    private void loadGridData(DungeonGrid grid, GameObject layer)
+    {
+        //to associate each dungeoncell with its respective gameobject in the scene, we can loop through every cell object in the scene and assign it to its cell based on its world position
+        foreach (Transform child in layer.transform)
+        {
+            DungeonCell cell = grid.getCell((int)child.position.x, (int)child.position.z);
+            cell.createCellObject(child.gameObject);
+        }
+        List<List<DungeonCell>> cellGrid = grid.getCellGrid();
+        for (int i = 0; i < cellGrid.Count; i++)
+        {
+            for (int j = 0; j < cellGrid[i].Count; j++)
+            {
+                //dont load cell if type is empty
+                if (cellGrid[i][j].type == "Empty") continue;
+                Vector2Int cellPos = cellGrid[i][j].getPos();
+                loadCellData(cellGrid[i][j], cellPos.x, cellPos.y, grid);
+            }
+        }
+    }
+
+    //called for pre-rendered grids only
+    private void loadCellData(DungeonCell cell, int cellX, int cellY, DungeonGrid grid)
+    {
+        cell.layer = grid.layer;
+        //load entity data
+        //we have cell type and entity facing position, assign subclasses and open
+        if (cell.type != "None" && cell.type != "Empty")
+        {
+            if (cell.type == "Empty") cell.traversible = false;
+            //just assign subclass because model is already present
+            assignEntitySubclass(cell);
+        }
+        //breakable construct is saved from initial render but its onbreak action needs to be reassigned
+        BreakableConstruct breakable = cell.getCellObject().GetComponent<BreakableConstruct>();
+        if (breakable != null)
+        {
+            breakable.onBreak = cell.breakObject;
+            cell.breakableConstruct = breakable;
+        }
+
+        //GameObject cellObject = cell.getCellObject();
+        //BreakablePart[] parts = cellObject.GetComponentsInChildren<BreakablePart>();
+        //if (parts.Length > 0)
+        //{
+        //    Debug.Log("parts found at " + cell.gridX + ", " + cell.gridY);
+        //    cell.breakableConstruct = cellObject.AddComponent<BreakableConstruct>();
+        //    cell.breakableConstruct.setParts(parts);
+        //    cell.breakableConstruct.onBreak = cell.breakObject;
+        //}
     }
 
     private void renderCellGrid(DungeonGrid grid, GameObject layer)
@@ -54,6 +123,8 @@ public class RenderGrid : MonoBehaviour
             }
         }
     }
+
+
 
     private GameObject renderCell(DungeonCell cell, int cellX, int cellY, DungeonGrid grid)
     {
@@ -279,16 +350,12 @@ public class RenderGrid : MonoBehaviour
         }
 
         //set breakable object now that all children have been assigned
-
-        //separate constructs for separate types? [item, wall]
         BreakablePart[] parts = cellObject.GetComponentsInChildren<BreakablePart>();
-        if(parts .Length > 0)
+        if(parts.Length > 0)
         {
-            
             cell.breakableConstruct = cellObject.AddComponent<BreakableConstruct>();
             cell.breakableConstruct.setParts(parts);
             cell.breakableConstruct.onBreak = cell.breakObject;
-
         }
 
         //add rendered object to global array so it doesnt have to be loaded again
@@ -324,15 +391,37 @@ public class RenderGrid : MonoBehaviour
         }
 
         //assign subclass
+        assignEntitySubclass(cell);
+
+    }
+
+    void assignEntitySubclass(DungeonCell cell)
+    {
         switch (cell.type)
         {
             case "OpenDoor":
-                Door door = new Door(cell.entity);
+                Door door;
+                if(cell.entity.entityInScene == null)
+                {
+                    door = new Door(cell.entity, cell.getCellObject().GetComponentInChildren<Animator>());
+                }
+                else
+                {
+                    door = new Door(cell.entity);
+                }
                 door.open = true;
                 cell.entity = door;
                 break;
             case "ClosedDoor":
-                Door cdoor = new Door(cell.entity);
+                Door cdoor;
+                if (cell.entity.entityInScene == null)
+                {
+                    cdoor = new Door(cell.entity, cell.getCellObject().GetComponentInChildren<Animator>());
+                }
+                else
+                {
+                    cdoor = new Door(cell.entity);
+                }
                 cdoor.open = false;
                 cell.entity = cdoor;
                 break;
@@ -348,7 +437,7 @@ public class RenderGrid : MonoBehaviour
                 break;
             case "Enemy":
                 //spawn an enemy here
-                EnemyManager.spawnEnemy(cell.gridX, cell.gridY, cell.layer, cell.entity.dataString);
+                //EnemyManager.spawnEnemy(cell.gridX, cell.gridY, cell.layer, cell.entity.dataString);
                 cell.entity.interactable = false;
                 cell.traversible = true;
                 break;

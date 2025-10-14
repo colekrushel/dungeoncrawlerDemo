@@ -5,11 +5,11 @@ OcclusionCullingSettings:
   m_ObjectHideFlags: 0
   serializedVersion: 2
   m_OcclusionBakeSettings:
-    smallestOccluder: 5
+    smallestOccluder: 1
     smallestHole: 0.25
     backfaceThreshold: 100
-  m_SceneGUID: 00000000000000000000000000000000
-  m_OcclusionCullingData: {fileID: 0}
+  m_SceneGUID: 578b1ec7ea2b2414faf27a00d66422b9
+  m_OcclusionCullingData: {fileID: 36300000, guid: d1b15079ccaebe948ad3bdfcd1f85fba, type: 2}
 --- !u!104 &2
 RenderSettings:
   m_ObjectHideFlags: 0
@@ -2626,7 +2626,7 @@ Light:
   m_InnerSpotAngle: 21.80208
   m_CookieSize: 10
   m_Shadows:
-    m_Type: 2
+    m_Type: 1
     m_Resolution: -1
     m_CustomResolution: -1
     m_Strength: 1
@@ -6400,9 +6400,10 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   gridFiles:
-  - {fileID: 4900000, guid: c953cc18b02f45d45bfbc836f0c9f50a, type: 3}
+  - {fileID: 4900000, guid: 781e7b226f82d26409113a1b126b59c9, type: 3}
   - {fileID: 4900000, guid: db0159f6fef601a4f8981b973269a86c, type: 3}
   - {fileID: 4900000, guid: 9e3458c841ca4f1458ee6072e9ae8df2, type: 3}
+  RenderedGrids: {fileID: 0}
 --- !u!1 &994060017
 GameObject:
   m_ObjectHideFlags: 0

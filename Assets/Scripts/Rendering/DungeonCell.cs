@@ -42,12 +42,15 @@ public class DungeonCell
     //methods:
     //getters
     //
-
+    
     public void createCellObject(GameObject newCell)
     {
         cellObject = newCell;
     }
 
+    public GameObject getCellObject() { 
+        return cellObject; 
+    }
 
     public bool hasWall(string dir)
     {

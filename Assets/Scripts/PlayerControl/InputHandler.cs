@@ -571,7 +571,7 @@ public class InputHandler : MonoBehaviour
                 {
                     //gather all unique models hit into a list and perform a 'hit' on each one
                     GameObject objectHit = hit.collider.gameObject;
-                    Debug.Log(objectHit.name);
+                    //Debug.Log(objectHit.name);
                     if (!objectsHit.Contains(objectHit))
                     {
                         objectsHit.Add(objectHit);

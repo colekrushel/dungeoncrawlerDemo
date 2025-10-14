@@ -8,7 +8,7 @@ public class EnemyManager : MonoBehaviour
     public static MonoBehaviour Instance { get; private set; }
     private static List<Enemy> enemies;
     // Start is called once before the first execution of Update after the MonoBehaviour is created
-    void Start()
+    void Awake()
     {
         Instance = this;
         enemies = new List<Enemy>();
@@ -37,6 +37,11 @@ public class EnemyManager : MonoBehaviour
         enemies.Add(e);
     }
 
+    public static void addEnemy(int x, int y, int layer, string type)
+    {
+
+    }
+
     public static void killEnemy(Enemy enemy)
     {
         enemies.Remove(enemy);
@@ -56,6 +61,7 @@ public class EnemyManager : MonoBehaviour
     public static void updateMapWithEnemyInfo(int layer)
     {
         //pass each enemy in the list into the map's update single cell method; to avoid looping through the enemy list multiple times in updatemap
+        if(enemies.Count == 0) return;
         foreach (Enemy enemy in enemies)
         {
             if(enemy.getLayer() == layer)UIUtils.updateSingleMapCell((int) enemy.getPos().x, (int) enemy.getPos().y, GridDicts.typeToSprite["Enemy"]);
