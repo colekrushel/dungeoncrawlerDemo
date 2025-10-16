@@ -9,6 +9,7 @@ public static class Player
     private static Vector2 gridPos = Vector2.zero;
     public static GameObject playerObject;
     public static int currentLayer = 0;
+    public static string orientation = "west"; //determines which side/zone player is in and their movements/rotation directions
     public static Tuple<float, float> between = new Tuple<float, float>(0, 0); //left number is lower layer, right is upper layer
     public static string facing;
     public static bool inputLock = false;
@@ -40,9 +41,25 @@ public static class Player
         HandleEquipment.displayEquips();
     }
 
+    static public void setRotationFromOrientation()
+    {
+        //set the players orientation so that its axes match the side it is on
+        //North is in the global +z direction
+        switch (orientation)
+        {
+            case "bottom":
+                playerObject.transform.eulerAngles = Vector3.zero;
+                break;
+            case "west":
+                playerObject.transform.eulerAngles = new Vector3(-90, -90, 0);
+                break;
+        }
+    }
+
     static public void teleportPlayer(Vector3 pos)
     {
-        playerObject.transform.position = pos;
+        //add zone offset
+        playerObject.transform.position = pos + GridUtils.getZoneOffset(orientation);
     }
 
     static public void updatePos(Vector2 newpos)
@@ -64,27 +81,8 @@ public static class Player
 
     static public void updateFacing()
     {
-        //180 && -180 = south (-y)
-        //-90 = west (-x)
-        //0 = north (+y)
-        //90 = east (+x)
-        float dir = Player.playerObject.transform.rotation.eulerAngles.y;
-        facing = GridUtils.getDirectionFromDegrees((int)dir);
-        //switch (dir)
-        //{
-        //    case 180:
-        //        facing = "S";
-        //        break;
-        //    case 270:
-        //        facing = "W";
-        //        break;
-        //    case 0:
-        //        facing = "N";
-        //        break;
-        //    case 90:
-        //        facing = "E";
-        //        break;
-        //}
+        //update facing by comparing the player's forward vector to its orientation's north/forward and east/right vectors
+        facing = GridUtils.getDirectionOfObjectFacing(playerObject, orientation);
     }
 
     static public void hitPlayer(int damage)

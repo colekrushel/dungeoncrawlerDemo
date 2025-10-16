@@ -8,13 +8,39 @@ using static UnityEditor.Experimental.GraphView.GraphView;
 public class RenderGrid : MonoBehaviour
 {
     private DungeonGrid[] grids;
-    [SerializeField] TextAsset[] gridFiles;
+    [SerializeField] TextAsset[] bottomGridFiles;
+    [SerializeField] TextAsset[] northGridFiles;
+    [SerializeField] TextAsset[] southGridFiles;
+    [SerializeField] TextAsset[] eastGridFiles;
+    [SerializeField] TextAsset[] westGridFiles;
+    [SerializeField] TextAsset[] topGridFiles;
     [SerializeField] GameObject RenderedGrids;
     private void Start()
     {
         gameObject.transform.position = Vector3.zero;
-        grids = new DungeonGrid[gridFiles.Length];
         GridDicts.init();
+        //for each zone/side
+        loadZone(eastGridFiles, "east");
+        loadZone(northGridFiles, "north");
+        loadZone(southGridFiles, "south");
+        loadZone(westGridFiles, "west");
+        loadZone(bottomGridFiles, "bottom");
+        //determine current active grid
+        //asign current active grid to utils
+        GridUtils.grids = grids;
+        //prompt map update
+        UIUtils.updateMap();
+
+
+    }
+
+    private void loadZone(TextAsset[] gridFiles, string side)
+    {
+        //assign grid being loaded currently
+        grids = new DungeonGrid[gridFiles.Length];
+        GameObject currZone = new GameObject();
+        currZone.name = side;
+        currZone.transform.SetParent(gameObject.transform);
         //for each layer
         for (int i = 0; i < gridFiles.Length; i++)
         {
@@ -35,22 +61,39 @@ public class RenderGrid : MonoBehaviour
                 //newlayer.transform.SetParent(gameObject.transform);
                 //newlayer.name = "layer" + (i);
                 loadGridData(grids[i], newlayer);
-            } else
+            }
+            else
             {
-                Debug.Log("rendering layer " + i);
+                //Debug.Log("rendering layer " + i);
                 newlayer = new GameObject();
-                newlayer.transform.SetParent(gameObject.transform);
+                newlayer.transform.SetParent(currZone.transform);
                 newlayer.name = "layer" + (i);
                 renderCellGrid(grids[i], newlayer);
             }
             newlayer.transform.position = gameObject.transform.position + new Vector3(0, i, 0);
         }
-        //asign grid to utils
-        GridUtils.grids = grids;
-        //prompt map update
-        UIUtils.updateMap();
-
-
+        //rotate zone based on side
+        switch (side.ToLower())
+        {
+            case "bottom":
+                break;
+            case "north":
+                currZone.transform.eulerAngles = new Vector3(-90, 0, 0);
+                currZone.transform.position += new Vector3(0, 0, 18);
+                break;
+            case "east":
+                currZone.transform.eulerAngles = new Vector3(0, 0, 90);
+                currZone.transform.position += new Vector3(18, 0, 0);
+                break;
+            case "south":
+                currZone.transform.eulerAngles = new Vector3(90, 0, 0);
+                currZone.transform.position += new Vector3(0, 14, -4);
+                break;
+            case "west":
+                currZone.transform.eulerAngles = new Vector3(0, 0, -90);
+                currZone.transform.position += new Vector3(-4, 14, 0);
+                break;
+        }
     }
 
     //called for pre-rendered grids only

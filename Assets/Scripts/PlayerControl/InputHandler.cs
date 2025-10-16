@@ -59,6 +59,9 @@ public class InputHandler : MonoBehaviour
         Player.playerObject = gameObject;
         Player.currentLayer = 0;
         SnapPlayer(startpos.x, startpos.y);
+        
+        Player.setRotationFromOrientation();
+        Player.playerObject.transform.position += Player.playerObject.transform.up/2;
         //move player onto 0,0 tile
     }
 
@@ -125,7 +128,7 @@ public class InputHandler : MonoBehaviour
 
             //check if movement complete
             Vector3 dist = (Player.playerObject.transform.position - finalPosition);
-            if ( Mathf.Abs(dist.x) < (.01f*speedMultiplier) && Mathf.Abs(dist.z) < (.01f * speedMultiplier))
+            if ( Mathf.Abs(dist.x) < (.01f*speedMultiplier) && Mathf.Abs(dist.z) < (.01f * speedMultiplier) && Mathf.Abs(dist.y) < (.01f * speedMultiplier))
             {
                 isMoving = false;          
                 Player.playerObject.transform.position = finalPosition;
@@ -233,7 +236,7 @@ public class InputHandler : MonoBehaviour
                         //set up rotation animation
                         isRotating = true;
                         startRotation = Player.playerObject.transform.rotation;
-                        endRotation = Quaternion.AngleAxis(90f, Vector3.up) * startRotation;
+                        endRotation = Quaternion.AngleAxis(90f, Player.playerObject.transform.up) * startRotation;
                         totalRotation = 0f;
                         OnMoveBegin();
                     }
@@ -244,7 +247,7 @@ public class InputHandler : MonoBehaviour
                         //set up rotation animation
                         isRotating = true;
                         startRotation = Player.playerObject.transform.rotation;
-                        endRotation = Quaternion.AngleAxis(-90f, Vector3.up) * startRotation;
+                        endRotation = Quaternion.AngleAxis(-90f, Player.playerObject.transform.up) * startRotation;
                         totalRotation = 0f;
                         OnMoveBegin();
 
@@ -260,19 +263,19 @@ public class InputHandler : MonoBehaviour
                 case 's': //move backwards
                     if (!isRotating && !isMoving)
                     {
-                        movePlayer(false, 0, priority);
+                        movePlayer(false, 180, priority);
                     }
                     break;
                 case 'e': //move right but keep camera fowards
                     if (!isRotating && !isMoving)
                     {
-                        movePlayer(false, -90, priority);
+                        movePlayer(false, 90, priority);
                     }
                     break;
                 case 'q': //move left but keep camera forwaards
                     if (!isRotating && !isMoving)
                     {
-                        movePlayer(false, 90, priority);
+                        movePlayer(false, -90, priority);
                     }
                     break;
 
@@ -299,31 +302,76 @@ public class InputHandler : MonoBehaviour
 
     void movePlayer(bool moveForwards, float dirOffset = 0, bool priority = false)
     {
-        
-        //180 && -180 = south (-y)
-        //-90 = west (-x)
-        //0 = north (+y)
-        //90 = east (+x)
-        float dir = Player.playerObject.transform.rotation.eulerAngles.y + dirOffset;
-        if (dir == -90) dir = 270; //exception for north -> west
-        bool canMove;
+        //determine movement direction and position based on player's forwards and right vectors
         Vector2 playerPos = Player.getPos();
-
-        //handle backwards by reversing player movement direction
-        if (!moveForwards)
-        {
-            //method doesnt work for east -> west so add exception
-            if (dir == 90) dir = 450;
-            dir = Mathf.Abs(dir - 180);
-            
-        }
         
         float vOffset = 0;
-
+        string playerFacing = Player.facing;
+        string moveFacing;
         //grant priority if player is on stairs and moving in direction opposite of stair facing
-        if (grid.getCell(Player.getPos()).type == "StairsUp" && GridUtils.getOppositeDirection(grid.getCell(Player.getPos()).entity.facing) == GridUtils.getDirectionFromDegrees((int)dir)) priority = true;
-        
+        if (grid.getCell(Player.getPos()).type == "StairsUp" && GridUtils.getOppositeDirection(grid.getCell(Player.getPos()).entity.facing) == playerFacing) priority = true;
 
+        bool canMove;
+
+        //move the player based on direction relative to the player's forward vector and right vector (forward, sidestep, backwards)
+        switch (dirOffset)
+        {
+            case 0:
+                //moving forwards
+                canMove = GridUtils.canMoveInDirection(playerPos, Player.currentLayer, playerFacing);
+                if(canMove || priority)
+                {
+                    //vOffset = determineVerticalOffset(moveForwards, dirOffset);
+                    moveDir = Player.playerObject.transform.forward + Player.playerObject.transform.up * vOffset;
+                    finalPosition = Player.playerObject.transform.position + moveDir;
+                    Player.updatePos(playerPos + GridUtils.directionToGridCoords(playerFacing));
+                    isMoving = true;
+                }
+
+                break;
+            case 90:
+                //moving right
+                moveFacing = GridUtils.getDirectionFromDegrees(GridUtils.getDegreesFromDirection(playerFacing) + 90);
+                canMove = GridUtils.canMoveInDirection(playerPos, Player.currentLayer, moveFacing);
+                if(canMove || priority)
+                {
+                    //vOffset = determineVerticalOffset(moveForwards, dirOffset);
+                    moveDir = Player.playerObject.transform.right + Player.playerObject.transform.up * vOffset;
+                    finalPosition = Player.playerObject.transform.position + moveDir;
+                    Player.updatePos(playerPos + GridUtils.directionToGridCoords(moveFacing));
+                    isMoving = true;
+                }
+                break;
+            case -90:
+                //moving left
+                moveFacing = GridUtils.getDirectionFromDegrees(GridUtils.getDegreesFromDirection(playerFacing) - 90);
+                canMove = GridUtils.canMoveInDirection(playerPos, Player.currentLayer, moveFacing);
+                if (canMove || priority)
+                {
+                    //vOffset = determineVerticalOffset(moveForwards, dirOffset);
+                    moveDir = Player.playerObject.transform.right * -1 + Player.playerObject.transform.up * vOffset;
+                    finalPosition = Player.playerObject.transform.position + moveDir;
+                    Player.updatePos(playerPos + GridUtils.directionToGridCoords(moveFacing));
+                    isMoving = true;
+                }
+                break;
+            case 180:
+                //moving backwards
+                canMove = GridUtils.canMoveInDirection(playerPos, Player.currentLayer, GridUtils.getOppositeDirection(playerFacing));
+                if (canMove || priority)
+                {
+                    //vOffset = determineVerticalOffset(moveForwards, dirOffset);
+                    moveDir = Player.playerObject.transform.forward * -1 + Player.playerObject.transform.up * vOffset;
+                    finalPosition = Player.playerObject.transform.position + moveDir;
+                    Player.updatePos(playerPos + GridUtils.directionToGridCoords(GridUtils.getOppositeDirection(playerFacing)));
+                    isMoving = true;
+                }
+                break;
+        }
+        
+        
+        /*
+        return;
         switch (dir)
         {
             case 180:
@@ -368,8 +416,11 @@ public class InputHandler : MonoBehaviour
                 if (canMove || priority)
                 {
                     vOffset = determineVerticalOffset(moveForwards, dirOffset);
-                    finalPosition = Player.playerObject.transform.position + new Vector3(0, vOffset, 1) * cellWidth;
-                    moveDir = new Vector3(0, vOffset, 1);
+                    //get next pos based on player's forwards and up vectors
+                    moveDir = Player.playerObject.transform.forward + Player.playerObject.transform.up * vOffset;
+                    finalPosition = Player.playerObject.transform.position + moveDir;
+                    //finalPosition = Player.playerObject.transform.position + new Vector3(0, vOffset, 1) * cellWidth;
+                    //moveDir = new Vector3(0, vOffset, 1);
                     Player.updatePos(playerPos + new Vector2(0, 1));
                     isMoving = true;
                     OnMoveBegin();
@@ -397,7 +448,7 @@ public class InputHandler : MonoBehaviour
                 }
                 break;
         }
-
+        */
         
     }
 
@@ -639,11 +690,11 @@ public class InputHandler : MonoBehaviour
         {
             //move camera above grid
             //this.transform.rotation.SetEulerAngles(-90, transform.rotation.y, transform.rotation.z);
-            Player.teleportPlayer(new Vector3(cellX, 5f, cellY));
+            Player.teleportPlayer(new Vector3(cellX, 0, cellY));
         }
         else
         {
-            Player.teleportPlayer(new Vector3(cellX, .5f, cellY));
+            Player.teleportPlayer(new Vector3(cellX, 0, cellY));
         }
     }
 

@@ -2,6 +2,7 @@ using System.Collections.Generic;
 using Unity.VisualScripting;
 using UnityEngine;
 using UnityEngine.UIElements.Experimental;
+using static UnityEditor.PlayerSettings;
 
 public static class GridUtils
 {
@@ -52,6 +53,12 @@ public static class GridUtils
                 break;
             case 90:
                 facing = "E";
+                break;
+            case -90:
+                facing = "W";
+                break;
+            case 360:
+                facing = "N";
                 break;
         }
         return facing;
@@ -161,6 +168,106 @@ public static class GridUtils
 
         return deg;
     }
+
+    public static Vector3 getZoneOffset(string zone)
+    {
+        Vector3 ret = new Vector3();
+        switch (zone)
+        {
+            case "bottom":
+                ret = Vector3.zero;
+                break;
+            case "west":
+                ret = new Vector3 (-4, 14, 0);
+                break;
+            case "south":
+                ret = new Vector3(0, 14, -4);
+                break;
+        }
+        return ret;
+    }
+
+    public static Vector3 getZoneNorthVector(string zone)
+    {
+        Vector3 ret = new Vector3();
+        switch (zone)
+        {
+            case "bottom":
+                ret = new Vector3(0, 1, 0);
+                break;
+            case "north":
+                ret = new Vector3(0, 1, 0);
+                break;
+            case "east":
+                ret = new Vector3(0, 0, 1);
+                break;
+            case "south":
+                ret = new Vector3(0, -1, 0);
+                break;
+            case "west":
+                ret = new Vector3(0, 0, 1);
+                break;
+        }
+        return ret;
+    }
+
+    public static Vector3 getZoneEastVector(string zone)
+    {
+        Vector3 ret = new Vector3();
+        switch (zone)
+        {
+            case "bottom":
+                ret = new Vector3(1, 0, 0);
+                break;
+            case "north":
+                ret = new Vector3(1, 0, 0);
+                break;
+            case "east":
+                ret = new Vector3(0, 1, 0);
+                break;
+            case "south":
+                ret = new Vector3(1, 0, 0);
+                break;
+            case "west":
+                ret = new Vector3(0, -1, 0);
+                break;
+        }
+        return ret;
+    }
+
+    public static string getDirectionOfObjectFacing(GameObject obj, string zone)
+    {
+        string ret = null;
+        Vector3 forwards = obj.transform.forward;
+        if (forwards == getZoneNorthVector(zone)) ret = "N";
+        else if (forwards == getZoneNorthVector(zone) * -1) ret = "S";
+        else if (forwards == getZoneEastVector(zone)) ret = "E";
+        else if (forwards == getZoneEastVector(zone) * -1) ret = "W";
+        return ret;
+    }
+
+    public static Vector2 directionToGridCoords(string direction)
+    {
+        Vector2 ret = Vector2.zero;
+        switch(direction)
+        {
+            case "S":
+                ret = new Vector2(0, -1);
+                break;
+            case "W":
+                ret = new Vector2(-1, 0);
+                break;
+            case "N":
+                ret = new Vector2(0, 1);
+                break;
+            case "E":
+                ret = new Vector2(1, 0);
+                break;
+        }
+        return ret;
+    }
+
+
 
     //static public bool canMoveBetween(Vector2 pos1, Vector2 pos2, char dir, int layer)
     //{

@@ -641,7 +641,7 @@ Transform:
   m_GameObject: {fileID: 88525241}
   serializedVersion: 2
   m_LocalRotation: {x: 0, y: 0, z: 0, w: 1}
-  m_LocalPosition: {x: 0, y: 0.5, z: 0}
+  m_LocalPosition: {x: 0, y: 0, z: 0}
   m_LocalScale: {x: 1, y: 1, z: 1}
   m_ConstrainProportionsScale: 0
   m_Children:
@@ -6399,10 +6399,27 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 3eb136ba53d70854dae929fed7e20e8d, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  gridFiles:
+  bottomGridFiles:
   - {fileID: 4900000, guid: 781e7b226f82d26409113a1b126b59c9, type: 3}
-  - {fileID: 4900000, guid: db0159f6fef601a4f8981b973269a86c, type: 3}
-  - {fileID: 4900000, guid: 9e3458c841ca4f1458ee6072e9ae8df2, type: 3}
+  - {fileID: 4900000, guid: 70d535c6066c5af429c975fae5e0eaf9, type: 3}
+  - {fileID: 4900000, guid: 4e9ef439f63325e4eb87f085442142ea, type: 3}
+  northGridFiles:
+  - {fileID: 4900000, guid: 781e7b226f82d26409113a1b126b59c9, type: 3}
+  - {fileID: 4900000, guid: 70d535c6066c5af429c975fae5e0eaf9, type: 3}
+  - {fileID: 4900000, guid: 4e9ef439f63325e4eb87f085442142ea, type: 3}
+  southGridFiles:
+  - {fileID: 4900000, guid: 781e7b226f82d26409113a1b126b59c9, type: 3}
+  - {fileID: 4900000, guid: 70d535c6066c5af429c975fae5e0eaf9, type: 3}
+  - {fileID: 4900000, guid: 4e9ef439f63325e4eb87f085442142ea, type: 3}
+  eastGridFiles:
+  - {fileID: 4900000, guid: 781e7b226f82d26409113a1b126b59c9, type: 3}
+  - {fileID: 4900000, guid: 70d535c6066c5af429c975fae5e0eaf9, type: 3}
+  - {fileID: 4900000, guid: 4e9ef439f63325e4eb87f085442142ea, type: 3}
+  westGridFiles:
+  - {fileID: 4900000, guid: 781e7b226f82d26409113a1b126b59c9, type: 3}
+  - {fileID: 4900000, guid: 70d535c6066c5af429c975fae5e0eaf9, type: 3}
+  - {fileID: 4900000, guid: 4e9ef439f63325e4eb87f085442142ea, type: 3}
+  topGridFiles: []
   RenderedGrids: {fileID: 0}
 --- !u!1 &994060017
 GameObject:
