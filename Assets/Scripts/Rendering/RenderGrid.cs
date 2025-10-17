@@ -21,13 +21,19 @@ public class RenderGrid : MonoBehaviour
         GridDicts.init();
         //for each zone/side
         loadZone(eastGridFiles, "east");
+        GridUtils.eastGrids = grids;
         loadZone(northGridFiles, "north");
+        GridUtils.northGrids = grids;
         loadZone(southGridFiles, "south");
+        GridUtils.southGrids = grids;
         loadZone(westGridFiles, "west");
+        GridUtils.westGrids = grids;
         loadZone(bottomGridFiles, "bottom");
+        GridUtils.bottomGrids = grids;
         //determine current active grid
         //asign current active grid to utils
         GridUtils.grids = grids;
+        
         //prompt map update
         UIUtils.updateMap();
 
@@ -79,19 +85,19 @@ public class RenderGrid : MonoBehaviour
                 break;
             case "north":
                 currZone.transform.eulerAngles = new Vector3(-90, 0, 0);
-                currZone.transform.position += new Vector3(0, 0, 18);
+                currZone.transform.position += new Vector3(0, 0.5f, 18);
                 break;
             case "east":
                 currZone.transform.eulerAngles = new Vector3(0, 0, 90);
-                currZone.transform.position += new Vector3(18, 0, 0);
+                currZone.transform.position += new Vector3(18, 0.5f, 0);
                 break;
             case "south":
                 currZone.transform.eulerAngles = new Vector3(90, 0, 0);
-                currZone.transform.position += new Vector3(0, 14, -4);
+                currZone.transform.position += new Vector3(0, 14.5f, -4);
                 break;
             case "west":
                 currZone.transform.eulerAngles = new Vector3(0, 0, -90);
-                currZone.transform.position += new Vector3(-4, 14, 0);
+                currZone.transform.position += new Vector3(-4, 14.5f, 0);
                 break;
         }
     }

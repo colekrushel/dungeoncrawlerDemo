@@ -1,4 +1,5 @@
 using System.Collections.Generic;
+using System.Linq;
 using Unity.VisualScripting;
 using UnityEngine;
 using UnityEngine.UIElements.Experimental;
@@ -7,6 +8,11 @@ using static UnityEditor.PlayerSettings;
 public static class GridUtils
 {
     public static DungeonGrid[] grids;
+    public static DungeonGrid[] bottomGrids;
+    public static DungeonGrid[] northGrids;
+    public static DungeonGrid[] eastGrids;
+    public static DungeonGrid[] southGrids;
+    public static DungeonGrid[] westGrids;
 
     public static DungeonCell getCell(int x, int y, int layer)
     {
@@ -54,11 +60,15 @@ public static class GridUtils
             case 90:
                 facing = "E";
                 break;
+            //edge cases
             case -90:
                 facing = "W";
                 break;
             case 360:
                 facing = "N";
+                break;
+            case 450:
+                facing = "E";
                 break;
         }
         return facing;
@@ -102,6 +112,29 @@ public static class GridUtils
                 break;
             case "E":
                 canMove = grid.canMoveBetween(pos, pos + new Vector2(1, 0), 'E');
+                break;
+        }
+        return canMove;
+    }
+
+    static public bool canTransportInDirection(Vector2 pos, int layer, string dir)
+    {
+        bool canMove = false;
+        DungeonGrid grid = grids[layer];
+        //check if player is moving out of bounds and there is no wall blocking them to indicate a valid transportation (transfer between zones)
+        switch (dir)
+        {
+            case "S":
+                canMove = !grid.getCell(pos).walls.Contains(dir) && grid.cellOutOfBounds(new Vector2Int((int)pos.x, (int)pos.y) - new Vector2Int(0, 1));
+                break;
+            case "W":
+                canMove = !grid.getCell(pos).walls.Contains(dir) && grid.cellOutOfBounds(new Vector2Int((int)pos.x, (int)pos.y) - new Vector2Int(1, 0));
+                break;
+            case "N":
+                canMove = !grid.getCell(pos).walls.Contains(dir) && grid.cellOutOfBounds(new Vector2Int((int)pos.x, (int)pos.y) + new Vector2Int(0, 1));
+                break;
+            case "E":
+                canMove = !grid.getCell(pos).walls.Contains(dir) && grid.cellOutOfBounds(new Vector2Int((int)pos.x, (int)pos.y) + new Vector2Int(1, 0));
                 break;
         }
         return canMove;
@@ -178,11 +211,18 @@ public static class GridUtils
                 ret = Vector3.zero;
                 break;
             case "west":
-                ret = new Vector3 (-4, 14, 0);
+                ret = new Vector3 (-4, 14.5f, 0);
                 break;
             case "south":
-                ret = new Vector3(0, 14, -4);
+                ret = new Vector3(0, 14.5f, -4);
                 break;
+            case "east":
+                ret = new Vector3(18, .5f, 0);
+                break;
+            case "north":
+                ret = new Vector3(0, .5f, 18);
+                break;
+
         }
         return ret;
     }
@@ -193,7 +233,7 @@ public static class GridUtils
         switch (zone)
         {
             case "bottom":
-                ret = new Vector3(0, 1, 0);
+                ret = new Vector3(0, 0, 1);
                 break;
             case "north":
                 ret = new Vector3(0, 1, 0);
@@ -235,10 +275,59 @@ public static class GridUtils
         return ret;
     }
 
+    public static Vector3 getZoneUpVector(string zone)
+    {
+        Vector3 ret = new Vector3();
+        switch (zone)
+        {
+            case "bottom":
+                ret = new Vector3(0, 1, 0);
+                break;
+            case "north":
+                ret = new Vector3(0, 0, -1);
+                break;
+            case "east":
+                ret = new Vector3(-1, 0, 0);
+                break;
+            case "south":
+                ret = new Vector3(0, 0, 1);
+                break;
+            case "west":
+                ret = new Vector3(1, 0, 0);
+                break;
+        }
+        return ret;
+    }
+
+    public static Vector3 getZoneRotationEuler(string zone)
+    {
+        Vector3 ret = Vector3.zero;
+        switch (zone)
+        {
+            case "bottom":
+                ret = new Vector3(0, 0, 0);
+                break;
+            case "north":
+                ret = new Vector3(-90, 0, 0);
+                break;
+            case "east":
+                ret = new Vector3(0, 0, 90);
+                break;
+            case "south":
+                ret = new Vector3(90, 0, 0);
+                break;
+            case "west":
+                ret = new Vector3(0, 0, -90);
+                break;
+        }
+        return ret;
+    }
+
     public static string getDirectionOfObjectFacing(GameObject obj, string zone)
     {
         string ret = null;
         Vector3 forwards = obj.transform.forward;
+        //Debug.Log("forwards v: " + forwards);
         if (forwards == getZoneNorthVector(zone)) ret = "N";
         else if (forwards == getZoneNorthVector(zone) * -1) ret = "S";
         else if (forwards == getZoneEastVector(zone)) ret = "E";
@@ -267,11 +356,262 @@ public static class GridUtils
         return ret;
     }
 
+    public static string getTransportDestinationZone(Vector2 pos, string dir, string currzone)
+    {
+        string destZone = null;
+        switch (currzone)
+        {
+            case "bottom":
+                switch (dir)
+                {
+                    case "N":
+                        destZone = "north";
+                        break;
+                    case "E":
+                        destZone = "east";
+                        break;
+                    case "S":
+                        destZone = "south";
+                        break;
+                    case "W":
+                        destZone = "west";
+                        break;
+                }
+
+                break;
+            case "north":
+                switch (dir)
+                {
+                    case "N":
+                        destZone = null;
+                        break;
+                    case "E":
+                        destZone = "east";
+                        break;
+                    case "S":
+                        destZone = "bottom";
+                        break;
+                    case "W":
+                        destZone = "west";
+                        break;
+                }
+                break;
+            case "east":
+                switch (dir)
+                {
+                    case "N":
+                        destZone = "north";
+                        break;
+                    case "W":
+                        destZone = "bottom";
+                        break;
+                    case "S":
+                        destZone = "south";
+                        break;
+                    case "E":
+                        destZone = null;
+                        break;
+                }
+                break;
+            case "south":
+                switch (dir)
+                {
+                    case "N":
+                        destZone = "bottom";
+                        break;
+                    case "E":
+                        destZone = "east";
+                        break;
+                    case "S":
+                        destZone = null;
+                        break;
+                    case "W":
+                        destZone = "west";
+                        break;
+                }
+                break;
+            case "west":
+                switch (dir)
+                {
+                    case "N":
+                        destZone = "north";
+                        break;
+                    case "E":
+                        destZone = "bottom";
+                        break;
+                    case "S":
+                        destZone = "south";
+                        break;
+                    case "W":
+                        destZone = null;
+                        break;
+                }
+                break;
+        }
+        return destZone;
+    }
+
+    public static Vector2 getTransportDestinationCoord(Vector2 pos, string dir, string currzone)
+    {
+        string destZone = getTransportDestinationZone(pos, dir, currzone);
+        bool keepX = false;
+        bool keepY = false;
+        switch (currzone)
+        {
+            case "bottom":
+                switch (destZone)
+                {
+                    case "north":
+                        keepX = true;
+                        keepY = false;
+                        break;
+                    case "east":
+                        keepX = false;
+                        keepY = true;
+                        break;
+                    case "south":
+                        keepX = true;
+                        keepY = false;
+                        break;
+                    case "west":
+                        keepX = false;
+                        keepY = true;
+                        break;
+                }
+                break;
+            case "north":
+                switch (destZone)
+                {
+                    case "east":
+                        keepX = false;
+                        keepY = false;
+                        break;
+                    case "bottom":
+                        keepX = true;
+                        keepY = false;
+                        break;
+                    case "west":
+                        keepX = false;
+                        keepY = false;
+                        break;
+                }
+                break;
+            case "east":
+                switch (destZone)
+                {
+                    case "north":
+                        keepX = false;
+                        keepY = false;
+                        break;
+                    case "bottom":
+                        keepX = false;
+                        keepY = true;
+                        break;
+                    case "south":
+                        keepX = false;
+                        keepY = false;
+                        break;
+                }
+                break;
+            case "south":
+                switch (destZone)
+                {
+                    case "east":
+                        keepX = false;
+                        keepY = false;
+                        break;
+                    case "bottom":
+                        keepX = true;
+                        keepY = false;
+                        break;
+                    case "west":
+                        keepX = false;
+                        keepY = false;
+                        break;
+                }
+                break;
+            case "west":
+                switch (destZone)
+                {
+                    case "north":
+                        keepX = false;
+                        keepY = false;
+                        break;
+                    case "bottom":
+                        keepX = false;
+                        keepY = true;
+                        break;
+                    case "south":
+                        keepX = false;
+                        keepY = false;
+                        break;
+                }
+                break;
+        }
+        //determine the new coord to set the player to
+        Vector2 newcoord = Vector2.zero;
+        if (keepX) newcoord.x = pos.x;
+        else newcoord.x = (Mathf.Abs((grids[0].width - 1) - pos.x));
+        if (keepY) newcoord.y = pos.y;
+        else newcoord.y = (Mathf.Abs((grids[0].height - 1) - pos.y));
+        return newcoord;
+    }
+
+    public static Vector3 getTransportDestinationWorldpos(Vector2 pos, string dir, string currzone)
+    {
+        //map each zone's edge to another zone's edge
+        //assume dir is the direction the entity is exiting the zone from
+        
+        Vector3 ret = Vector3.zero;
+        DungeonGrid[] destGrids = grids;
+        //when player is transporting to a zone, they will conserve x or y and reverse the other coord
+        string destZone = getTransportDestinationZone(pos, dir, currzone);
+
+        //and put them on the highest traversible tile
+   
+        //convert coord and orientation into world pos
+        Vector2 newcoord = getTransportDestinationCoord(pos, dir, currzone);
+        ret = coordToWorld(newcoord, destZone);
+        return ret;
+    }
+
+    public static Vector3 coordToWorld(Vector2 coord, string zone)
+    {
+        //x is right vector; y is forward vector
+        Vector3 ret = getZoneOffset(zone) + coord.x * getZoneEastVector(zone) + coord.y * getZoneNorthVector(zone);
+        return ret;
+    }
+
+    public static void switchZone(string newZone)
+    {
+        Player.orientation = newZone;
+        switch (newZone)
+        {
+
+            case "bottom":
+                grids = bottomGrids;
+                break;
+            case "north":
+                grids = northGrids;
+                break;
+            case "east":
+                grids = eastGrids;
+                break;
+            case "south":
+                grids = southGrids;
+                break;
+            case "west":
+                grids = westGrids;
+                break;
+
+        }
+    }
+    
 
 
-    //static public bool canMoveBetween(Vector2 pos1, Vector2 pos2, char dir, int layer)
-    //{
-    //    return grids[layer].canMoveBetween(pos1, pos2, dir);
-    //}
+
+
+
+
 
 }

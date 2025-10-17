@@ -598,7 +598,7 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   gridParent: {fileID: 993281072}
   isCreator: 0
-  startpos: {x: 0, y: 11}
+  startpos: {x: 0, y: 10}
   camera: {fileID: 890660339}
   interactWindow: {fileID: 209323962}
   firewall: {fileID: 1471878254}
@@ -2682,13 +2682,13 @@ Transform:
   m_PrefabAsset: {fileID: 0}
   m_GameObject: {fileID: 410087039}
   serializedVersion: 2
-  m_LocalRotation: {x: 0.69630235, y: -0.0868488, z: 0.70732653, w: 0.085495204}
-  m_LocalPosition: {x: 0, y: 3, z: 0}
+  m_LocalRotation: {x: 0.6423662, y: -0.28644344, z: 0.6525364, w: 0.28197902}
+  m_LocalPosition: {x: 5.19, y: 14.14, z: 14.92}
   m_LocalScale: {x: 1, y: 1, z: 1}
   m_ConstrainProportionsScale: 0
   m_Children: []
   m_Father: {fileID: 0}
-  m_LocalEulerAnglesHint: {x: 166, y: -90.9, z: 0}
+  m_LocalEulerAnglesHint: {x: 132.6, y: -90.9, z: 0}
 --- !u!114 &410087042
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -6404,21 +6404,21 @@ MonoBehaviour:
   - {fileID: 4900000, guid: 70d535c6066c5af429c975fae5e0eaf9, type: 3}
   - {fileID: 4900000, guid: 4e9ef439f63325e4eb87f085442142ea, type: 3}
   northGridFiles:
-  - {fileID: 4900000, guid: 781e7b226f82d26409113a1b126b59c9, type: 3}
-  - {fileID: 4900000, guid: 70d535c6066c5af429c975fae5e0eaf9, type: 3}
-  - {fileID: 4900000, guid: 4e9ef439f63325e4eb87f085442142ea, type: 3}
+  - {fileID: 4900000, guid: 5b94435e4f2229f498d3eab419dc0675, type: 3}
+  - {fileID: 4900000, guid: 04cedce6c975b33498daaac239bd4010, type: 3}
+  - {fileID: 4900000, guid: 4b44ee0a676ad424b87181a339f2b21a, type: 3}
   southGridFiles:
-  - {fileID: 4900000, guid: 781e7b226f82d26409113a1b126b59c9, type: 3}
-  - {fileID: 4900000, guid: 70d535c6066c5af429c975fae5e0eaf9, type: 3}
-  - {fileID: 4900000, guid: 4e9ef439f63325e4eb87f085442142ea, type: 3}
+  - {fileID: 4900000, guid: 5b94435e4f2229f498d3eab419dc0675, type: 3}
+  - {fileID: 4900000, guid: 04cedce6c975b33498daaac239bd4010, type: 3}
+  - {fileID: 4900000, guid: 4b44ee0a676ad424b87181a339f2b21a, type: 3}
   eastGridFiles:
-  - {fileID: 4900000, guid: 781e7b226f82d26409113a1b126b59c9, type: 3}
-  - {fileID: 4900000, guid: 70d535c6066c5af429c975fae5e0eaf9, type: 3}
-  - {fileID: 4900000, guid: 4e9ef439f63325e4eb87f085442142ea, type: 3}
+  - {fileID: 4900000, guid: 5b94435e4f2229f498d3eab419dc0675, type: 3}
+  - {fileID: 4900000, guid: 04cedce6c975b33498daaac239bd4010, type: 3}
+  - {fileID: 4900000, guid: 4b44ee0a676ad424b87181a339f2b21a, type: 3}
   westGridFiles:
-  - {fileID: 4900000, guid: 781e7b226f82d26409113a1b126b59c9, type: 3}
-  - {fileID: 4900000, guid: 70d535c6066c5af429c975fae5e0eaf9, type: 3}
-  - {fileID: 4900000, guid: 4e9ef439f63325e4eb87f085442142ea, type: 3}
+  - {fileID: 4900000, guid: 5b94435e4f2229f498d3eab419dc0675, type: 3}
+  - {fileID: 4900000, guid: 04cedce6c975b33498daaac239bd4010, type: 3}
+  - {fileID: 4900000, guid: 4b44ee0a676ad424b87181a339f2b21a, type: 3}
   topGridFiles: []
   RenderedGrids: {fileID: 0}
 --- !u!1 &994060017

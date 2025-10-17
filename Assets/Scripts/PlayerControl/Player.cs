@@ -9,7 +9,7 @@ public static class Player
     private static Vector2 gridPos = Vector2.zero;
     public static GameObject playerObject;
     public static int currentLayer = 0;
-    public static string orientation = "west"; //determines which side/zone player is in and their movements/rotation directions
+    public static string orientation = "bottom"; //determines which side/zone player is in and their movements/rotation directions
     public static Tuple<float, float> between = new Tuple<float, float>(0, 0); //left number is lower layer, right is upper layer
     public static string facing;
     public static bool inputLock = false;
@@ -44,16 +44,8 @@ public static class Player
     static public void setRotationFromOrientation()
     {
         //set the players orientation so that its axes match the side it is on
-        //North is in the global +z direction
-        switch (orientation)
-        {
-            case "bottom":
-                playerObject.transform.eulerAngles = Vector3.zero;
-                break;
-            case "west":
-                playerObject.transform.eulerAngles = new Vector3(-90, -90, 0);
-                break;
-        }
+        //bottom's North is in the global +z direction
+        playerObject.transform.eulerAngles = GridUtils.getZoneRotationEuler(orientation);
     }
 
     static public void teleportPlayer(Vector3 pos)

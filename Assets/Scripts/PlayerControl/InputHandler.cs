@@ -124,11 +124,11 @@ public class InputHandler : MonoBehaviour
             float moveAmount = 1f * speedMultiplier * Time.deltaTime;
             //move player towards new cell
             Player.playerObject.transform.position += new Vector3(moveAmount * moveDir.x, moveAmount * moveDir.y, moveAmount * moveDir.z);
-            
 
+            float bounds = speedMultiplier * moveDir.magnitude;
             //check if movement complete
             Vector3 dist = (Player.playerObject.transform.position - finalPosition);
-            if ( Mathf.Abs(dist.x) < (.01f*speedMultiplier) && Mathf.Abs(dist.z) < (.01f * speedMultiplier) && Mathf.Abs(dist.y) < (.01f * speedMultiplier))
+            if ( Mathf.Abs(dist.x) < (.01f*bounds) && Mathf.Abs(dist.z) < (.01f * bounds) && Mathf.Abs(dist.y) < (.01f * bounds))
             {
                 isMoving = false;          
                 Player.playerObject.transform.position = finalPosition;
@@ -202,25 +202,25 @@ public class InputHandler : MonoBehaviour
                 case 'w':
                     if (!isMoving)
                     {
-                        movePlayer(true, 0, priority);
+                        movePlayer(0, priority);
                     }
                     break;
                 case 'a':
                     if (!isMoving)
                     {
-                        movePlayer(false, 90, priority);
+                        movePlayer(90, priority);
                     }
                     break;
                 case 's':
                     if (!isMoving)
                     {
-                        movePlayer(false, 0, priority);
+                        movePlayer(0, priority);
                     }
                     break;
                 case 'd':
                     if (!isMoving)
                     {
-                        movePlayer(false, -90, priority);
+                        movePlayer(-90, priority);
                     }
                     break;
             }
@@ -257,25 +257,25 @@ public class InputHandler : MonoBehaviour
                 case 'w': //move forwards
                     if (!isRotating && !isMoving)
                     {
-                        movePlayer(true, 0, priority);
+                        movePlayer(0, priority);
                     }
                     break;
                 case 's': //move backwards
                     if (!isRotating && !isMoving)
                     {
-                        movePlayer(false, 180, priority);
+                        movePlayer(180, priority);
                     }
                     break;
                 case 'e': //move right but keep camera fowards
                     if (!isRotating && !isMoving)
                     {
-                        movePlayer(false, 90, priority);
+                        movePlayer(90, priority);
                     }
                     break;
                 case 'q': //move left but keep camera forwaards
                     if (!isRotating && !isMoving)
                     {
-                        movePlayer(false, -90, priority);
+                        movePlayer(-90, priority);
                     }
                     break;
 
@@ -293,6 +293,9 @@ public class InputHandler : MonoBehaviour
                     isRotating = false;
                     isMoving = false;
                     break;
+                case 'x':
+                    Debug.Log(Player.getPos());
+                    break;
 
 
             }
@@ -300,7 +303,7 @@ public class InputHandler : MonoBehaviour
         
     }
 
-    void movePlayer(bool moveForwards, float dirOffset = 0, bool priority = false)
+    void movePlayer(int dirOffset = 0, bool priority = false)
     {
         //determine movement direction and position based on player's forwards and right vectors
         Vector2 playerPos = Player.getPos();
@@ -308,8 +311,7 @@ public class InputHandler : MonoBehaviour
         float vOffset = 0;
         string playerFacing = Player.facing;
         string moveFacing;
-        //grant priority if player is on stairs and moving in direction opposite of stair facing
-        if (grid.getCell(Player.getPos()).type == "StairsUp" && GridUtils.getOppositeDirection(grid.getCell(Player.getPos()).entity.facing) == playerFacing) priority = true;
+
 
         bool canMove;
 
@@ -318,24 +320,55 @@ public class InputHandler : MonoBehaviour
         {
             case 0:
                 //moving forwards
+                //grant priority if player is on stairs and moving in direction opposite of stair facing
+                if (grid.getCell(Player.getPos()).type == "StairsUp" && GridUtils.getOppositeDirection(grid.getCell(Player.getPos()).entity.facing) == playerFacing) priority = true;
                 canMove = GridUtils.canMoveInDirection(playerPos, Player.currentLayer, playerFacing);
                 if(canMove || priority)
                 {
-                    //vOffset = determineVerticalOffset(moveForwards, dirOffset);
+                    vOffset = determineVerticalOffset(dirOffset);
                     moveDir = Player.playerObject.transform.forward + Player.playerObject.transform.up * vOffset;
                     finalPosition = Player.playerObject.transform.position + moveDir;
                     Player.updatePos(playerPos + GridUtils.directionToGridCoords(playerFacing));
                     isMoving = true;
                 }
+                //else check if player is attempting to go out of bounds and there is no wall blocking the way
+                //only allow player to transport on a forward movement
+                else if(GridUtils.canTransportInDirection(playerPos, Player.currentLayer, playerFacing))
+                {
+                    
+                    //if valid, determine which zone the player is moving into
+                    string destZone = GridUtils.getTransportDestinationZone(playerPos, playerFacing, Player.orientation);
+                    Debug.Log("initiate transport from " + Player.orientation + " to " + destZone);
+                    //and what their position & rotation should be set to
+                    Vector3 worldDest = GridUtils.getTransportDestinationWorldpos(playerPos, playerFacing, Player.orientation) + GridUtils.getZoneUpVector(destZone)/2;
+                    Vector3 newRotation = GridUtils.getZoneRotationEuler(destZone);
+                    //setup movement
+                    moveDir = worldDest - Player.playerObject.transform.position;
+                    finalPosition = worldDest;
+                    Player.updatePos(GridUtils.getTransportDestinationCoord(playerPos, playerFacing, Player.orientation));
+                    isMoving = true;
+                    //setup rotation
+                    isRotating = true;
+                    startRotation = Player.playerObject.transform.rotation;
+                    endRotation = Quaternion.Euler(newRotation);
+                    totalRotation = 0f;
 
+
+                    GridUtils.switchZone(destZone);
+                    grids = GridUtils.grids;
+                    grid = grids[Player.currentLayer];
+                    UIUtils.updateMap();
+                }
                 break;
             case 90:
                 //moving right
                 moveFacing = GridUtils.getDirectionFromDegrees(GridUtils.getDegreesFromDirection(playerFacing) + 90);
+                //grant priority if player is on stairs and moving in direction opposite of stair facing
+                if (grid.getCell(Player.getPos()).type == "StairsUp" && GridUtils.getOppositeDirection(grid.getCell(Player.getPos()).entity.facing) == moveFacing) priority = true;
                 canMove = GridUtils.canMoveInDirection(playerPos, Player.currentLayer, moveFacing);
                 if(canMove || priority)
                 {
-                    //vOffset = determineVerticalOffset(moveForwards, dirOffset);
+                    vOffset = determineVerticalOffset(dirOffset);
                     moveDir = Player.playerObject.transform.right + Player.playerObject.transform.up * vOffset;
                     finalPosition = Player.playerObject.transform.position + moveDir;
                     Player.updatePos(playerPos + GridUtils.directionToGridCoords(moveFacing));
@@ -345,10 +378,12 @@ public class InputHandler : MonoBehaviour
             case -90:
                 //moving left
                 moveFacing = GridUtils.getDirectionFromDegrees(GridUtils.getDegreesFromDirection(playerFacing) - 90);
+                //grant priority if player is on stairs and moving in direction opposite of stair facing
+                if (grid.getCell(Player.getPos()).type == "StairsUp" && GridUtils.getOppositeDirection(grid.getCell(Player.getPos()).entity.facing) == moveFacing) priority = true;
                 canMove = GridUtils.canMoveInDirection(playerPos, Player.currentLayer, moveFacing);
                 if (canMove || priority)
                 {
-                    //vOffset = determineVerticalOffset(moveForwards, dirOffset);
+                    vOffset = determineVerticalOffset(dirOffset);
                     moveDir = Player.playerObject.transform.right * -1 + Player.playerObject.transform.up * vOffset;
                     finalPosition = Player.playerObject.transform.position + moveDir;
                     Player.updatePos(playerPos + GridUtils.directionToGridCoords(moveFacing));
@@ -358,9 +393,11 @@ public class InputHandler : MonoBehaviour
             case 180:
                 //moving backwards
                 canMove = GridUtils.canMoveInDirection(playerPos, Player.currentLayer, GridUtils.getOppositeDirection(playerFacing));
+                //grant priority if player is on stairs and moving in direction opposite of stair facing
+                if (grid.getCell(Player.getPos()).type == "StairsUp" && GridUtils.getOppositeDirection(grid.getCell(Player.getPos()).entity.facing) == GridUtils.getOppositeDirection(playerFacing)) priority = true;
                 if (canMove || priority)
                 {
-                    //vOffset = determineVerticalOffset(moveForwards, dirOffset);
+                    vOffset = determineVerticalOffset(dirOffset);
                     moveDir = Player.playerObject.transform.forward * -1 + Player.playerObject.transform.up * vOffset;
                     finalPosition = Player.playerObject.transform.position + moveDir;
                     Player.updatePos(playerPos + GridUtils.directionToGridCoords(GridUtils.getOppositeDirection(playerFacing)));
@@ -370,95 +407,14 @@ public class InputHandler : MonoBehaviour
         }
         
         
-        /*
-        return;
-        switch (dir)
-        {
-            case 180:
-                //check if possible to move that way
-                canMove = grid.canMoveBetween(playerPos, playerPos - new Vector2(0, 1), 'S');
-                if (canMove || priority)
-                {
-                    //handle verticality (move to & from in-betweens)
-                    vOffset = determineVerticalOffset(moveForwards, dirOffset);
-                    finalPosition = Player.playerObject.transform.position + new Vector3(0, vOffset, -1) * cellWidth;
-                    moveDir = new Vector3(0, vOffset, -1);
-                    isMoving = true;
-                    Player.updatePos(playerPos - new Vector2(0, 1));
-                    OnMoveBegin();
-                }
-                else
-                {
-                    Debug.Log("can't move south");
-                }
-
-                break;
-            case 270:
-                //check if possible to move that way
-                canMove = grid.canMoveBetween(playerPos, playerPos - new Vector2(1, 0), 'W');
-                if (canMove || priority)
-                {
-                    vOffset = determineVerticalOffset(moveForwards, dirOffset);
-                    finalPosition = Player.playerObject.transform.position + new Vector3(-1, vOffset, 0) * cellWidth;
-                    moveDir = new Vector3(-1, vOffset, 0);
-                    isMoving = true;
-                    Player.updatePos(playerPos - new Vector2(1, 0));
-                    OnMoveBegin();
-                }
-                else
-                {
-                    Debug.Log("can't move west");
-                }
-                break;
-            case 0:
-                //check if possible to move that way
-                canMove = grid.canMoveBetween(playerPos, playerPos + new Vector2(0, 1), 'N');
-                if (canMove || priority)
-                {
-                    vOffset = determineVerticalOffset(moveForwards, dirOffset);
-                    //get next pos based on player's forwards and up vectors
-                    moveDir = Player.playerObject.transform.forward + Player.playerObject.transform.up * vOffset;
-                    finalPosition = Player.playerObject.transform.position + moveDir;
-                    //finalPosition = Player.playerObject.transform.position + new Vector3(0, vOffset, 1) * cellWidth;
-                    //moveDir = new Vector3(0, vOffset, 1);
-                    Player.updatePos(playerPos + new Vector2(0, 1));
-                    isMoving = true;
-                    OnMoveBegin();
-                }
-                else
-                {
-                    Debug.Log("can't move north");
-                }
-                break;
-            case 90:
-                //check if possible to move that way
-                canMove = grid.canMoveBetween(playerPos, playerPos + new Vector2(1, 0), 'E');
-                if (canMove || priority)
-                {
-                    vOffset = determineVerticalOffset(moveForwards, dirOffset);
-                    finalPosition = Player.playerObject.transform.position + new Vector3(1, vOffset, 0) * cellWidth;
-                    moveDir = new Vector3(1, vOffset, 0);
-                    Player.updatePos(playerPos + new Vector2(1, 0));
-                    isMoving = true;
-                    OnMoveBegin();
-                }
-                else
-                {
-                    Debug.Log("can't move east");
-                }
-                break;
-        }
-        */
-        
     }
 
-    float determineVerticalOffset(bool moveForwards, float dirOffset)
+    float determineVerticalOffset(int dirOffset)
     {
         float returnval = 0f;
-        int dirnum = (int)Player.playerObject.transform.rotation.eulerAngles.y + (int)dirOffset; 
 
-        string dir = GridUtils.getDirectionFromDegrees(dirnum);
-        if (!moveForwards) dir = GridUtils.getOppositeDirection(dir);
+        string dir = GridUtils.getDirectionFromDegrees(GridUtils.getDegreesFromDirection(Player.facing) + dirOffset);
+        bool moveForwards = !(dirOffset == 180); //moving backwards only when offset is 180
         //check if in-between already
         if (Player.between.Item1 != Player.between.Item2)
         {
