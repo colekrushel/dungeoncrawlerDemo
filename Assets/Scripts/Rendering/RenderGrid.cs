@@ -8,6 +8,7 @@ using static UnityEditor.Experimental.GraphView.GraphView;
 public class RenderGrid : MonoBehaviour
 {
     private DungeonGrid[] grids;
+    string currside;
     [SerializeField] TextAsset[] bottomGridFiles;
     [SerializeField] TextAsset[] northGridFiles;
     [SerializeField] TextAsset[] southGridFiles;
@@ -37,6 +38,9 @@ public class RenderGrid : MonoBehaviour
         //prompt map update
         UIUtils.updateMap();
 
+        //spawn enemies
+        EnemyManager.zoneSwitch("bottom");
+
 
     }
 
@@ -45,6 +49,7 @@ public class RenderGrid : MonoBehaviour
         //assign grid being loaded currently
         grids = new DungeonGrid[gridFiles.Length];
         GameObject currZone = new GameObject();
+        currside = side;
         currZone.name = side;
         currZone.transform.SetParent(gameObject.transform);
         //for each layer
@@ -486,7 +491,7 @@ public class RenderGrid : MonoBehaviour
                 break;
             case "Enemy":
                 //spawn an enemy here
-                //EnemyManager.spawnEnemy(cell.gridX, cell.gridY, cell.layer, cell.entity.dataString);
+                EnemyManager.addEnemy(cell.gridX, cell.gridY, cell.layer, cell.entity.dataString, currside);
                 cell.entity.interactable = false;
                 cell.traversible = true;
                 break;

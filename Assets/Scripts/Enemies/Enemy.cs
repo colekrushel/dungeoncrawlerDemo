@@ -3,12 +3,14 @@ using System.Collections;
 using System.Collections.Generic;
 using System.Linq;
 using UnityEngine;
+using UnityEngine.UIElements;
 
 //base enemy class
 public class Enemy : MonoBehaviour, IHittable
 {
-    protected Vector2 pos; //position on grid
+    [SerializeField]protected Vector2 pos; //position on grid
     protected int layer = 0; //current layer
+    protected string zone;
     protected float HP; //hit points
     protected int baseDamage;
     protected int actionRange; //tiles player must be within to initiate an action
@@ -24,9 +26,11 @@ public class Enemy : MonoBehaviour, IHittable
     protected EnemyAction currentAction;
     enum enemyState { Idle, Charging, Attacking, Stunned, None};
     enemyState currentState = enemyState.Idle;
+    string currMovementDir = "";
 
     private void Update()
     {
+        if (EnemyManager.switchingLock) return;
         //handle ICD
         ICD -= Time.deltaTime;
         if (ICD < 0)
@@ -118,12 +122,15 @@ public class Enemy : MonoBehaviour, IHittable
 
     private void move(RaycastHit hit)
     {
+        //first step; determine a direction to move in if there is not one currently set (currmovedir)
+
         //at the start of movement, cast a line to see if the enemy should move towards the player or randomly
         bool playerFound = (hit.collider.gameObject.name == "Player" && hit.distance < alertRange);
         Vector3 newPos = Vector3.zero;
-        char dir;
+        char dir = ' ';
+        if (currMovementDir != "")dir = currMovementDir[0];
         //different movement behavior based on whether enemy is active or not; unactive enemy moves randomly but active enemy follows player
-        if (!playerFound) //determine movement direction
+        if (!playerFound && currMovementDir == "") //determine movement direction
         {
             //get first random legal move by picking a random direction and attempting to move in that direction until a legal move is found
             List<string> dirs = new List<string>();
@@ -140,8 +147,8 @@ public class Enemy : MonoBehaviour, IHittable
             }
             //now that a valid direction has been found, move enemy in direction (and rotate it?)
             dir = ranDir[0];
-            
-        } else
+            currMovementDir = dir.ToString();
+        } else if (currMovementDir == "")
         {
             //TODO
             //rework facing system (maybe do this later when an enemy with a proper 'face' is implemented
@@ -154,17 +161,44 @@ public class Enemy : MonoBehaviour, IHittable
             //if direction found is a compound direction then pick one and check if it is legal; if not then pick the other one.
             dir = playerdir[0];
             if (playerdir.Length >= 2 && !GridUtils.canMoveInDirection(pos, layer, dir.ToString())) dir = playerdir[1];
-
+            currMovementDir = dir.ToString();
         }
-        //check if move is legal or not
-        if (!GridUtils.canMoveInDirection(pos, layer, dir.ToString()))
+        //second step: check if move is legal or not
+        if (currMovementDir != "" && !GridUtils.canMoveInDirection(pos, layer, dir.ToString()))
         {
             //if move would be illegal then dont move
             return;
         }
-        newPos = positionObject.transform.position + MovementManager.directionToVector3(dir.ToString());
-        pos.x = newPos.x; pos.y = newPos.z;
-        MovementManager.moveObject(positionObject, newPos, .01f);
+        //third step: rotate enemy if not facing, otherwise execute movement
+        //now that we have a valid direction for the enemy to move in, we want to check if the enemy is facing that direction.
+        Debug.Log(positionObject.name + ": " + GridUtils.getDirectionOfObjectFacing(positionObject, zone));
+        if (GridUtils.getDirectionOfObjectFacing(positionObject, zone) == dir.ToString())
+        {
+            //enemy is facing the movement direction; move enemy forwards
+            newPos = positionObject.transform.position + positionObject.transform.forward;
+            Vector2 newV2 = GridUtils.directionToGridCoords(dir.ToString());
+            pos.x = pos.x + newV2.x; pos.y = pos.y + newV2.y;
+            MovementManager.moveObject(positionObject, newPos, .01f);
+            Debug.Log("move");
+            //reset movement direction
+            currMovementDir = "";
+        }
+        else
+        {
+            
+            //enemy is not facing the movement direction; rotate enemy towards the direction
+            //get amount to rotate (either 90 or -90)
+            float diff = GridUtils.getDegreesFromDirection(GridUtils.getDirectionOfObjectFacing(positionObject, zone)) - GridUtils.getDegreesFromDirection(dir.ToString());
+
+            float angle = diff;
+            if (diff > 90 || diff < -90) angle = 90f;
+            Quaternion targetRotation = Quaternion.AngleAxis(angle, positionObject.transform.up) * positionObject.transform.rotation;
+            MovementManager.rotateObject(positionObject, targetRotation, 1f);
+
+        }
+        //newPos = positionObject.transform.position + MovementManager.directionToVector3(dir.ToString());
+        //pos.x = newPos.x; pos.y = newPos.z;
+        //MovementManager.moveObject(positionObject, newPos, .01f);
         //after movement update the map
         UIUtils.updateMap();
         
@@ -185,7 +219,9 @@ public class Enemy : MonoBehaviour, IHittable
         //snap enemy to position on grid
         pos = p;
         layer = l;
-        positionObject.transform.position = new Vector3(pos.x, l, pos.y);
+        Vector3 newPos = GridUtils.coordToWorld(p, zone, l);
+       // positionObject.transform.position = new Vector3(pos.x, l, pos.y);
+        positionObject.transform.position = newPos;
     }
 
     public void attackHit()
@@ -286,8 +322,9 @@ public class Enemy : MonoBehaviour, IHittable
         return layer;
     }
 
-    public void setLayer(int l)
+    public void initialize(int l, string z)
     {
         this.layer = l;
+        this.zone = z;
     }
 }

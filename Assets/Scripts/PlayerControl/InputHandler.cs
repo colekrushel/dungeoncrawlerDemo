@@ -338,10 +338,14 @@ public class InputHandler : MonoBehaviour
                     
                     //if valid, determine which zone the player is moving into
                     string destZone = GridUtils.getTransportDestinationZone(playerPos, playerFacing, Player.orientation);
-                    Debug.Log("initiate transport from " + Player.orientation + " to " + destZone);
+                    //Debug.Log("initiate transport from " + Player.orientation + " to " + destZone);
+                    GridUtils.switchZone(destZone);
                     //and what their position & rotation should be set to
                     Vector3 worldDest = GridUtils.getTransportDestinationWorldpos(playerPos, playerFacing, Player.orientation) + GridUtils.getZoneUpVector(destZone)/2;
-                    Vector3 newRotation = GridUtils.getZoneRotationEuler(destZone);
+                    string d = Player.orientation[0].ToString();
+                    if (d == "b") d = Player.facing[0].ToString();
+                    else d = GridUtils.getOppositeDirection(d);
+                    Quaternion newRotation = GridUtils.getTransportDestinationQuaternion(destZone, d);
                     //setup movement
                     moveDir = worldDest - Player.playerObject.transform.position;
                     finalPosition = worldDest;
@@ -350,14 +354,16 @@ public class InputHandler : MonoBehaviour
                     //setup rotation
                     isRotating = true;
                     startRotation = Player.playerObject.transform.rotation;
-                    endRotation = Quaternion.Euler(newRotation);
+                    endRotation = newRotation;
                     totalRotation = 0f;
 
-
-                    GridUtils.switchZone(destZone);
+                    Player.orientation = destZone;
                     grids = GridUtils.grids;
                     grid = grids[Player.currentLayer];
+                    EnemyManager.zoneSwitch(destZone);
                     UIUtils.updateMap();
+
+                    
                 }
                 break;
             case 90:

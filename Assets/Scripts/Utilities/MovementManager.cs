@@ -42,7 +42,7 @@ public class MovementManager : MonoBehaviour
                 }
 
                 //snap to final rotation
-                if (Mathf.Abs(entry.totalRotation - 90f) < 1)
+                if (Mathf.Abs(entry.totalRotation - 90f) < 1 * rotationSpeed)
                 {
                     entry.isRotating = false;
                     entry.objectBeingMoved.transform.rotation = entry.endRotation;

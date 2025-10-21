@@ -1,5 +1,6 @@
 using System.Collections.Generic;
 using System.Linq;
+using System.Runtime.InteropServices.WindowsRuntime;
 using Unity.VisualScripting;
 using UnityEngine;
 using UnityEngine.UIElements.Experimental;
@@ -454,8 +455,15 @@ public static class GridUtils
     public static Vector2 getTransportDestinationCoord(Vector2 pos, string dir, string currzone)
     {
         string destZone = getTransportDestinationZone(pos, dir, currzone);
+        //possible operations when changing grid orientation
+        //keep one coord and inverse the other
         bool keepX = false;
         bool keepY = false;
+        //swap resulting x or y with initial x or y
+        //set result x or y to 0 or width/height -1
+
+        //determine the new coord to set the player to
+        Vector2 newcoord = Vector2.zero;
         switch (currzone)
         {
             case "bottom":
@@ -478,21 +486,25 @@ public static class GridUtils
                         keepY = true;
                         break;
                 }
+                if (keepX) newcoord.x = pos.x;
+                else newcoord.x = (Mathf.Abs((grids[0].width - 1) - pos.x));
+                if (keepY) newcoord.y = pos.y;
+                else newcoord.y = (Mathf.Abs((grids[0].height - 1) - pos.y));
                 break;
             case "north":
                 switch (destZone)
                 {
                     case "east":
-                        keepX = false;
-                        keepY = false;
+                        newcoord.x = pos.y;
+                        newcoord.y = pos.x;
                         break;
                     case "bottom":
-                        keepX = true;
-                        keepY = false;
+                        newcoord.x = pos.x;
+                        newcoord.y = (Mathf.Abs((grids[0].height - 1) - pos.y));
                         break;
                     case "west":
-                        keepX = false;
-                        keepY = false;
+                        newcoord.x = (Mathf.Abs((grids[0].height - 1) - pos.y));
+                        newcoord.y = grids[0].height - 1;
                         break;
                 }
                 break;
@@ -500,16 +512,16 @@ public static class GridUtils
                 switch (destZone)
                 {
                     case "north":
-                        keepX = false;
-                        keepY = false;
+                        newcoord.x = pos.y;
+                        newcoord.y = pos.x;
                         break;
                     case "bottom":
-                        keepX = false;
-                        keepY = true;
+                        newcoord.x = (Mathf.Abs((grids[0].width - 1) - pos.x));
+                        newcoord.y = pos.y;
                         break;
                     case "south":
-                        keepX = false;
-                        keepY = false;
+                        newcoord.x = grids[0].width - 1;
+                        newcoord.y = (Mathf.Abs((grids[0].width - 1) - pos.x));
                         break;
                 }
                 break;
@@ -517,16 +529,16 @@ public static class GridUtils
                 switch (destZone)
                 {
                     case "east":
-                        keepX = false;
-                        keepY = false;
+                        newcoord.x = (Mathf.Abs((grids[0].height - 1) - pos.y));
+                        newcoord.y = 0;
                         break;
                     case "bottom":
-                        keepX = true;
-                        keepY = false;
+                        newcoord.x = pos.x;
+                        newcoord.y = (Mathf.Abs((grids[0].height - 1) - pos.y));
                         break;
                     case "west":
-                        keepX = false;
-                        keepY = false;
+                        newcoord.x = pos.y;
+                        newcoord.y = 0;
                         break;
                 }
                 break;
@@ -534,26 +546,22 @@ public static class GridUtils
                 switch (destZone)
                 {
                     case "north":
-                        keepX = false;
-                        keepY = false;
+                        newcoord.y = (Mathf.Abs((grids[0].width - 1) - pos.x));
+                        newcoord.x = 0;
                         break;
                     case "bottom":
-                        keepX = false;
-                        keepY = true;
+                        newcoord.x = (Mathf.Abs((grids[0].width - 1) - pos.x));
+                        newcoord.y = pos.y;
                         break;
                     case "south":
-                        keepX = false;
-                        keepY = false;
+                        newcoord.x = 0;
+                        newcoord.y = pos.x;
                         break;
                 }
                 break;
         }
-        //determine the new coord to set the player to
-        Vector2 newcoord = Vector2.zero;
-        if (keepX) newcoord.x = pos.x;
-        else newcoord.x = (Mathf.Abs((grids[0].width - 1) - pos.x));
-        if (keepY) newcoord.y = pos.y;
-        else newcoord.y = (Mathf.Abs((grids[0].height - 1) - pos.y));
+        
+
         return newcoord;
     }
 
@@ -571,20 +579,30 @@ public static class GridUtils
    
         //convert coord and orientation into world pos
         Vector2 newcoord = getTransportDestinationCoord(pos, dir, currzone);
-        ret = coordToWorld(newcoord, destZone);
+        //get highest traversible tile (layer)
+        int layer = 0;
+        for(int i = destGrids.Length-1; i > 0; i--)
+        {
+            if (destGrids[i].getCell(newcoord).isTraversible())
+            {
+                layer = i;
+                break;
+            }
+        }
+        ret = coordToWorld(newcoord, destZone, layer);
         return ret;
     }
 
-    public static Vector3 coordToWorld(Vector2 coord, string zone)
+    public static Vector3 coordToWorld(Vector2 coord, string zone, int layer = 0)
     {
-        //x is right vector; y is forward vector
-        Vector3 ret = getZoneOffset(zone) + coord.x * getZoneEastVector(zone) + coord.y * getZoneNorthVector(zone);
+        //x is right vector; y is forward vector; layer is up vector
+        Vector3 ret = getZoneOffset(zone) + coord.x * getZoneEastVector(zone) + coord.y * getZoneNorthVector(zone) + getZoneUpVector(zone) * layer;
         return ret;
     }
 
     public static void switchZone(string newZone)
     {
-        Player.orientation = newZone;
+        //Player.orientation = newZone;
         switch (newZone)
         {
 
@@ -605,6 +623,34 @@ public static class GridUtils
                 break;
 
         }
+    }
+
+    public static Quaternion getTransportDestinationQuaternion(string zone, string direction)
+    {
+        Quaternion ret = Quaternion.identity;
+        Quaternion northQuat = Quaternion.Euler(getZoneRotationEuler(zone));
+
+        //and rotating it accordingly 
+        switch (direction.ToUpper())
+        {
+            case "N":
+                ret = northQuat;
+                break;
+            case "E":
+                //rotate 90
+                ret = Quaternion.AngleAxis(90f, getZoneUpVector(zone)) * northQuat;
+                break;
+            case "S":
+                //rotate 180
+                ret = Quaternion.AngleAxis(180f, getZoneUpVector(zone)) * northQuat;
+                break;
+            case "W":
+                //rotate -90
+                ret = Quaternion.AngleAxis(-90f, getZoneUpVector(zone)) * northQuat;
+                break;
+            
+        }
+        return ret;
     }
     
 
