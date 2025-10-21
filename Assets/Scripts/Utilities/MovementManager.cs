@@ -30,7 +30,6 @@ public class MovementManager : MonoBehaviour
             }
             if (entry.isRotating)
             {
-                Vector3 rotationVector = new Vector3(0, 1f, 0);
                 float rotationSpeed = 180f * entry.rotationSpeed; //degrees per second
 
                 //rotate cam from 0 to 90 deg
@@ -47,6 +46,7 @@ public class MovementManager : MonoBehaviour
                     entry.isRotating = false;
                     entry.objectBeingMoved.transform.rotation = entry.endRotation;
                     //finished rotating 
+                    //Debug.Log("snapping to final rotation");
                 }
             }
             if (entry.isMoving)
@@ -58,7 +58,7 @@ public class MovementManager : MonoBehaviour
 
                 //check if movement complete
                 Vector3 dist = (entry.objectBeingMoved.transform.position - entry.finalPosition);
-                if (Mathf.Abs(dist.x) < (.01f * entry.movementSpeed) && Mathf.Abs(dist.z) < (.01f * entry.movementSpeed))
+                if (Mathf.Abs(dist.x) < (.01f * entry.movementSpeed) && Mathf.Abs(dist.z) < (.01f * entry.movementSpeed) && Mathf.Abs(dist.y) < (0.01f * entry.movementSpeed))
                 {
                     entry.isMoving = false;
                     entry.objectBeingMoved.transform.position = entry.finalPosition;

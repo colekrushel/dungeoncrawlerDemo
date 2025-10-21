@@ -294,7 +294,7 @@ public class InputHandler : MonoBehaviour
                     isMoving = false;
                     break;
                 case 'x':
-                    Debug.Log(Player.getPos());
+                    Debug.Log(Player.getPos() + " | " + Player.currentLayer);
                     break;
 
 
@@ -349,7 +349,8 @@ public class InputHandler : MonoBehaviour
                     //setup movement
                     moveDir = worldDest - Player.playerObject.transform.position;
                     finalPosition = worldDest;
-                    Player.updatePos(GridUtils.getTransportDestinationCoord(playerPos, playerFacing, Player.orientation));
+                    Vector2 newpos = GridUtils.getTransportDestinationCoord(playerPos, playerFacing, Player.orientation);
+                    Player.updatePos(newpos, GridUtils.getHighestTraversibleLayer(newpos, destZone));
                     isMoving = true;
                     //setup rotation
                     isRotating = true;

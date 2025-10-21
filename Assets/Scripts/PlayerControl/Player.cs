@@ -59,6 +59,12 @@ public static class Player
         gridPos = newpos;
 
     }
+    static public void updatePos(Vector2 newpos, int layer )
+    {
+        gridPos = newpos;
+        currentLayer = layer;
+        Debug.Log(layer);
+    }
 
     static public Vector2 getPos()
     {

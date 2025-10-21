@@ -238,13 +238,13 @@ public class RenderGrid : MonoBehaviour
         else if(!cell.hasCeiling && cell.layer > 0 && cell.traversible)//assign railings between non-ground level non-ceiling and empty tiles
         {
             DungeonCell N = grid.getCellInDirection(cell, "N");
-            if (N == null || N.type == "Empty") railings.Add("N");
+            if (N != null && N.type == "Empty") railings.Add("N");
             DungeonCell E = grid.getCellInDirection(cell, "E");
-            if (E == null || E.type == "Empty") railings.Add("E");
+            if (E != null && E.type == "Empty") railings.Add("E");
             DungeonCell S = grid.getCellInDirection(cell, "S");
-            if (S == null || S.type == "Empty") railings.Add("S");
+            if (S != null && S.type == "Empty") railings.Add("S");
             DungeonCell W = grid.getCellInDirection(cell, "W");
-            if (W == null || W.type == "Empty") railings.Add("W");
+            if (W != null && W.type == "Empty") railings.Add("W");
         }
         
         for (int i = 0; i < walls.Length; i++)

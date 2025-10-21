@@ -3,6 +3,7 @@ using System.Collections;
 using System.Collections.Generic;
 using System.Linq;
 using UnityEngine;
+using UnityEngine.Diagnostics;
 using UnityEngine.UIElements;
 
 //base enemy class
@@ -10,7 +11,7 @@ public class Enemy : MonoBehaviour, IHittable
 {
     [SerializeField]protected Vector2 pos; //position on grid
     protected int layer = 0; //current layer
-    protected string zone;
+    [SerializeField] protected string zone;
     protected float HP; //hit points
     protected int baseDamage;
     protected int actionRange; //tiles player must be within to initiate an action
@@ -26,7 +27,7 @@ public class Enemy : MonoBehaviour, IHittable
     protected EnemyAction currentAction;
     enum enemyState { Idle, Charging, Attacking, Stunned, None};
     enemyState currentState = enemyState.Idle;
-    string currMovementDir = "";
+    [SerializeField] string currMovementDir = "";
 
     private void Update()
     {
@@ -37,8 +38,7 @@ public class Enemy : MonoBehaviour, IHittable
         {
             triggerAction();
             ICD = ICDBase * ICDDelay;
-            //look at player after every action?
-            positionObject.transform.LookAt(Player.playerObject.transform.position);
+
 
         }
     }
@@ -54,7 +54,8 @@ public class Enemy : MonoBehaviour, IHittable
                 RaycastHit hit = playerCheck();
                 //use positions for checking attack range instead of the raycast length as we dont know where on the player the hit might have been [and attack ranges are tile-based]
                 Vector3 distanceBetween = (Player.playerObject.transform.position - positionObject.transform.position); distanceBetween.y = 0;
-                float magn = distanceBetween.magnitude;
+                float magn = (Player.getPos() - pos).magnitude;    
+                
                 if (hit.collider.gameObject && hit.collider.gameObject.name == "Player" && magn <= actionRange)
                 {
                     setupAction();
@@ -95,15 +96,37 @@ public class Enemy : MonoBehaviour, IHittable
             c++;
         }
         currentAction = selectedAction;
-        //set up override animator and attack values
-        AnimatorOverrideController overrideController = new AnimatorOverrideController(animator.runtimeAnimatorController);
-        overrideController["DroneCharge"] = selectedAction.chargeAnim;
-        overrideController["DroneAttack"] = selectedAction.actionAnim;
-        ICDDelay = currentAction.chargeDelay;
-        animator.runtimeAnimatorController = overrideController;
-        //Debug.Log(animator["ChargeAction"].name);
-        animator.Play("ChargeAction");
-        currentState = enemyState.Charging;
+        //before attacking, determine if attack would actually hit the player. if not then turn to move to/face the player.
+        bool startAction = true;
+        if (currentAction.hitsFront)
+        {
+            //check if player is in front of the enemy
+            if (GridUtils.getDirectionBetween(pos, Player.getPos()) == GridUtils.getDirectionOfObjectFacing(positionObject, zone))
+            {
+                startAction = true;
+            }
+            else
+            {
+                //cant reach with attack; turn to face player
+                float angle = GridUtils.getDegBetweenDirections(GridUtils.getDirectionOfObjectFacing(positionObject, zone), GridUtils.getDirectionBetween(pos, Player.getPos()));
+
+                Quaternion targetRotation = Quaternion.AngleAxis(angle, positionObject.transform.up) * positionObject.transform.rotation;
+                MovementManager.rotateObject(positionObject, targetRotation, 1f);
+                startAction = false;
+            }
+        }
+        if(startAction)//start attack
+        {
+            //set up override animator and attack values
+            AnimatorOverrideController overrideController = new AnimatorOverrideController(animator.runtimeAnimatorController);
+            overrideController["DroneCharge"] = selectedAction.chargeAnim;
+            overrideController["DroneAttack"] = selectedAction.actionAnim;
+            ICDDelay = currentAction.chargeDelay;
+            animator.runtimeAnimatorController = overrideController;
+            animator.Play("ChargeAction");
+            currentState = enemyState.Charging;
+        }
+
     }
 
     private bool canPerformAction(EnemyAction action)
@@ -148,8 +171,9 @@ public class Enemy : MonoBehaviour, IHittable
             //now that a valid direction has been found, move enemy in direction (and rotate it?)
             dir = ranDir[0];
             currMovementDir = dir.ToString();
-        } else if (currMovementDir == "")
+        } if (playerFound)
         {
+            
             //TODO
             //rework facing system (maybe do this later when an enemy with a proper 'face' is implemented
             //sometimes enemy will continue to move even though the player is right in front of them?
@@ -157,7 +181,7 @@ public class Enemy : MonoBehaviour, IHittable
 
 
             //if a player was found, use the offset in positions between the player and enemy to determine what direction to move 
-            string playerdir = GridUtils.getDirectionBetween(positionObject.transform.position, Player.playerObject.transform.position);
+            string playerdir = GridUtils.getDirectionBetween(pos, Player.getPos());
             //if direction found is a compound direction then pick one and check if it is legal; if not then pick the other one.
             dir = playerdir[0];
             if (playerdir.Length >= 2 && !GridUtils.canMoveInDirection(pos, layer, dir.ToString())) dir = playerdir[1];
@@ -166,12 +190,12 @@ public class Enemy : MonoBehaviour, IHittable
         //second step: check if move is legal or not
         if (currMovementDir != "" && !GridUtils.canMoveInDirection(pos, layer, dir.ToString()))
         {
-            //if move would be illegal then dont move
+            //if move would be illegal then dont move and reset movement direction
+            currMovementDir = "";
             return;
         }
         //third step: rotate enemy if not facing, otherwise execute movement
         //now that we have a valid direction for the enemy to move in, we want to check if the enemy is facing that direction.
-        Debug.Log(positionObject.name + ": " + GridUtils.getDirectionOfObjectFacing(positionObject, zone));
         if (GridUtils.getDirectionOfObjectFacing(positionObject, zone) == dir.ToString())
         {
             //enemy is facing the movement direction; move enemy forwards
@@ -179,7 +203,6 @@ public class Enemy : MonoBehaviour, IHittable
             Vector2 newV2 = GridUtils.directionToGridCoords(dir.ToString());
             pos.x = pos.x + newV2.x; pos.y = pos.y + newV2.y;
             MovementManager.moveObject(positionObject, newPos, .01f);
-            Debug.Log("move");
             //reset movement direction
             currMovementDir = "";
         }
@@ -188,10 +211,10 @@ public class Enemy : MonoBehaviour, IHittable
             
             //enemy is not facing the movement direction; rotate enemy towards the direction
             //get amount to rotate (either 90 or -90)
-            float diff = GridUtils.getDegreesFromDirection(GridUtils.getDirectionOfObjectFacing(positionObject, zone)) - GridUtils.getDegreesFromDirection(dir.ToString());
 
-            float angle = diff;
-            if (diff > 90 || diff < -90) angle = 90f;
+
+            float angle = GridUtils.getDegBetweenDirections(GridUtils.getDirectionOfObjectFacing(positionObject, zone), dir.ToString());
+
             Quaternion targetRotation = Quaternion.AngleAxis(angle, positionObject.transform.up) * positionObject.transform.rotation;
             MovementManager.rotateObject(positionObject, targetRotation, 1f);
 
@@ -211,7 +234,7 @@ public class Enemy : MonoBehaviour, IHittable
         //do a linecast to the player and return its hit info
         RaycastHit hit;
         //move cast out of the floor
-        Physics.Linecast(positionObject.transform.position + new Vector3(0, .5f, 0), Player.playerObject.transform.position, out hit);
+        Physics.Linecast(positionObject.transform.position + .5f * positionObject.transform.up, Player.playerObject.transform.position, out hit);
         return hit;
     }
     public void snap(Vector2 p, int l)
@@ -326,5 +349,6 @@ public class Enemy : MonoBehaviour, IHittable
     {
         this.layer = l;
         this.zone = z;
+        positionObject.transform.rotation = Quaternion.Euler(GridUtils.getZoneRotationEuler(z));
     }
 }

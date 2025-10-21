@@ -141,17 +141,16 @@ public static class GridUtils
         return canMove;
     }
 
-    static public string getDirectionBetween(Vector3 p1, Vector3 p2)
+    static public string getDirectionBetween(Vector2 p1, Vector2 p2)
     {
         //can return compound directions ie NE or SW
-        Vector3 diff = p1 - p2;
+        Vector2 diff = p1 - p2;
         string returnStr = "";
-        //x indicates E/W, +x is W, -x is E
-        //z indicaes N/S; +Z is S, -z is N
-        if (diff.z != 0)
+        //use grid coordinates; +y is north
+        if (diff.y != 0)
         {
-            if (diff.z < 0) returnStr += "N";
-            else if (diff.z > 0) returnStr += "S";
+            if (diff.y < 0) returnStr += "N";
+            else if (diff.y > 0) returnStr += "S";
         }
         if (diff.x != 0)
         {
@@ -560,8 +559,6 @@ public static class GridUtils
                 }
                 break;
         }
-        
-
         return newcoord;
     }
 
@@ -579,18 +576,23 @@ public static class GridUtils
    
         //convert coord and orientation into world pos
         Vector2 newcoord = getTransportDestinationCoord(pos, dir, currzone);
-        //get highest traversible tile (layer)
+        int layer = getHighestTraversibleLayer(newcoord, destZone);
+        ret = coordToWorld(newcoord, destZone, layer);
+        return ret;
+    }
+
+    public static int getHighestTraversibleLayer(Vector2 pos, string zone)
+    {
         int layer = 0;
-        for(int i = destGrids.Length-1; i > 0; i--)
+        for (int i = grids.Length - 1; i > 0; i--)
         {
-            if (destGrids[i].getCell(newcoord).isTraversible())
+            if (grids[i].getCell(pos).isTraversible())
             {
                 layer = i;
                 break;
             }
         }
-        ret = coordToWorld(newcoord, destZone, layer);
-        return ret;
+        return layer;
     }
 
     public static Vector3 coordToWorld(Vector2 coord, string zone, int layer = 0)
@@ -652,7 +654,74 @@ public static class GridUtils
         }
         return ret;
     }
-    
+
+    public static float getDegBetweenDirections(string currentDir, string targetDir)
+    {
+        float ret = 0;
+        //handle opposite dirs and return 90 or -90 randomly
+        if (Mathf.Abs(getDegreesFromDirection(currentDir) - getDegreesFromDirection(targetDir)) / 180 == 1)
+        {
+            if(Random.Range(1,3) == 1)
+            {
+                ret = 90f;
+            }
+            else
+            {
+                ret = -90f;
+            }
+            
+        }
+
+        
+        switch (currentDir)
+        {
+            case "N":
+                switch (targetDir)
+                {
+                    case "E":
+                        ret = 90f;
+                        break;
+                    case "W":
+                        ret = -90f;
+                        break;
+                }
+                break;
+            case "E":
+                switch (targetDir)
+                {
+                    case "N":
+                        ret = -90f;
+                        break;
+                    case "S":
+                        ret = 90f;
+                        break;
+                }
+                break;
+            case "S":
+                switch (targetDir)
+                {
+                    case "E":
+                        ret = -90f;
+                        break;
+                    case "W":
+                        ret = 90f;
+                        break;
+                }
+                break;
+            case "W":
+                switch (targetDir)
+                {
+                    case "N":
+                        ret = 90f;
+                        break;
+                    case "S":
+                        ret = -90f;
+                        break;
+                }
+                break;
+        }
+        return ret;
+    }
 
 
 
@@ -660,4 +729,5 @@ public static class GridUtils
 
 
 
-}
+
+    }
