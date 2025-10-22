@@ -1,6 +1,7 @@
 using System;
 using System.Collections;
 using System.Collections.Generic;
+using TMPro;
 using TMPro.Examples;
 using UnityEditor;
 using UnityEngine;
@@ -15,6 +16,7 @@ public class AnimateUI : MonoBehaviour
     private void Awake()
     {
         Cursor.visible = false;
+
     }
 
     // Start is called once before the first execution of Update after the MonoBehaviour is created
@@ -64,13 +66,26 @@ public class AnimateUI : MonoBehaviour
     float shakeAmount = 0.02f;
     float decreaseFactor = 1f;
     // grab every UI component window
-    static private List<GameObject> components;
-    static private Image monitorBackground;
-    static private GameObject firewall;
+    private static List<GameObject> components;
+    private static Image monitorBackground;
+    private static GameObject firewall;
     //cursor handling with attack indications
     [SerializeField] private GameObject cursorOverlay;
     private Image leftMaskImage;
     private Image rightMaskImage;
+    // currency
+    static int currencyToBeAdded = 0;
+    static int currencyAddedPerUpdate = 1;
+    [SerializeField] private TextMeshProUGUI currencyText;
+    //hide taskbar
+    [SerializeField] GameObject iconTray;
+    public static bool cursorInsideTray = false; //keep track of when cursor enters and exits taskbar instead of constantly checking its position
+    public static int trayIdleThreshold = 2; //if taskbar is left alone for this many seconds then it will recede
+    public static float trayIdleTimer = 0; //keep track of time since taskbar was not idle (cursor inside it)
+    private static int trayOffset = 100; //amount to move tray down/back up by
+    private static int moveTrayAmt = 0;
+    private static int totalMovement = 0;
+    private static bool trayUp = true;
 
     void Update()
     {
@@ -146,6 +161,55 @@ public class AnimateUI : MonoBehaviour
             if (Player.rightCooldown <= 0) rightMaskImage.fillAmount = 0;
         }
 
+        //increment currency every frame
+        if(currencyToBeAdded > 0)
+        {
+            currencyText.text = (int.Parse(currencyText.text.ToString()) + currencyAddedPerUpdate).ToString();
+            currencyToBeAdded -= currencyAddedPerUpdate;
+        }
+
+        //handle tray idle timer and flags for animation up and down
+        if(cursorInsideTray)
+        {
+            //move tray up if it is not already up
+            if (!trayUp)
+            {
+                moveTrayAmt = 2;
+            } else
+            {
+                trayIdleTimer = 0;
+            }
+        } else if(trayUp)
+        {
+            //increment timer if tray is already up
+            trayIdleTimer += Time.deltaTime;
+            if (trayIdleTimer >= trayIdleThreshold)
+            {
+                //move tray down
+                moveTrayAmt = -2;
+            }
+        }
+        //handle tray animation up and down
+        if (moveTrayAmt != 0)
+        {
+            iconTray.transform.position = iconTray.transform.position += new Vector3(0, moveTrayAmt, 0);
+            totalMovement += moveTrayAmt;
+            if (Mathf.Abs(totalMovement) >= trayOffset)
+            {
+                moveTrayAmt = 0;
+                if (totalMovement > 0)
+                {
+                    trayUp = true;
+                }
+                else
+                {
+                    trayUp = false;
+                }
+                totalMovement = 0;
+                trayIdleTimer = 0;
+            }
+        }
+
     }
 
     public static void setEffect(RawImage img, bool left)
@@ -186,5 +250,15 @@ public class AnimateUI : MonoBehaviour
 
         //make screen shake
         shake = .3f;
+    }
+
+    public static void addCurrency(int amt)
+    {
+        currencyToBeAdded += amt;
+    }
+
+    private void OnMousePositionChanged(Vector2 newPosition)
+    {
+        Debug.Log($"Global mouse position changed: {newPosition}");
     }
 }

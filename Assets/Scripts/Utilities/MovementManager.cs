@@ -17,7 +17,7 @@ public class MovementManager : MonoBehaviour
     }
 
     // Update is called once per frame
-    void Update()
+    void FixedUpdate()
     {
         //for each object
         foreach (var entry in entries.ToList())
@@ -35,7 +35,7 @@ public class MovementManager : MonoBehaviour
                 //rotate cam from 0 to 90 deg
                 if (entry.totalRotation < 90f)
                 {
-                    float step = rotationSpeed * Time.deltaTime;
+                    float step = rotationSpeed * Time.fixedDeltaTime;
                     entry.objectBeingMoved.transform.rotation = Quaternion.RotateTowards(entry.objectBeingMoved.transform.rotation, entry.endRotation, step);
                     entry.totalRotation += step;
                 }
@@ -51,9 +51,9 @@ public class MovementManager : MonoBehaviour
             }
             if (entry.isMoving)
             {
-                float moveAmount = 1f * entry.movementSpeed * Time.deltaTime;
+                float moveAmount = entry.movementSpeed * Time.fixedDeltaTime * 500;
                 //move player towards new pos
-                entry.objectBeingMoved.transform.position = Vector3.MoveTowards(entry.objectBeingMoved.transform.position, entry.finalPosition, entry.movementSpeed);
+                entry.objectBeingMoved.transform.position = Vector3.MoveTowards(entry.objectBeingMoved.transform.position, entry.finalPosition, moveAmount);
 
 
                 //check if movement complete
@@ -70,7 +70,7 @@ public class MovementManager : MonoBehaviour
                 if (entry.shake > 0)
                 {
                     entry.objectBeingMoved.transform.position = UnityEngine.Random.insideUnitSphere * entry.shakeAmount + entry.originalPosition;
-                    entry.shake -= Time.deltaTime * entry.decreaseFactor;
+                    entry.shake -= Time.fixedDeltaTime * entry.decreaseFactor;
 
                 }
                 else

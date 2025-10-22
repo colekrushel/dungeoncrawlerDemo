@@ -28,6 +28,7 @@ public class Enemy : MonoBehaviour, IHittable
     enum enemyState { Idle, Charging, Attacking, Stunned, None};
     enemyState currentState = enemyState.Idle;
     [SerializeField] string currMovementDir = "";
+    protected int dropAmount; //amount of currency to drop on kill
 
     private void Update()
     {
@@ -310,7 +311,7 @@ public class Enemy : MonoBehaviour, IHittable
     public void onDeath()
     {
         //tell manager to destroy object
-        EnemyManager.killEnemy(this);
+        EnemyManager.killEnemy(this, this.dropAmount);
     }
 
     private EnemyPart getPartFromObject(GameObject obj)

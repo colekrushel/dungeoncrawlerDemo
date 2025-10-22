@@ -16,6 +16,7 @@ public class Drone : Enemy
         ICDBase = 1f;
         ICD = ICDBase;
         animator = gameObject.GetComponent<Animator>();
+        dropAmount = 100;
         
     }
 

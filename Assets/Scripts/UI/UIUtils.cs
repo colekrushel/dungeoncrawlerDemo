@@ -17,6 +17,8 @@ public class UIUtils : MonoBehaviour
     static public GameObject firewall;
     public static MonoBehaviour Instance { get; private set; }
 
+    
+
     private void Awake()
     {
         logWindow = GameObject.Find("LogContent").gameObject;
@@ -332,6 +334,11 @@ public class UIUtils : MonoBehaviour
         particleSystem.Play();
         //destroy when finished playing
         Destroy(particleEffect, particleSystem.main.duration); 
+    }
+
+    public static void addCurrency(int amt)
+    {
+        //animate adding of currency
     }
 
 }

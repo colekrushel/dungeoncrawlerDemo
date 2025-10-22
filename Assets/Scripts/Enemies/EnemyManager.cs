@@ -70,11 +70,12 @@ public class EnemyManager : MonoBehaviour
         //handle movement manager entry?
     }
 
-    public static void killEnemy(Enemy enemy)
+    public static void killEnemy(Enemy enemy, int dropAmt)
     {
         activeEnemies.Remove(enemy);
         Destroy(enemy.positionObject);
         //handle on death fx and drops
+        Player.addCurrency(dropAmt);
     }
 
     public static bool enemyOnPos(Vector2 pos, int layer)

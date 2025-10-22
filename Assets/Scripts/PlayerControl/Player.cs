@@ -27,6 +27,8 @@ public static class Player
     public static EquipmentItem rightItem = Resources.Load<EquipmentItem>("Equipment/Smasher");
     public static float currentBlockHP;
     public static float maxBlockHP;
+    //other misc data
+    private static int currencyHeld = 0;
 
     static public void loadPlayerInfo()
     {
@@ -112,6 +114,12 @@ public static class Player
             rightItem = equipItem;
             rightCooldown = 0;
         }
+    }
+
+    static public void addCurrency(int amt)
+    {
+        currencyHeld += amt;
+        AnimateUI.addCurrency(amt);
     }
 
     
