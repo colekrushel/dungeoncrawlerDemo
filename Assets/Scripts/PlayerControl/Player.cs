@@ -29,18 +29,24 @@ public static class Player
     public static float maxBlockHP;
     //other misc data
     private static int currencyHeld = 0;
+    public static string[] skills = new string[1];
 
     static public void loadPlayerInfo()
     {
-        //load in inventory from json
+        //load player info without existing data; initialize player data
         //hardcoded now for testing
         inventory.addItem("Slasher", "breacher");
         //inventory.addItem("Blocker", "breacher");
         inventory.addItem("Smasher", "breacher");
-        //Resources.Load<EquipmentItem>("Equipment/Slasher");
-        //Resources.Load<EquipmentItem>("Equipment/Blocker");
         //update equipment display
         HandleEquipment.displayEquips();
+        skills[0] = "testskill";
+        HandleSkillTree.initializeTree(skills);
+    }
+
+    static public void loadPlayerInfo(PlayerSerializableData data)
+    {
+        //load player info from existing data
     }
 
     static public void setRotationFromOrientation()
@@ -71,6 +77,16 @@ public static class Player
     static public Vector2 getPos()
     {
         return gridPos;
+    }
+
+    static public int getHP()
+    {
+        return currentHP;
+    }
+
+    static public int getCurrency()
+    {
+        return currencyHeld;
     }
 
     static public void printPos()
@@ -122,6 +138,10 @@ public static class Player
         AnimateUI.addCurrency(amt);
     }
 
+    static public void saveData()
+    {
+        //serialize player data to its own json file
+    }
     
 
 }

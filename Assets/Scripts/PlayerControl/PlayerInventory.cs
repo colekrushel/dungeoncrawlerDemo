@@ -21,4 +21,14 @@ public class PlayerInventory
         }
         return;
     }
+
+    public string[] getItemsAsStringArray()
+    {
+        string[] ret = new string[equipmentItems.Length];
+        for(int i = 0;i < equipmentItems.Length; i++)
+        {
+            ret[i] = equipmentItems[i].name;
+        }
+        return ret;
+    }
 }
