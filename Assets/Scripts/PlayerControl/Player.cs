@@ -15,21 +15,24 @@ public static class Player
     public static bool inputLock = false;
     public static List<char> actionQueue = new List<char>();
     //combat values
-    private static int totalHP = 50;
-    private static int currentHP = 50;
+    public static PlayerStats playerStats = new PlayerStats();
+    private static float totalHP = playerStats.getMaxHealth();
+    private static float currentHP = totalHP;
     public static float leftCooldown = 0;
     public static float rightCooldown = 0;
-    public static float recoil = 0;
+    //public static float recoil = 0;    what is this even used for?
     public static bool isBlocking = false;
+    
     //items
     public static PlayerInventory inventory = new PlayerInventory();
-    public static EquipmentItem leftItem = Resources.Load<EquipmentItem>("Equipment/Slasher");
+    public static EquipmentItem leftItem = Resources.Load<EquipmentItem>("Equipment/Slasher"); //autoequip to save time testing
     public static EquipmentItem rightItem = Resources.Load<EquipmentItem>("Equipment/Smasher");
     public static float currentBlockHP;
     public static float maxBlockHP;
     //other misc data
     private static int currencyHeld = 0;
-    public static string[] skills = new string[1];
+    public static List<Skill> skills = new List<Skill>();
+    
 
     static public void loadPlayerInfo()
     {
@@ -40,7 +43,6 @@ public static class Player
         inventory.addItem("Smasher", "breacher");
         //update equipment display
         HandleEquipment.displayEquips();
-        skills[0] = "testskill";
         HandleSkillTree.initializeTree(skills);
     }
 
@@ -79,7 +81,7 @@ public static class Player
         return gridPos;
     }
 
-    static public int getHP()
+    static public float getHP()
     {
         return currentHP;
     }
@@ -141,6 +143,13 @@ public static class Player
     static public void saveData()
     {
         //serialize player data to its own json file
+    }
+
+    //called when loading skills from data or unlocking a skill on the skill tree
+    static public void addSkill(Skill newSkill)
+    {
+        skills.Add(newSkill);
+        playerStats.addSkillModifiers(newSkill);
     }
     
 

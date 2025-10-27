@@ -5,21 +5,22 @@ using UnityEngine;
 [Serializable]
 public class PlayerSerializableData
 {
+    //TODO ensure skills and equipment are serializable and serialize lists of those objects instead
     string[] skills;
     string[] equipment;
+    PlayerStats playerStats;
     int currency;
     int xPos;
     int yPos;
     int layer;
-    int currHealth;
     string facing;
+
 
     public PlayerSerializableData()
     {
         xPos = (int)Player.getPos().x;
         yPos = (int)Player.getPos().y;
         layer = Player.currentLayer;
-        currHealth = Player.getHP();
         currency = Player.getCurrency();
         facing = Player.facing;
         equipment = Player.inventory.getItemsAsStringArray();

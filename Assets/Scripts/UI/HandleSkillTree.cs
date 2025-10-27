@@ -16,28 +16,26 @@ public class HandleSkillTree : MonoBehaviour
         nodes = GetComponentsInChildren<TreeNode>();
     }
 
-    public static void initializeTree(string[] enabledSkills)
+    public static void initializeTree(List<Skill> enabledSkills)
     {
         //called when player data is loaded, enable all skills the player already has
         for (int i = 0; i < nodes.Length; i++)
         {
             TreeNode cnode = nodes[i];
             cnode.descriptionWindow = descriptionWindow;
-            string skill = Array.Find(enabledSkills, e => e == cnode.name);
-            if (skill != null)
+            cnode.descHover = descriptionWindow.GetComponent<HoverMe>();
+            bool contains = enabledSkills.Contains(cnode.nodeSkill);
+            if (!contains)
             {
-                cnode.initializeNode(false);
+                cnode.initializeNode(true);
             } else
             {
-                //skill not found in player skills; disable it
-                cnode.initializeNode(true);
+                //skill found
+                cnode.initializeNode(false);
             }
         }
     }
 
-    public static void setWindow(TreeNode node)
-    {
-
-    }
+  
 
 }

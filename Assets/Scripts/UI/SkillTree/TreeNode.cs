@@ -1,6 +1,7 @@
 using NUnit.Framework;
 using System.Collections.Generic;
 using System.Runtime.InteropServices;
+using TMPro;
 using UnityEngine;
 using UnityEngine.EventSystems;
 using UnityEngine.UI;
@@ -9,23 +10,34 @@ using UnityEngine.UI;
 
 public class TreeNode : MonoBehaviour, IPointerEnterHandler, IPointerExitHandler
 {
+
     [SerializeField]
-    public string nodeName { get; } //unique identifier
-    [SerializeField]
-    public List<TreeConnection> requirements { get; } //required connections to grant access to node
-    [SerializeField]
-    public Skill nodeSkill { get; }//skill granted when requirements are met
-    bool unlocked = false;
+    public List<TreeNode> requirements; //required connections to grant access to node
+    [SerializeField] public Skill nodeSkill; //skill granted when requirements are met
+    public bool unlocked = false;
 
     //ui display handling
     private GameObject background;
     private GameObject icon;
+    private GameObject border;
     public GameObject descriptionWindow;
+    public HoverMe descHover;
+    //grab description components at wake so they dont have to be grabbed multiple times
+    private TextMeshProUGUI dname;
+    private TextMeshProUGUI ddesc;
+    private GameObject dstats;
+    private TextMeshProUGUI dprice;
+    [SerializeField] GameObject attribute;
 
     public void Awake()
     {
         background = transform.Find("BCKG").gameObject;
         icon = transform.Find("Icon").gameObject;
+        border = transform.Find("Border").gameObject;
+        dname = descriptionWindow.transform.Find("Name").GetComponent<TextMeshProUGUI>();
+        ddesc = descriptionWindow.transform.Find("Description").GetComponent<TextMeshProUGUI>();
+        dstats = descriptionWindow.transform.Find("Stats").gameObject;
+        dprice = descriptionWindow.transform.Find("Price").transform.Find("Number").GetComponent<TextMeshProUGUI>();
     }
 
     public void initializeNode(bool locked)
@@ -43,19 +55,68 @@ public class TreeNode : MonoBehaviour, IPointerEnterHandler, IPointerExitHandler
     {
         unlocked = false;
         background.GetComponent<Image>().color = Color.black;
+        border.GetComponent<Image>().color = Color.black;
     }
 
     private void unlockNode()
     {
         unlocked = true;
         background.GetComponent<Image>().color = Color.white;
+        border.GetComponent<Image>().color = Color.blue;
     }
 
     public void OnPointerEnter(PointerEventData pointerEventData)
     {
         //display info window and fill it with appropriate data
+        fillWindow();
+        descHover.resetHover();
         descriptionWindow.SetActive(true);
-        descriptionWindow.transform.position = gameObject.transform.position + new Vector3(0, 200);
+        descriptionWindow.transform.position = gameObject.transform.position + new Vector3(0, 220);
+        
+    }
+
+    private void fillWindow()
+    {
+        //read skill info and fill the appropriate text components
+        dname.text = nodeSkill.name;
+        ddesc.text = nodeSkill.description;
+        dprice.text = nodeSkill.price.ToString();
+        if (!requirementsMet()) dprice.color = Color.red;
+        else dprice.color = Color.white;
+        //grab and display skill passive effects
+        List<PassiveEffect> passiveSkillEffects = nodeSkill.GetPassiveSkillEffects();
+        //kill the children!
+        for (int i = dstats.transform.childCount - 1; i >= 0; i--)
+        {
+            Destroy(dstats.transform.GetChild(i).gameObject);
+        }
+        foreach (PassiveEffect effect in passiveSkillEffects)
+        {
+            GameObject newStat = Instantiate(attribute);
+            newStat.name = effect.stat;
+            TextMeshProUGUI text = newStat.GetComponent<TextMeshProUGUI>();
+            string affix = "";
+            if (!effect.flat) affix = "%";
+            if (effect.boost < 0)
+            {
+                text.color = Color.red;
+                text.text = effect.stat + " " + effect.boost.ToString() + affix;
+            } else
+            {
+                text.text = effect.stat + " +" + effect.boost.ToString() + affix;
+            }
+            newStat.transform.SetParent(dstats.transform, false);
+        }
+    }
+
+    public bool requirementsMet()
+    {
+        bool ret = true;
+        foreach (var req in requirements)
+        {
+            if (!req.unlocked) ret = false;
+        }
+        return ret;
     }
 
     public void OnPointerExit(PointerEventData pointerEventData)
