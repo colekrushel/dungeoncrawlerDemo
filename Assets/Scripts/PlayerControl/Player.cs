@@ -30,7 +30,7 @@ public static class Player
     public static float currentBlockHP;
     public static float maxBlockHP;
     //other misc data
-    private static int currencyHeld = 0;
+    private static int currencyHeld = 1000;
     public static List<Skill> skills = new List<Skill>();
     
 
@@ -139,6 +139,7 @@ public static class Player
         currencyHeld += amt;
         AnimateUI.addCurrency(amt);
     }
+
 
     static public void saveData()
     {

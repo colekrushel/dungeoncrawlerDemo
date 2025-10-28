@@ -13,7 +13,6 @@ MonoBehaviour:
   m_Name: testskill
   m_EditorClassIdentifier: 
   description: i am a text skill
-  type: 0
   price: 100
   skillEffects:
   - rid: 1292136801848787007

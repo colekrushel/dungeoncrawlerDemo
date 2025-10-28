@@ -166,20 +166,31 @@ public class AnimateUI : MonoBehaviour
         {
             currencyText.text = (int.Parse(currencyText.text.ToString()) + currencyAddedPerUpdate).ToString();
             currencyToBeAdded -= currencyAddedPerUpdate;
+            //prevent overflow
+            if(currencyToBeAdded < 0) currencyToBeAdded = 0;
+        } else if(currencyToBeAdded < 0)
+        {
+            //handle subtracting currency
+            currencyText.text = (int.Parse(currencyText.text.ToString()) - currencyAddedPerUpdate).ToString();
+            currencyToBeAdded += currencyAddedPerUpdate;
+            //prevent overflow
+            if (currencyToBeAdded > 0) currencyToBeAdded = 0;
         }
 
         //handle tray idle timer and flags for animation up and down
-        if(cursorInsideTray)
+        if (cursorInsideTray)
         {
             //move tray up if it is not already up
             if (!trayUp)
             {
                 moveTrayAmt = 2;
-            } else
+            }
+            else
             {
                 trayIdleTimer = 0;
             }
-        } else if(trayUp)
+        }
+        else if (trayUp)
         {
             //increment timer if tray is already up
             trayIdleTimer += Time.deltaTime;

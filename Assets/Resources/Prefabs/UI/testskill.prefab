@@ -276,7 +276,9 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 0f9b389c0df1ac74e8ce17a7ee170336, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
+  requirements: []
   nodeSkill: {fileID: 0}
+  unlocked: 0
   descriptionWindow: {fileID: 0}
   descHover: {fileID: 0}
   attribute: {fileID: 4502871345192674419, guid: dcf5accf0ea31944e837b6692b2c806c, type: 3}

@@ -8,7 +8,7 @@ using UnityEngine.UI;
 
 //data class for a node on the skill tree
 
-public class TreeNode : MonoBehaviour, IPointerEnterHandler, IPointerExitHandler
+public class TreeNode : MonoBehaviour, IPointerEnterHandler, IPointerExitHandler, IPointerDownHandler
 {
 
     [SerializeField]
@@ -72,7 +72,9 @@ public class TreeNode : MonoBehaviour, IPointerEnterHandler, IPointerExitHandler
         descHover.resetHover();
         descriptionWindow.SetActive(true);
         descriptionWindow.transform.position = gameObject.transform.position + new Vector3(0, 220);
-        
+        HandleCursorOverlay.setState(HandleCursorOverlay.cursorState.pointer);
+        //preview stats
+        HandleSkillTree.fillStatsWindow(Player.playerStats.generateStatStringPreview(nodeSkill));
     }
 
     private void fillWindow()
@@ -116,11 +118,27 @@ public class TreeNode : MonoBehaviour, IPointerEnterHandler, IPointerExitHandler
         {
             if (!req.unlocked) ret = false;
         }
+        //having enough currency is also a requirement
+        if(Player.getCurrency() < nodeSkill.price) ret = false;
         return ret;
     }
 
     public void OnPointerExit(PointerEventData pointerEventData)
     {
         descriptionWindow.SetActive(false);
+        HandleCursorOverlay.setState(HandleCursorOverlay.cursorState.none);
+        HandleSkillTree.fillStatsWindow(Player.playerStats.generateStatString());
+    }
+
+    public void OnPointerDown(PointerEventData pointerEventData)
+    {
+        Debug.Log("clicked on " + nodeSkill.name);
+        //attempt to purchase skill
+        if (requirementsMet())
+        {
+            unlockNode(); //are skill effects applied here or somewhere else?
+            Player.addCurrency(nodeSkill.price * -1);
+        }
+        HandleSkillTree.fillStatsWindow(Player.playerStats.generateStatString());
     }
 }

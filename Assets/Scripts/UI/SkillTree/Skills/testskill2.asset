@@ -29,6 +29,6 @@ MonoBehaviour:
     - rid: 1292136801848787008
       type: {class: PassiveEffect, ns: , asm: Assembly-CSharp}
       data:
-        stat: Agility
+        stat: Damage
         boost: -25
         flat: 0

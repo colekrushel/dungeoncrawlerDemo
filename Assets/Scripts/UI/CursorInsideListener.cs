@@ -5,6 +5,7 @@ public class CursorListener : MonoBehaviour, IPointerEnterHandler, IPointerExitH
 {
     [SerializeField] string handleType;
     //Detect if the Cursor starts to pass over the GameObject
+    [SerializeField] HandleCursorOverlay.cursorState cursorStateOnHover;
     public void OnPointerEnter(PointerEventData pointerEventData)
     {
         switch (handleType)
@@ -13,6 +14,7 @@ public class CursorListener : MonoBehaviour, IPointerEnterHandler, IPointerExitH
                 AnimateUI.cursorInsideTray = true;
                 break;
         }
+        HandleCursorOverlay.setState(cursorStateOnHover);
     }
 
     //Detect when Cursor leaves the GameObject
@@ -24,5 +26,6 @@ public class CursorListener : MonoBehaviour, IPointerEnterHandler, IPointerExitH
                 AnimateUI.cursorInsideTray = false;
                 break;
         }
+        HandleCursorOverlay.setState(HandleCursorOverlay.cursorState.none);
     }
 }
