@@ -28,6 +28,7 @@ public class DungeonCell
     public BreakableConstruct breakableConstruct = null;
     public string breakableWallDirection; //direction of breakable wall if there is one. only one breakable wall allowed on a cell.
     //when serializing the dungeon json in, the entity will always be serialized as a CellEntity object. this means that to subtype it, we have to assign subtypes manually.
+    public string tilesetPath; //path to where the tileset-associated prefabs are stored (walls, floors, doorays, ceilings, props
     public DungeonCell()
     {
         //default values are for empty cells

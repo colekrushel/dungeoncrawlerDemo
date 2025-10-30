@@ -59,8 +59,8 @@ public static class GridDicts
         typeToSprite = spriteToType.ToDictionary(x => x.Value, x => x.Key);
 
         //entity models
-        typeToModel.Add("OpenDoor", Resources.Load<GameObject>("Prefabs/Door1"));
-        typeToModel.Add("ClosedDoor", Resources.Load<GameObject>("Prefabs/Door1"));
+        typeToModel.Add("OpenDoor", Resources.Load<GameObject>("Prefabs/Door"));
+        typeToModel.Add("ClosedDoor", Resources.Load<GameObject>("Prefabs/Door"));
         typeToModel.Add("Entrance", Resources.Load<GameObject>("Prefabs/Rest1"));
         typeToModel.Add("Item", Resources.Load<GameObject>("Prefabs/Item1"));
         typeToModel.Add("Rest", Resources.Load<GameObject>("Prefabs/Rest1"));

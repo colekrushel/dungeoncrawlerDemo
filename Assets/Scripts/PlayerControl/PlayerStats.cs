@@ -5,6 +5,8 @@ using UnityEngine;
 //store player stats and modifiers from skills so they dont have to be constantly dereferenced
 public class PlayerStats 
 {
+    //List<Buff> activeBuffs;
+
     float baseDamage;
     float damageMult = 1;
 
@@ -137,5 +139,14 @@ public class PlayerStats
 
         }
         return ret;
+    }
+
+    public void addBuff(Buff buff)
+    {
+        //activeBuffs.Add(buff);
+    }
+    public void removeBuff(Buff buff)
+    {
+        //activeBuffs.Remove(buff);
     }
 }

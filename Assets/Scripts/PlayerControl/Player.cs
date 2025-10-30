@@ -150,6 +150,7 @@ public static class Player
     static public void addSkill(Skill newSkill)
     {
         skills.Add(newSkill);
+        //if it has passive effects then activate its effects immediately when added
         playerStats.addSkillModifiers(newSkill);
     }
     

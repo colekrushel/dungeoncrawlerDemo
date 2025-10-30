@@ -298,7 +298,8 @@ public class Enemy : MonoBehaviour, IHittable
         MovementManager.shakeObject(positionObject, .04f, 1f, .2f, positionObject.transform.position);
         //check if enemy was killed 
         HP -= damage;
-        if(HP < 0)
+        //Debug.Log("dealt " + damage + " damage to enemy");
+        if (HP < 0)
         {
             //play death animation
             animator.Play("Death");

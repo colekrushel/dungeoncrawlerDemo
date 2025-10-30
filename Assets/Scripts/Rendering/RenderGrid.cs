@@ -90,21 +90,22 @@ public class RenderGrid : MonoBehaviour
                 break;
             case "north":
                 currZone.transform.eulerAngles = new Vector3(-90, 0, 0);
-                currZone.transform.position += new Vector3(0, 0.5f, 18);
+                //currZone.transform.position += new Vector3(0, 0.5f, 18);
                 break;
             case "east":
                 currZone.transform.eulerAngles = new Vector3(0, 0, 90);
-                currZone.transform.position += new Vector3(18, 0.5f, 0);
+                //currZone.transform.position += new Vector3(18, 0.5f, 0);
                 break;
             case "south":
                 currZone.transform.eulerAngles = new Vector3(90, 0, 0);
-                currZone.transform.position += new Vector3(0, 14.5f, -4);
+                //currZone.transform.position += new Vector3(0, 14.5f, -4);
                 break;
             case "west":
                 currZone.transform.eulerAngles = new Vector3(0, 0, -90);
-                currZone.transform.position += new Vector3(-4, 14.5f, 0);
+                //currZone.transform.position += new Vector3(-4, 14.5f, 0);
                 break;
         }
+        currZone.transform.position += GridUtils.getZoneOffset(side.ToLower());
     }
 
     //called for pre-rendered grids only
@@ -191,14 +192,14 @@ public class RenderGrid : MonoBehaviour
         //assign floor
         string floorURL = "";
         //use different floors for indoors tiles/ tiles on buildings (layer > 0? maybe should check if floor below has a ceiling instead)
-        if (cell.hasCeiling || cell.layer > 0)
-        {
-            floorURL = "Prefabs/" + cell.getFloorToAssign() + "Indoors";
-        } else
-        {
-            floorURL = "Prefabs/" + cell.getFloorToAssign();
-        }
-
+        //if (cell.hasCeiling || cell.layer > 0)
+        //{
+        //    floorURL = "Prefabs/" + cell.getFloorToAssign() + "Indoors";
+        //} else
+        //{
+        //    floorURL = "Prefabs/" + cell.getFloorToAssign();
+        //}
+        floorURL = cell.tilesetPath + "/Floor";
         //for certain tiles we want to change what tiles is placed on what tiles are bordering it
         GameObject floor;
         if (cell.getFloorToAssign() == "grass1")
@@ -265,20 +266,17 @@ public class RenderGrid : MonoBehaviour
             GameObject wall;
             if (walls[0] == cell.breakableWallDirection)
             {
-                wall = Instantiate(Resources.Load<GameObject>("Prefabs/CellWallBreakable"));
+                wall = Instantiate(Resources.Load<GameObject>(cell.tilesetPath + "/WallBreakable"));
             }
             else if (cell.hasCeiling && cell.layer > 0 && grid.getCellInDirection(cell, walls[0]) != null && grid.getCellInDirection(cell, walls[0]).type == "Empty")
             {
-                wall = Instantiate(Resources.Load<GameObject>("Prefabs/BuildingWindow1"));
+                wall = Instantiate(Resources.Load<GameObject>(cell.tilesetPath + "/Window"));
             }
-            else if (cell.hasCeiling)
+            else 
             {
-                wall = Instantiate(Resources.Load<GameObject>("Prefabs/BuildingWall1"));
+                wall = Instantiate(Resources.Load<GameObject>(cell.tilesetPath + "/Wall"));
             }
-            else
-            {
-                wall = Instantiate(Resources.Load<GameObject>("Prefabs/CellWall"));
-            }
+
             wall.transform.position = floor.transform.position;
             wall.transform.SetParent(cellObject.transform);
 
@@ -320,7 +318,8 @@ public class RenderGrid : MonoBehaviour
         for (int i = 0; i < doorways.Count; i++)
         {
 
-            GameObject wall = Instantiate(Resources.Load<GameObject>("Prefabs/BuildingDoorway1"));
+            //GameObject wall = Instantiate(Resources.Load<GameObject>("Prefabs/BuildingDoorway1"));
+            GameObject wall = Instantiate(Resources.Load<GameObject>(cell.tilesetPath + "/Doorway"));
             wall.transform.position = floor.transform.position;
             wall.transform.SetParent(cellObject.transform);
             //offset walls to the edge of the tile
@@ -349,7 +348,9 @@ public class RenderGrid : MonoBehaviour
         for (int i = 0; i < railings.Count; i++)
         {
 
-            GameObject wall = Instantiate(Resources.Load<GameObject>("Prefabs/Railing1"));
+            //GameObject wall = Instantiate(Resources.Load<GameObject>("Prefabs/Railing1"));
+            //get cell below because it is guaranteed to be an indoors cell if this one has a railing on it
+            GameObject wall = Instantiate(Resources.Load<GameObject>(grids[cell.layer-1].getCell(cell.gridX, cell.gridY).tilesetPath + "/Railing"));
             wall.transform.position = floor.transform.position;
             wall.transform.SetParent(cellObject.transform);
             //offset walls to the edge of the tile
@@ -378,7 +379,7 @@ public class RenderGrid : MonoBehaviour
         //assign ceiling
         if (cell.hasCeiling)
         {
-            GameObject ceil = Instantiate(Resources.Load<GameObject>("Prefabs/Ceiling1"));
+            GameObject ceil = Instantiate(Resources.Load<GameObject>(cell.tilesetPath + "/Ceiling"));
             ceil.transform.SetParent(cellObject.transform);
             ceil.transform.position = new Vector3(0, 1, 0);
         }
@@ -423,7 +424,17 @@ public class RenderGrid : MonoBehaviour
         if(cell.type != "StairsDown" && cell.type != "Enemy")
         {
             //get model from dict
-            GameObject model = Instantiate(GridDicts.typeToModel[cell.type]);
+            //overrides for tileset exclusive models (transition everything to tileset eventually?)
+            
+            GameObject model;
+            if(cell.type == "StairsUp")
+            {
+                model = Instantiate(Resources.Load<GameObject>(cell.tilesetPath + "/Stairs"));
+            } else
+            {
+                model = Instantiate(GridDicts.typeToModel[cell.type]);
+            }
+
             model.transform.SetParent(cellObject.transform);
             cell.entity.entityInScene = model;
             //rotate 

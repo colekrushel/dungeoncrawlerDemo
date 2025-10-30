@@ -7,6 +7,9 @@ public class HandleTray : MonoBehaviour
     private void Start()
     {
         closeWindow("Log");
+        closeWindow("Weapons");
+        closeWindow("SkillTree");
+        closeWindow("SkillBar");
     }
 
     public void closeWindow(string windowName) {

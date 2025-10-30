@@ -211,16 +211,16 @@ public static class GridUtils
                 ret = Vector3.zero;
                 break;
             case "west":
-                ret = new Vector3 (-4, 14.5f, 0);
+                ret = new Vector3 (-4, 19.5f, 0);
                 break;
             case "south":
-                ret = new Vector3(0, 14.5f, -4);
+                ret = new Vector3(0, 19.5f, -4);
                 break;
             case "east":
-                ret = new Vector3(18, .5f, 0);
+                ret = new Vector3(23, .5f, 0);
                 break;
             case "north":
-                ret = new Vector3(0, .5f, 18);
+                ret = new Vector3(0, .5f, 23);
                 break;
 
         }

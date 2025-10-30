@@ -63,6 +63,7 @@ public class TreeNode : MonoBehaviour, IPointerEnterHandler, IPointerExitHandler
         unlocked = true;
         background.GetComponent<Image>().color = Color.white;
         border.GetComponent<Image>().color = Color.blue;
+        Player.addSkill(nodeSkill);
     }
 
     public void OnPointerEnter(PointerEventData pointerEventData)

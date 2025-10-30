@@ -130,10 +130,10 @@ public class EditorHandle : MonoBehaviour
         GameObject selectedObject = EventSystem.current.currentSelectedGameObject;
         //set clicked on tile's icon to match currently selected icon
         //check if tile is restricted; cannot edit restricted tiles.
-        if (selectedObject.transform.Find("Icon").GetComponent<Image>().sprite == restrictedsprite)
-        {
-            //do nothing
-        } else
+        //if (selectedObject.transform.Find("Icon").GetComponent<Image>().sprite == restrictedsprite)
+        //{
+        //    //do nothing
+        //} else
         {
             Image tileImg = selectedObject.transform.Find("Icon").GetComponent<Image>();
             tileImg.sprite = currSelected.transform.Find("Icon").GetComponent<Image>().sprite;
@@ -412,7 +412,20 @@ public class EditorHandle : MonoBehaviour
                 cell.walls = walls.ToArray();
                 //export cellentity data
 
-                
+                //tileset data
+                if (cell.hasCeiling)
+                {
+                    string tset = GameObject.Find("indoorTileset").transform.Find("Dropdown").Find("Label").GetComponent<TextMeshProUGUI>().text;
+                    cell.tilesetPath = "Prefabs/gridTilesets/Indoor/" + tset;
+                }
+                else
+                {
+                    string tset = GameObject.Find("outdoorTileset").transform.Find("Dropdown").Find("Label").GetComponent<TextMeshProUGUI>().text;
+                    cell.tilesetPath = "Prefabs/gridTilesets/Outdoor/" + tset;
+                }
+                //tileset override for tiles that might not have a ceiling but still want indoor tilesets (stairs)
+                if(cell.type == "StairsUp") cell.tilesetPath = "Prefabs/gridTilesets/Indoor/" + GameObject.Find("indoorTileset").transform.Find("Dropdown").Find("Label").GetComponent<TextMeshProUGUI>().text;
+
                 cellList.Add(cell);
                 cellindex++;
             }

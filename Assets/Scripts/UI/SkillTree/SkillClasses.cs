@@ -24,9 +24,23 @@ public class PassiveEffect : ISkillEffect
     public bool flat; //whether boost is flat or multiplicative (%)
     public void ActivateEffect()
     {
-        //apply passive effects to the player
+        //effects are applied when the skill is added
     }
     
+}
+
+public class BuffEffect : ISkillEffect
+{
+    [SerializeReference] Buff buff;
+    [SerializeField]
+    public float cost; //cost in bits/mp
+    [SerializeField]
+    public float cooldown; //time between expire and use again in seconds
+    public void ActivateEffect()
+    {
+        //apply buff to the player
+        Player.playerStats.addBuff(buff);
+    }
 }
 
 
