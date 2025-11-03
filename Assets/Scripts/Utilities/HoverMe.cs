@@ -4,9 +4,9 @@ using UnityEngine;
 public class HoverMe : MonoBehaviour
 {
     //hover params
-    [SerializeField] int moveSpeed; //duration of one hover loop (up and back down; starts at bottom state)
+    [SerializeField] float moveSpeed; //duration of one hover loop (up and back down; starts at bottom state)
     [SerializeField] float transitionSpeed = 1; //speed to go from up to down 
-    [SerializeField] int hoverHeight; //distance object will hover up before coming back down
+    [SerializeField] float hoverHeight; //distance object will hover up before coming back down
     float distanceMoved = 0;
     float moveMult = 1;
     bool stateTransitionUpToDown = false;
