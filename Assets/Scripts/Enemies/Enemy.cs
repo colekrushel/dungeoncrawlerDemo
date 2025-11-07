@@ -206,6 +206,7 @@ public class Enemy : MonoBehaviour, IHittable
             MovementManager.moveObject(positionObject, newPos, .01f);
             //after movement update the map
             //UIUtils.handleEnemyMoveUpdate(new Vector2(pos.x - newV2.x, pos.y - newV2.y), new Vector2(pos.x, pos.y));
+            UIUtils.updateMap();
             //reset movement direction
             currMovementDir = "";
         }
@@ -267,19 +268,22 @@ public class Enemy : MonoBehaviour, IHittable
 
     }
 
-    public void hitPart(float damage, GameObject partHit)
+    public float hitPart(float damage, GameObject partHit)
     {
+        float effectiveness = 1;
+        if (currentState == enemyState.Stunned) effectiveness = 2;
         EnemyPart part = getPartFromObject(partHit);
         if (part != null && currentAction != null)
         {
             //only deal damage if part hit is associated with the current action 
             bool inUse = currentAction.associatedParts.Contains(part.partName);
-            if (!inUse) return;
+            if (!inUse) return effectiveness;
             part.currentHP -= damage;
 
             if (part.currentHP < 0)
             {
                 //broke the part; now apply an effect and change the part to its broken appearance
+                effectiveness = 2;
                 part.partModel.GetComponent<MeshRenderer>().enabled = false;
                 part.isBroken = true;
                 //if a part was broken then stagger the enemy
@@ -289,10 +293,17 @@ public class Enemy : MonoBehaviour, IHittable
                 currentAction = null;
             }
         }
+        return effectiveness;
     }
-    public void hitByPlayer(float damage)
+    public float hitByPlayer(float damage)
     {
-
+        float effectiveness = 1;
+        //if enemy is stunned then do more damage
+        if(currentState == enemyState.Stunned)
+        {
+            damage *= 2;
+            effectiveness *= 2;
+        }
         UIUtils.addMessageToLog("player hit enemy for " + damage + " damage", Color.green);
 
         //apply the onhit effect (shake object)
@@ -307,6 +318,8 @@ public class Enemy : MonoBehaviour, IHittable
             currentState = enemyState.None;
             
         }
+        //return effectiveness
+        return effectiveness;
     }
 
     //called from point in death animation where death should be handled

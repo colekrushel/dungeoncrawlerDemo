@@ -7,7 +7,7 @@ public class BreakablePart : MonoBehaviour, IHittable
     [SerializeField] public BreakableConstruct.breakType breakType;
     //[SerializeField] GameObject 
 
-    public void hitByPlayer(float damage)
+    public float hitByPlayer(float damage)
     {
         //play fx and resolve logic
         HP -= damage;
@@ -24,7 +24,7 @@ public class BreakablePart : MonoBehaviour, IHittable
         {
             MovementManager.shakeObject(this.gameObject, .04f, 1f, .2f, this.gameObject.transform.position);
         }
-
+        return 1;
 
     }
 

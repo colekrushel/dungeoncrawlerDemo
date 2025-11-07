@@ -47,6 +47,9 @@ public class InputHandler : MonoBehaviour
     Vector2 leftStartPos;
     Vector2 rightStartPos;
 
+    //freelook
+    bool looking = false;
+    Quaternion rotationBeforeLook;
 
 
     //ui stuff
@@ -159,6 +162,12 @@ public class InputHandler : MonoBehaviour
                 Player.currentBlockHP += Time.deltaTime * Player.rightItem.shieldRegen;
             }
         }
+
+        //handle look
+        if(looking && !isRotating)
+        {
+            handleLook();
+        }
             
 
     }
@@ -186,7 +195,7 @@ public class InputHandler : MonoBehaviour
     {
         inputKey = char.ToLower(inputKey);
         //if player is input locked then ignore all incoming inputs
-        if (Player.inputLock) { return; }
+        if (Player.inputLock || looking) { return; }
         //store last pressed input as buffered input
         bufferedInput = ']';
         if(isRotating || isMoving)
@@ -480,7 +489,53 @@ public class InputHandler : MonoBehaviour
         }
     }
 
-    //0
+    void OnLookDown(InputValue value)
+    {
+        if (!isRotating && !isMoving)
+        {
+            rotationBeforeLook = Player.playerObject.transform.localRotation;
+            looking = true;
+            UnityEngine.Cursor.lockState = CursorLockMode.Locked;
+            HandleCursorOverlay.setState(HandleCursorOverlay.cursorState.locked);
+        }
+
+    }
+
+    void OnLookUp(InputValue value)
+    {
+        //reset camera
+        isRotating = true;
+        startRotation = Player.playerObject.transform.rotation;
+        endRotation = rotationBeforeLook;
+        totalRotation = 0f;
+        //Player.playerObject.transform.localRotation = rotationBeforeLook;
+        //Player.playerObject.transform.localRotation = Quaternion.identity;
+        looking = false;
+        UnityEngine.Cursor.lockState = CursorLockMode.None;
+        HandleCursorOverlay.setState(HandleCursorOverlay.cursorState.none);
+    }
+
+    void handleLook()
+    {
+        float mouseSensitivity = 1000f;
+
+        float mouseX = Input.GetAxis("Mouse X") * mouseSensitivity * Time.deltaTime;
+        float mouseY = Input.GetAxis("Mouse Y") * mouseSensitivity * Time.deltaTime;
+
+        float xRotation = 0f;
+        float yRotation = 0f;
+
+        xRotation -= mouseX;
+        xRotation = Mathf.Clamp(xRotation, -90f, 90f); // Clamp horizontal rotation
+        yRotation -= mouseY;
+        yRotation = Mathf.Clamp(yRotation, -90f, 90f); // Clamp vertical rotation
+
+        //Player.playerObject.transform.localRotation = Quaternion.Euler(xRotation, 0f, 0f);
+        Player.playerObject.transform.Rotate(Vector3.up * mouseX); // Rotate the player body horizontally
+        //Player.playerObject.transform.Rotate(Vector3.right * mouseY * -1); // Rotate the player body vertically
+
+    }
+
     void OnLeftDown(InputValue value)
     {
         if (Player.leftItem != null && Player.leftItem.equipType == EquipmentItem.type.Shield)
@@ -609,17 +664,20 @@ public class InputHandler : MonoBehaviour
             //try to get an enemy component from parents
             Enemy enemyScript = objectHit.GetComponentInParent<Enemy>();
             BreakablePart bp = objectHit.GetComponent<BreakablePart>();
+            float effectiveness = 1f;
             if (enemyScript != null)
             {
                 enemyHit = enemyScript;
                 //we want to deal damage to each part but only hit the enemy once; some effects we only want to happen once
-                UIUtils.playAttackHitEffect(hits[i].point, item);
-                enemyScript.hitPart(damage, objectHit);
+                effectiveness = enemyScript.hitPart(damage, objectHit);
+                UIUtils.playAttackHitEffect(hits[i].point, item, effectiveness);
+                
             } else if(bp != null)
             {
                 //just play an effect
-                UIUtils.playAttackHitEffect(hits[i].point, item);
-                bp.hitByPlayer(damage); 
+                effectiveness = bp.hitByPlayer(damage);
+                UIUtils.playAttackHitEffect(hits[i].point, item, effectiveness);
+                
             }
         }
         //now perform the actual hit on the enemy (if necessary)

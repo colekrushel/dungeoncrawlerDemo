@@ -9,7 +9,7 @@ public class HandleCursorOverlay : MonoBehaviour
     [SerializeField] static GameObject cursorPointer;
     public static MonoBehaviour Instance { get; private set; }
 
-    public enum cursorState { none, pointer}
+    public enum cursorState { none, pointer, locked}
     public static cursorState state = cursorState.none;
     void Start()
     {
@@ -32,6 +32,10 @@ public class HandleCursorOverlay : MonoBehaviour
             case cursorState.pointer:
                 cursorDefault.SetActive(false);
                 cursorPointer.SetActive(true);
+                break;
+            case cursorState.locked:
+                cursorDefault.SetActive(false);
+                cursorPointer.SetActive(false);
                 break;
         }
     }

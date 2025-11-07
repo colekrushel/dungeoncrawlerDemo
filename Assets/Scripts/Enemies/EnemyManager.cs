@@ -93,7 +93,13 @@ public class EnemyManager : MonoBehaviour
         if(activeEnemies.Count == 0) return;
         foreach (Enemy enemy in activeEnemies)
         {
-            //if(enemy.getLayer() == layer)UIUtils.updateSingleMapCell((int) enemy.getPos().x, (int) enemy.getPos().y, GridDicts.typeToSprite["Enemy"]);
+            int cellX = ((int)enemy.getPos().x - (int)Player.getPos().x) + 2; //[0 - 4]
+            int cellY = ((int)enemy.getPos().y - (int)Player.getPos().y) + 2; //[0 - 4]
+            bool enemyNearPlayer = cellX >= 0 && cellX <= 4 && cellY >= 0 && cellY <= 4; 
+            if (enemy.getLayer() == layer && enemyNearPlayer)
+            {
+                UIUtils.updateSingleMapCell((int)enemy.getPos().x, (int)enemy.getPos().y, GridDicts.typeToSprite["Enemy"]);
+            }
         }
     }
 }

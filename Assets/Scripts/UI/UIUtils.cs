@@ -87,13 +87,13 @@ public class UIUtils : MonoBehaviour
     }
     
     //overload for when we dont know what sprite to put on the spot but we want to update it because something changed
-    public static void updateSingleMapCell(int gridx, int gridy)
-    {
-        DungeonGrid grid = GridUtils.grids[Player.currentLayer];
-        DungeonCell realCell = grid.getCell(gridx, gridy);
-        Sprite typesprite = GridDicts.typeToSprite[realCell.type];
-        updateSingleMapCell(gridx, gridy, typesprite);
-    }
+    //public static void updateSingleMapCell(int gridx, int gridy)
+    //{
+    //    DungeonGrid grid = GridUtils.grids[Player.currentLayer];
+    //    DungeonCell realCell = grid.getCell(gridx, gridy);
+    //    Sprite typesprite = GridDicts.typeToSprite[realCell.type];
+    //    //updateSingleMapCell(gridx, gridy, typesprite);
+    //}
     public static void updateMap()
     {
         if(updatingLock) return;
@@ -133,7 +133,14 @@ public class UIUtils : MonoBehaviour
                     DungeonCell realCell = grid.getCell(x, y);
                     //cell on map - assign sprite from typeToSprite dict and background from floorToColor dict
                     //ignore some entities used for instantiation
-                    if(realCell.type != "Enemy") mapCell.transform.Find("Icon").gameObject.GetComponent<Image>().sprite = GridDicts.typeToSprite[realCell.type];
+                    if (realCell.type == "Enemy")
+                    {
+                        mapCell.transform.Find("Icon").gameObject.GetComponent<Image>().sprite = GridDicts.typeToSprite["None"];
+                    } else
+                    {
+                        mapCell.transform.Find("Icon").gameObject.GetComponent<Image>().sprite = GridDicts.typeToSprite[realCell.type];
+                    }
+                        
                     //mapCell.transform.Find("Background").gameObject.GetComponent<Image>().color = GridDicts.floorToColor[realCell.floorToAssign];
                     mapCell.transform.Find("Background").gameObject.GetComponent<Image>().color = new Color(0, 0, 0, .1f);
                     //assign walls - overlap should be fine visually?
@@ -176,15 +183,15 @@ public class UIUtils : MonoBehaviour
 
     }
 
-    public static void handleEnemyMoveUpdate(Vector2 prevPos, Vector2 newPos)
-    {
-        if (!updatingLock)
-        {
-            //if not currently updating map then update the results of this enemy's movement
-            updateSingleMapCell((int)newPos.x, (int)newPos.y, GridDicts.typeToSprite["Enemy"]);
-            updateSingleMapCell((int)prevPos.x, (int)prevPos.y);
-        }
-    }
+    //public static void handleEnemyMoveUpdate(Vector2 prevPos, Vector2 newPos)
+    //{
+    //    if (!updatingLock)
+    //    {
+    //        //if not currently updating map then update the results of this enemy's movement
+    //        updateSingleMapCell((int)newPos.x, (int)newPos.y, GridDicts.typeToSprite["Enemy"]);
+    //        updateSingleMapCell((int)prevPos.x, (int)prevPos.y);
+    //    }
+    //}
 
     //from https://stackoverflow.com/questions/44933517/fading-in-out-gameobject
     public static IEnumerator fadeObject(GameObject objectToFade, bool fadeIn, float duration)
@@ -348,12 +355,37 @@ public class UIUtils : MonoBehaviour
         AnimateUI.setEffect(img, left);
     }
 
-    public static void playAttackHitEffect(Vector3 worldPos, EquipmentItem item)
+    public static void playAttackHitEffect(Vector3 worldPos, EquipmentItem item, float effectiveness) //where effectiveness is a damage mult based on the part of the enemy hit/enemy state (eg stunned enemies would be 2)
     {
         //to play the effect we want to instantiate a gameobject with the item's particle system at the hit location, play it, and then destroy the object when done
         GameObject particleEffect = Instantiate(item.hitParticles, worldPos, Quaternion.identity);
         particleEffect.transform.LookAt(Player.playerObject.transform.position);
         ParticleSystem particleSystem = particleEffect.GetComponent<ParticleSystem>();
+        //modify particle system based on effectiveness
+        var main = particleSystem.main;
+        main.startSpeed = effectiveness;
+        main.startSize = effectiveness * .05f;
+        //set colors
+        if(effectiveness > 1)
+        {
+            //positive effectiveness
+            var col = particleSystem.colorOverLifetime; col.enabled = true; Gradient grad = new Gradient();
+            grad.SetKeys(new GradientColorKey[] { new GradientColorKey(Color.red, 0.0f), new GradientColorKey(Color.black, 1.0f) }, new GradientAlphaKey[] { new GradientAlphaKey(1.0f, 0.0f), new GradientAlphaKey(0.0f, 1.0f) });
+            col.color = grad;
+        }
+        //set emissions
+        if(effectiveness > 1)
+        {
+            var em = particleSystem.emission; em.enabled = true;
+            em.SetBursts(
+                new ParticleSystem.Burst[]{
+                new ParticleSystem.Burst(0.0f, 24, 1, 0.020f),
+                new ParticleSystem.Burst(0.5f, 12, 1, 0.010f)
+                });
+        }
+
+
+
         particleSystem.Play();
         //destroy when finished playing
         Destroy(particleEffect, particleSystem.main.duration); 
