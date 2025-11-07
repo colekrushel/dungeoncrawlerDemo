@@ -30,6 +30,9 @@ public class EditorHandle : MonoBehaviour
     [SerializeField] Sprite restrictedsprite;
     [SerializeField] Sprite downstairssprite;
     int currLayer = 1;
+    GameObject lastSelectedEditorTile;
+    string globalPropName = "";
+    string globalPropOrientation = "";
 
     
 
@@ -112,13 +115,12 @@ public class EditorHandle : MonoBehaviour
     {
         PointerEventData e = eventData as PointerEventData; //cast it to pointer event data even though it doesn't have automatic conversion
         GameObject selectedObject = e.pointerEnter.transform.parent.gameObject; //event is intercepted by its child (ceiling obj)... bandage fix it
-        if (e.button == PointerEventData.InputButton.Right && selectedObject.transform.Find("Icon").gameObject.GetComponent<Image>().sprite != nullsprite)
+        if(lastSelectedEditorTile != null)onPropStringChange();//check if the prev tile's prop string changed
+        lastSelectedEditorTile = selectedObject;
+        if (e.button == PointerEventData.InputButton.Right)
         {
-            Debug.Log("Right click");
             //toggle this item's entitymenu
-
-
-            GameObject menu = selectedObject.transform.GetChild(selectedObject.transform.childCount - 1).gameObject;
+            GameObject menu = selectedObject.transform.GetChild(selectedObject.transform.childCount - 1).gameObject; //get last child
             menu.transform.position = new Vector3(600, 350, 0);
             menu.SetActive(true);
         }
@@ -141,6 +143,13 @@ public class EditorHandle : MonoBehaviour
             tileBckg.color = currSelected.transform.Find("Background").GetComponent<Image>().color;
             Image tileCeil = selectedObject.transform.Find("Ceiling").GetComponent<Image>();
             tileCeil.color = currSelected.transform.Find("Ceiling").GetComponent<Image>().color;
+            //prop placement handlingGameObject menu = selectedObject.transform.Find("entityMenu").gameObject;
+            GameObject menu = selectedObject.transform.Find("entityMenu").gameObject;
+            if (tileImg.sprite == GridDicts.typeToSprite["Prop"])
+            {
+                menu.transform.Find("PropString").gameObject.GetComponent<TMP_InputField>().text = globalPropName;
+                menu.transform.Find("PropPos").gameObject.GetComponent<TMP_InputField>().text = globalPropOrientation;
+            }
             if (hasCeiling && currLayer != 3)
             {
                 //if a ceiling is placed, then unrestrict the above tile.
@@ -257,6 +266,39 @@ public class EditorHandle : MonoBehaviour
         }
     }
 
+    public void onPropStringChange()
+    {
+        //used to place a prop sprite on the cell where the prop was placed if there is not already an entity sprite there
+        GameObject selectedObject = lastSelectedEditorTile;
+        if (lastSelectedEditorTile == null)
+        {
+            return;
+        }
+        GameObject menu = selectedObject.transform.Find("entityMenu").gameObject;
+        Image tileImg = selectedObject.transform.Find("Icon").GetComponent<Image>();
+        string pstring = menu.transform.Find("PropString").gameObject.GetComponent<TMP_InputField>().text;
+        if (pstring != null && pstring != "" && tileImg.sprite == nullsprite)
+        {
+            tileImg.sprite = GridDicts.typeToSprite["Prop"];
+        } 
+        //if no prop then make sure propsprite is removed
+        if((pstring == null || pstring == "") && tileImg.sprite == GridDicts.typeToSprite["Prop"])
+        {
+            tileImg.sprite = nullsprite;
+        }
+        
+    }
+
+    public void onGlobalPropStringChange()
+    {
+        globalPropName = this.transform.Find("propPreset").Find("propString").gameObject.GetComponent<TMP_InputField>().text;
+    }
+
+    public void onGlobalPropOrientChange()
+    {
+        globalPropOrientation = this.transform.Find("propPreset").Find("propOrientation").gameObject.GetComponent<TMP_InputField>().text;
+    }
+
     public void importGrid()
     {
         GameObject selectedObject = EventSystem.current.currentSelectedGameObject;
@@ -303,13 +345,22 @@ public class EditorHandle : MonoBehaviour
                     if(cell.hasCeiling) editorCell.transform.Find("Ceiling").gameObject.GetComponent<Image>().color = Color.black;
 
                     //populate entity info if not empty
-                    if(cell.type != "Empty" && cell.type != "None")
+                    GameObject menu = editorCell.transform.Find("entityMenu").gameObject;
+                    if (cell.type != "Empty" && cell.type != "None")
                     {
-                        GameObject menu = editorCell.transform.Find("entityMenu").gameObject;
+                        
                         menu.transform.Find("linkX").gameObject.GetComponent<TMP_InputField>().text = entity.targetx.ToString();
                         menu.transform.Find("linkY").gameObject.GetComponent<TMP_InputField>().text = entity.targety.ToString();//invert?
                         menu.transform.Find("Facing").gameObject.GetComponent<TMP_InputField>().text = entity.facing;
                         menu.transform.Find("DataString").gameObject.GetComponent<TMP_InputField>().text = entity.dataString;
+                    }
+
+                    //populate prop info
+                    menu.transform.Find("PropString").gameObject.GetComponent<TMP_InputField>().text = cell.propToAssign;
+                    menu.transform.Find("PropPos").gameObject.GetComponent<TMP_InputField>().text = cell.propPlacementOrientation;
+                    if(cell.propToAssign != null && cell.propToAssign != "" && cell.type == "None")
+                    {
+                        editorCell.transform.Find("Icon").gameObject.GetComponent<Image>().sprite = GridDicts.typeToSprite["Prop"];
                     }
                 }
 
@@ -385,14 +436,12 @@ public class EditorHandle : MonoBehaviour
                         if (p.GetComponent<Image>().color == Color.black) cell.hasCeiling = true;
                     } else if ((i == 7)) //entity info
                     {
+                        GameObject menu = p;
                         //switch based on type
-                        if (cell.type != "None" && cell.type != "Empty")
+                        if (cell.type != "None" && cell.type != "Empty" && cell.type != "Prop")
                         {
-                            //TEST HOW SUBCLASSES GET EXPORTED
+                            //fill entity info from menu
                             entity = new CellEntity();
-                            //get info from menu
-                            GameObject menu = p;
-                            //menu.SetActive(true);
                             entity.targetx = int.Parse(menu.transform.Find("linkX").gameObject.GetComponent<TMP_InputField>().text);
                             entity.targety = int.Parse(menu.transform.Find("linkY").gameObject.GetComponent<TMP_InputField>().text); //invert?
                             entity.xpos = cell.gridX;
@@ -401,10 +450,11 @@ public class EditorHandle : MonoBehaviour
                             entity.dataString = menu.transform.Find("DataString").gameObject.GetComponent<TMP_InputField>().text;
                             cell.entity = entity;
                             entity.interactable = true;
-                            //menu.SetActive(false);
-
-                        } 
-
+                        }
+                        //prop info
+                        cell.propToAssign = menu.transform.Find("PropString").gameObject.GetComponent<TMP_InputField>().text;
+                        cell.propPlacementOrientation = menu.transform.Find("PropPos").gameObject.GetComponent<TMP_InputField>().text;
+                        if(cell.propPlacementOrientation != null && cell.propPlacementOrientation != "") cell.traversible = true;
                     }
 
                     i++;

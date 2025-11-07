@@ -16,6 +16,7 @@ public class UIUtils : MonoBehaviour
     static public GameObject attackContainer;
     static public GameObject firewall;
     public static MonoBehaviour Instance { get; private set; }
+    public static bool updatingLock = false;
 
     
 
@@ -84,8 +85,19 @@ public class UIUtils : MonoBehaviour
             mapCell.transform.Find("Icon").gameObject.GetComponent<Image>().sprite = spriteToPlace;
         }
     }
+    
+    //overload for when we dont know what sprite to put on the spot but we want to update it because something changed
+    public static void updateSingleMapCell(int gridx, int gridy)
+    {
+        DungeonGrid grid = GridUtils.grids[Player.currentLayer];
+        DungeonCell realCell = grid.getCell(gridx, gridy);
+        Sprite typesprite = GridDicts.typeToSprite[realCell.type];
+        updateSingleMapCell(gridx, gridy, typesprite);
+    }
     public static void updateMap()
     {
+        if(updatingLock) return;
+        updatingLock = true;
         DungeonGrid grid = GridUtils.grids[Player.currentLayer];
         //get cells around player and update the map with their info and walls
         //default is 2 cell radius around player (map grid is 5x5 with player's pos at center)
@@ -160,7 +172,18 @@ public class UIUtils : MonoBehaviour
                 playerCell.transform.Find("Icon").transform.rotation = Quaternion.Euler(0, 0, 90);
                 break;
         }
-        
+        updatingLock = false;
+
+    }
+
+    public static void handleEnemyMoveUpdate(Vector2 prevPos, Vector2 newPos)
+    {
+        if (!updatingLock)
+        {
+            //if not currently updating map then update the results of this enemy's movement
+            updateSingleMapCell((int)newPos.x, (int)newPos.y, GridDicts.typeToSprite["Enemy"]);
+            updateSingleMapCell((int)prevPos.x, (int)prevPos.y);
+        }
     }
 
     //from https://stackoverflow.com/questions/44933517/fading-in-out-gameobject

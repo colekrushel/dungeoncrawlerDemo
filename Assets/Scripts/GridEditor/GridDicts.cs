@@ -22,7 +22,7 @@ public static class GridDicts
     public static Dictionary<string, Sprite> typeToSprite = new Dictionary<string, Sprite>();
 
     public static Dictionary<string, GameObject> typeToModel = new Dictionary<string, GameObject>();
-
+    public static Dictionary<string, GameObject> stringToPropScene = new Dictionary<string, GameObject>();
     public static void init()
     {
         //add spritesheet icons to dict
@@ -56,6 +56,7 @@ public static class GridDicts
         spriteToType.Add(Resources.Load<Sprite>("Tiles/restricted"), "Empty");
         spriteToType.Add(Resources.Load<Sprite>("Tiles/playerIcon"), "Player");
         spriteToType.Add(Resources.Load<Sprite>("Tiles/enemyIcon"), "Enemy");
+        spriteToType.Add(Resources.Load<Sprite>("Tiles/propIcon"), "Prop");
         typeToSprite = spriteToType.ToDictionary(x => x.Value, x => x.Key);
 
         //entity models
@@ -65,6 +66,9 @@ public static class GridDicts
         typeToModel.Add("Item", Resources.Load<GameObject>("Prefabs/Item1"));
         typeToModel.Add("Rest", Resources.Load<GameObject>("Prefabs/Rest1"));
         typeToModel.Add("StairsUp", Resources.Load<GameObject>("Prefabs/Stairs1"));
+
+        //prop models
+        //stringToPropScene.Add("Tree1")
     }
 
 }

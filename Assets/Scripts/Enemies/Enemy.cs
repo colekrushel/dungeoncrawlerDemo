@@ -204,6 +204,8 @@ public class Enemy : MonoBehaviour, IHittable
             Vector2 newV2 = GridUtils.directionToGridCoords(dir.ToString());
             pos.x = pos.x + newV2.x; pos.y = pos.y + newV2.y;
             MovementManager.moveObject(positionObject, newPos, .01f);
+            //after movement update the map
+            //UIUtils.handleEnemyMoveUpdate(new Vector2(pos.x - newV2.x, pos.y - newV2.y), new Vector2(pos.x, pos.y));
             //reset movement direction
             currMovementDir = "";
         }
@@ -223,8 +225,7 @@ public class Enemy : MonoBehaviour, IHittable
         //newPos = positionObject.transform.position + MovementManager.directionToVector3(dir.ToString());
         //pos.x = newPos.x; pos.y = newPos.z;
         //MovementManager.moveObject(positionObject, newPos, .01f);
-        //after movement update the map
-        UIUtils.updateMap();
+
         
         //UIUtils.updateSingleMapCell((int)pos.x, (int)pos.y, GridDicts.typeToSprite["Enemy"]);
 

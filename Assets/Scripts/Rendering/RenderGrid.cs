@@ -16,6 +16,7 @@ public class RenderGrid : MonoBehaviour
     [SerializeField] TextAsset[] westGridFiles;
     [SerializeField] TextAsset[] topGridFiles;
     [SerializeField] GameObject RenderedGrids;
+    string[] indoorTilesetTypes = new string[] { "StairsUp" };
     private void Start()
     {
         gameObject.transform.position = Vector3.zero;
@@ -264,11 +265,11 @@ public class RenderGrid : MonoBehaviour
             //doorways (between ceiling and non-ceiling tiles where there is no wall) [NO-WALL FILLER]
 
             GameObject wall;
-            if (walls[0] == cell.breakableWallDirection)
+            if (walls[i] == cell.breakableWallDirection)
             {
                 wall = Instantiate(Resources.Load<GameObject>(cell.tilesetPath + "/WallBreakable"));
             }
-            else if (cell.hasCeiling && cell.layer > 0 && grid.getCellInDirection(cell, walls[0]) != null && grid.getCellInDirection(cell, walls[0]).type == "Empty")
+            else if (cell.hasCeiling && cell.layer > 0 && grid.getCellInDirection(cell, walls[i]) != null && grid.getCellInDirection(cell, walls[i]).type == "Empty")
             {
                 wall = Instantiate(Resources.Load<GameObject>(cell.tilesetPath + "/Window"));
             }
@@ -284,7 +285,7 @@ public class RenderGrid : MonoBehaviour
             //offset walls to the edge of the tile
             //add or subtract offset of 1/8th of the tile width (1/2 of the post radius)
             float offsetAmt = (float)-cell.getWidth() / 16; ; //indoor wall offset
-            if(!cell.hasCeiling) offsetAmt = (float)cell.getWidth() / 8;
+            if(!cell.hasCeiling && Array.IndexOf(indoorTilesetTypes, cell.type) < 0) offsetAmt = (float)cell.getWidth() / 8;
             switch (walls[i])
             {
                 case "N":
@@ -385,23 +386,39 @@ public class RenderGrid : MonoBehaviour
         }
         //models/entities
         //we have cell type and entity facing position, assign subclasses and open
-        if (cell.type != "None" && cell.type != "Empty")
+        if (cell.type != "None" && cell.type != "Empty" && cell.type != "Prop")
         {
             if (cell.type == "Empty") cell.traversible = false;
             initializeEntity(cell, cellObject);
         }
 
-       
-        
-
         //handle models for types (set when saving?
         string modelURL = "Prefabs/" + cell.getModelToAssign();
         if(cell.getModelToAssign() != "None")
         {
-            Debug.Log(modelURL);
             GameObject model = Instantiate(Resources.Load<GameObject>(modelURL));
             model.transform.position = floor.transform.position;
             model.transform.SetParent(cellObject.transform);
+        }
+
+        //place cell prop and position it
+        string propURL = "Prefabs/propScenes/" + cell.propToAssign;
+        
+        if (cell.propToAssign != null && cell.propToAssign != "")
+        {
+            try
+            {
+                GameObject prop = Instantiate(Resources.Load<GameObject>(propURL));
+                prop.transform.position = floor.transform.position;
+                //move prop according to its orientation
+                prop.transform.localPosition = GridUtils.DirStringToWorldOffset(cell.propPlacementOrientation, "bottom");
+                prop.transform.SetParent(cellObject.transform);
+            }
+            catch (Exception e)
+            {
+                Debug.Log("Unable to place cell prop with name " + cell.propToAssign + " exception: " + e);
+            }
+
         }
 
         //set breakable object now that all children have been assigned

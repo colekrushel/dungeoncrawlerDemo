@@ -16,6 +16,8 @@ public class DungeonCell
     public string type; //type of cell (entrance, item, door
     public string modelToAssign; //string telling what model to assign to this cell when loading from json
     public string modelFacingDir; // N/E/S/W string telling how much to rotate the model by when placed in the scene
+    public string propToAssign; //string telling what propScene to place on this cell when rendering
+    public string propPlacementOrientation; //direction string (C/Null or N, SW, ect) telling where to place the prop relative to the cell's center point
     public string floorToAssign; //string telling what texture to assign to the floor
     public string floorType = "Default"; //unused ??
     public bool hasCeiling = false; //tells whether to render a ceiling tile or not on this cell
@@ -120,11 +122,16 @@ public class DungeonCell
         {
             case BreakableConstruct.breakType.Wall:
                 //remove wall
-                Debug.Log("wall broken");
                 string[] newwalls = new string[walls.Length-1];
+                int wc = 0;
                 for(int i = 0; i < walls.Length; i++)
                 {
-                    if (walls[i] != breakableWallDirection) newwalls[i] = walls[i];
+                    if (walls[i] != breakableWallDirection)
+                    {
+                        newwalls[wc] = walls[i];
+                        wc++;
+                    }
+                   
                 }
                 walls = newwalls;
                 UIUtils.updateMap();

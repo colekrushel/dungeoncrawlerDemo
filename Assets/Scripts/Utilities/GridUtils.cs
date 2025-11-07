@@ -1,3 +1,4 @@
+using System.Collections;
 using System.Collections.Generic;
 using System.Linq;
 using System.Runtime.InteropServices.WindowsRuntime;
@@ -723,7 +724,31 @@ public static class GridUtils
         return ret;
     }
 
-
+    public static Vector3 DirStringToWorldOffset(string dirString, string zone)
+    {
+        //takes a direction and returns an offset (based on center of a cell) in world pos; used for placing props on edges of cell
+        Vector3 ret = Vector3.zero;
+        char[] chars = dirString.ToLower().ToCharArray();
+        foreach (char c in chars)
+        {
+            switch (c)
+            {
+                case 'n':
+                    ret += getZoneNorthVector(zone) * .5f;
+                    break;
+                case 's':
+                    ret -= getZoneNorthVector(zone) * .5f;
+                    break;
+                case 'e':
+                    ret += getZoneEastVector(zone) * .5f;
+                    break;
+                case 'w':
+                    ret -= getZoneEastVector(zone) * .5f;
+                    break;
+            }
+        }
+        return ret;
+    }
 
 
 
