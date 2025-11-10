@@ -60,6 +60,11 @@ public class EditorHandle : MonoBehaviour
 
     }
 
+    private void Update()
+    {
+        
+    }
+
     void drawGrid()
     {
         int index = 1;
@@ -102,6 +107,11 @@ public class EditorHandle : MonoBehaviour
                     pointerDown.eventID = EventTriggerType.PointerDown;
                     pointerDown.callback.AddListener((e) => rightClickTile(e));
                     trigger.triggers.Add(pointerDown);
+                    //detect if pointer is held when entering element (allow user to hold down leftclick to fill tiles)
+                    var pointerEnter = new EventTrigger.Entry();
+                    pointerEnter.eventID = EventTriggerType.PointerEnter;
+                    pointerEnter.callback.AddListener((e) => tileGridEnter(e));
+                    trigger.triggers.Add(pointerEnter);
                 }
             }
             //set inactive if index isnt currlayer
@@ -109,6 +119,16 @@ public class EditorHandle : MonoBehaviour
             index++;
         }
 
+    }
+
+    public void tileGridEnter(BaseEventData eventData)
+    {
+        PointerEventData e = eventData as PointerEventData; //cast it to pointer event data even though it doesn't have automatic conversion
+        GameObject selectedObject = e.pointerEnter.transform.parent.gameObject; //event is intercepted by its child (ceiling obj)... bandage fix it
+        if (e.button == PointerEventData.InputButton.Left && Input.GetMouseButton(0))
+        {
+            tileGridPress(selectedObject);
+        }
     }
 
     public void rightClickTile(BaseEventData eventData)
@@ -127,54 +147,56 @@ public class EditorHandle : MonoBehaviour
             
     }
 
+    //move actions into separate func so method has the object of taking the selected object from the event system or being passed in one
+    public void handleTileGridPressBehavior(GameObject selectedObject)
+    {
+        Image tileImg = selectedObject.transform.Find("Icon").GetComponent<Image>();
+        tileImg.sprite = currSelected.transform.Find("Icon").GetComponent<Image>().sprite;
+        Image tileBckg = selectedObject.transform.Find("Background").GetComponent<Image>();
+        tileBckg.color = currSelected.transform.Find("Background").GetComponent<Image>().color;
+        Image tileCeil = selectedObject.transform.Find("Ceiling").GetComponent<Image>();
+        tileCeil.color = currSelected.transform.Find("Ceiling").GetComponent<Image>().color;
+        //prop placement handlingGameObject menu = selectedObject.transform.Find("entityMenu").gameObject;
+        GameObject menu = selectedObject.transform.Find("entityMenu").gameObject;
+        if (tileImg.sprite == GridDicts.typeToSprite["Prop"])
+        {
+            menu.transform.Find("PropString").gameObject.GetComponent<TMP_InputField>().text = globalPropName;
+            menu.transform.Find("PropPos").gameObject.GetComponent<TMP_InputField>().text = globalPropOrientation;
+        }
+        if (hasCeiling && currLayer != 3)
+        {
+            //if a ceiling is placed, then unrestrict the above tile.
+            int index = selectedObject.transform.GetSiblingIndex();
+            GameObject aboveGrid = tileGridParent.transform.GetChild(currLayer).gameObject;
+            GameObject aboveTile = aboveGrid.transform.GetChild(index).gameObject;
+            aboveTile.transform.Find("Icon").GetComponent<Image>().sprite = nullsprite;
+        }
+        else if (!hasCeiling && currLayer != 3)
+        {
+            //if a ceiling is removed, make sure the above tile is restricted.
+            int index = selectedObject.transform.GetSiblingIndex();
+            GameObject aboveGrid = tileGridParent.transform.GetChild(currLayer).gameObject;
+            GameObject aboveTile = aboveGrid.transform.GetChild(index).gameObject;
+            aboveTile.transform.Find("Icon").GetComponent<Image>().sprite = restrictedsprite;
+            //Debug.Log(tileImg.sprite.name);
+            //if stairsup is selected, then add a stairsdown to the above tile. if not possible then prevent stairs from being places
+            if (tileImg.sprite.name == "iconsWIPTransparentNoBorder3_10")
+            {
+                Debug.Log("setting above");
+                aboveTile.transform.Find("Icon").GetComponent<Image>().sprite = downstairssprite;
+            }
+        }
+    }
+
     public void tileGridPress()
     {
         GameObject selectedObject = EventSystem.current.currentSelectedGameObject;
-        //set clicked on tile's icon to match currently selected icon
-        //check if tile is restricted; cannot edit restricted tiles.
-        //if (selectedObject.transform.Find("Icon").GetComponent<Image>().sprite == restrictedsprite)
-        //{
-        //    //do nothing
-        //} else
-        {
-            Image tileImg = selectedObject.transform.Find("Icon").GetComponent<Image>();
-            tileImg.sprite = currSelected.transform.Find("Icon").GetComponent<Image>().sprite;
-            Image tileBckg = selectedObject.transform.Find("Background").GetComponent<Image>();
-            tileBckg.color = currSelected.transform.Find("Background").GetComponent<Image>().color;
-            Image tileCeil = selectedObject.transform.Find("Ceiling").GetComponent<Image>();
-            tileCeil.color = currSelected.transform.Find("Ceiling").GetComponent<Image>().color;
-            //prop placement handlingGameObject menu = selectedObject.transform.Find("entityMenu").gameObject;
-            GameObject menu = selectedObject.transform.Find("entityMenu").gameObject;
-            if (tileImg.sprite == GridDicts.typeToSprite["Prop"])
-            {
-                menu.transform.Find("PropString").gameObject.GetComponent<TMP_InputField>().text = globalPropName;
-                menu.transform.Find("PropPos").gameObject.GetComponent<TMP_InputField>().text = globalPropOrientation;
-            }
-            if (hasCeiling && currLayer != 3)
-            {
-                //if a ceiling is placed, then unrestrict the above tile.
-                int index = selectedObject.transform.GetSiblingIndex();
-                GameObject aboveGrid = tileGridParent.transform.GetChild(currLayer).gameObject;
-                GameObject aboveTile = aboveGrid.transform.GetChild(index).gameObject;
-                aboveTile.transform.Find("Icon").GetComponent<Image>().sprite = nullsprite;
-            } else if (!hasCeiling && currLayer != 3)
-            {
-                //if a ceiling is removed, make sure the above tile is restricted.
-                int index = selectedObject.transform.GetSiblingIndex();
-                GameObject aboveGrid = tileGridParent.transform.GetChild(currLayer).gameObject;
-                GameObject aboveTile = aboveGrid.transform.GetChild(index).gameObject;
-                aboveTile.transform.Find("Icon").GetComponent<Image>().sprite = restrictedsprite;
-                //Debug.Log(tileImg.sprite.name);
-                //if stairsup is selected, then add a stairsdown to the above tile. if not possible then prevent stairs from being places
-                if (tileImg.sprite.name == "iconsWIPTransparentNoBorder3_10")
-                {
-                    Debug.Log("setting above");
-                    aboveTile.transform.Find("Icon").GetComponent<Image>().sprite = downstairssprite;
-                }
-            }
-        }
+        handleTileGridPressBehavior(selectedObject);
+    }
 
-
+    public void tileGridPress(GameObject selectedObject)
+    {
+        handleTileGridPressBehavior(selectedObject);
     }
 
     public void tileGridWallPress()
@@ -270,7 +292,7 @@ public class EditorHandle : MonoBehaviour
     {
         //used to place a prop sprite on the cell where the prop was placed if there is not already an entity sprite there
         GameObject selectedObject = lastSelectedEditorTile;
-        if (lastSelectedEditorTile == null)
+        if (lastSelectedEditorTile == null || selectedObject == null)
         {
             return;
         }
@@ -306,7 +328,7 @@ public class EditorHandle : MonoBehaviour
         //for each layer
         for(int i = 0; i < 3; i++)
         {
-            string path = Application.dataPath + "/Resources/Grids/" + fileName + (i+1) + ".txt";
+            string path = Application.dataPath + "/Resources/Grids/" + fileName + "-" + (i+1) + ".txt";
             //fetch file
             if (File.Exists(path))
             {
@@ -362,6 +384,8 @@ public class EditorHandle : MonoBehaviour
                     {
                         editorCell.transform.Find("Icon").gameObject.GetComponent<Image>().sprite = GridDicts.typeToSprite["Prop"];
                     }
+                    GameObject.Find("useCeilingAsFloor").transform.Find("Toggle").gameObject.GetComponent<Toggle>().isOn = cell.useCeilingAsFloor;
+
                 }
 
             } else
@@ -476,6 +500,9 @@ public class EditorHandle : MonoBehaviour
                 //tileset override for tiles that might not have a ceiling but still want indoor tilesets (stairs)
                 if(cell.type == "StairsUp") cell.tilesetPath = "Prefabs/gridTilesets/Indoor/" + GameObject.Find("indoorTileset").transform.Find("Dropdown").Find("Label").GetComponent<TextMeshProUGUI>().text;
 
+                //ceiling as floor
+                bool ceilingAsFloor = GameObject.Find("useCeilingAsFloor").transform.Find("Toggle").gameObject.GetComponent<Toggle>().isOn;
+                cell.useCeilingAsFloor = ceilingAsFloor;
                 cellList.Add(cell);
                 cellindex++;
             }
@@ -483,7 +510,7 @@ public class EditorHandle : MonoBehaviour
             //export json
             string json = JsonUtility.ToJson(grid);
             Debug.Log(json);
-            string cfileName = fileName + clayer + ".txt";
+            string cfileName = fileName + "-" + clayer + ".txt";
             string path = Application.dataPath + "/Resources/Grids/" + cfileName;
 
             //overwrite existing?

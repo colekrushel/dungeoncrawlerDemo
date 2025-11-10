@@ -200,7 +200,14 @@ public class RenderGrid : MonoBehaviour
         //{
         //    floorURL = "Prefabs/" + cell.getFloorToAssign();
         //}
-        floorURL = cell.tilesetPath + "/Floor";
+        if (!cell.hasCeiling && cell.type != "StairsDown" && cell.type != "StairsUp" && cell.useCeilingAsFloor && cell.layer > 0)
+        {
+            floorURL = grids[cell.layer - 1].getCell(cell.gridX, cell.gridY).tilesetPath + "/Ceiling";
+            
+        } else
+        {
+            floorURL = cell.tilesetPath + "/Floor";
+        }
         //for certain tiles we want to change what tiles is placed on what tiles are bordering it
         GameObject floor;
         if (cell.getFloorToAssign() == "grass1")
@@ -209,7 +216,18 @@ public class RenderGrid : MonoBehaviour
 
         } else
         {
-            floor = Instantiate(Resources.Load<GameObject>(floorURL));
+            try
+            {
+                floor = Instantiate(Resources.Load<GameObject>(floorURL));
+            }
+            catch (Exception e)
+            {
+                Debug.Log("unable to set ceiling below as floor at " + cell.getPos() + "; defaulting to floor tile");
+                Debug.LogException(e);
+                floorURL = cell.tilesetPath + "/Floor";
+                floor = Instantiate(Resources.Load<GameObject>(floorURL));
+            }
+            
         }
 
 
@@ -222,31 +240,31 @@ public class RenderGrid : MonoBehaviour
 
         //assign walls
 
-        //assign doorways (between ceiling and non ceiling tiles
+        //assign doorways (between ceiling and non ceiling tiles where there are no walls between
         List<String> doorways = new List<String>();
         List<String> railings = new List<String>();
         if (cell.hasCeiling)
         {
             DungeonCell N = grid.getCellInDirection(cell, "N");
-            if (N != null && !N.hasCeiling) doorways.Add("N");
+            if (N != null && !N.hasCeiling && !N.hasWall("S") && !cell.hasWall("N")) doorways.Add("N");
             DungeonCell E = grid.getCellInDirection(cell, "E");
-            if (E != null && !E.hasCeiling) doorways.Add("E");
+            if (E != null && !E.hasCeiling && !E.hasWall("W") && !cell.hasWall("E")) doorways.Add("E");
             DungeonCell S = grid.getCellInDirection(cell, "S");
-            if (S != null && !S.hasCeiling) doorways.Add("S");
+            if (S != null && !S.hasCeiling && !S.hasWall("N") && !cell.hasWall("S")) doorways.Add("S");
             DungeonCell W = grid.getCellInDirection(cell, "W");
-            if (W != null && !W.hasCeiling) doorways.Add("W");
+            if (W != null && !W.hasCeiling && !W.hasWall("E") && !cell.hasWall("W")) doorways.Add("W");
 
         }
-        else if(!cell.hasCeiling && cell.layer > 0 && cell.traversible)//assign railings between non-ground level non-ceiling and empty tiles
+        else if(!cell.hasCeiling && cell.layer > 0 && cell.traversible)//assign railings between non-ground level non-ceiling and empty tiles where there are no walls
         {
             DungeonCell N = grid.getCellInDirection(cell, "N");
-            if (N != null && N.type == "Empty") railings.Add("N");
+            if (N != null && N.type == "Empty" && !N.hasWall("S") && !cell.hasWall("N")) railings.Add("N");
             DungeonCell E = grid.getCellInDirection(cell, "E");
-            if (E != null && E.type == "Empty") railings.Add("E");
+            if (E != null && E.type == "Empty" && !E.hasWall("W") && !cell.hasWall("E")) railings.Add("E");
             DungeonCell S = grid.getCellInDirection(cell, "S");
-            if (S != null && S.type == "Empty") railings.Add("S");
+            if (S != null && S.type == "Empty" && !S.hasWall("N") && !cell.hasWall("S")) railings.Add("S");
             DungeonCell W = grid.getCellInDirection(cell, "W");
-            if (W != null && W.type == "Empty") railings.Add("W");
+            if (W != null && W.type == "Empty" && !W.hasWall("E") && !cell.hasWall("W")) railings.Add("W");
         }
         
         for (int i = 0; i < walls.Length; i++)
@@ -350,8 +368,15 @@ public class RenderGrid : MonoBehaviour
         {
 
             //GameObject wall = Instantiate(Resources.Load<GameObject>("Prefabs/Railing1"));
+            if (cell.type == "StairsDown") continue;
             //get cell below because it is guaranteed to be an indoors cell if this one has a railing on it
-            GameObject wall = Instantiate(Resources.Load<GameObject>(grids[cell.layer-1].getCell(cell.gridX, cell.gridY).tilesetPath + "/Railing"));
+            GameObject wall = Resources.Load<GameObject>(grids[cell.layer - 1].getCell(cell.gridX, cell.gridY).tilesetPath + "/Railing");
+            if (wall == null) 
+            {
+                Debug.LogError("Tried to place a railing that wasn't found in the tileset " + grids[cell.layer - 1].getCell(cell.gridX, cell.gridY).tilesetPath + " at (" + cell.gridX + ", " + cell.gridY + ")");
+                continue;
+            }
+            wall = Instantiate(wall);
             wall.transform.position = floor.transform.position;
             wall.transform.SetParent(cellObject.transform);
             //offset walls to the edge of the tile
@@ -382,7 +407,7 @@ public class RenderGrid : MonoBehaviour
         {
             GameObject ceil = Instantiate(Resources.Load<GameObject>(cell.tilesetPath + "/Ceiling"));
             ceil.transform.SetParent(cellObject.transform);
-            ceil.transform.position = new Vector3(0, 1, 0);
+            ceil.transform.position = new Vector3(0, .9f, 0);
         }
         //models/entities
         //we have cell type and entity facing position, assign subclasses and open
@@ -493,6 +518,7 @@ public class RenderGrid : MonoBehaviour
                 }
                 door.open = true;
                 cell.entity = door;
+                cell.traversible = true;
                 break;
             case "ClosedDoor":
                 Door cdoor;
@@ -506,6 +532,7 @@ public class RenderGrid : MonoBehaviour
                 }
                 cdoor.open = false;
                 cell.entity = cdoor;
+                cell.traversible = false;
                 break;
             case "StairsUp":
                 cell.entity.interactable = false;

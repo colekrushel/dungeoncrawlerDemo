@@ -727,24 +727,35 @@ public static class GridUtils
     public static Vector3 DirStringToWorldOffset(string dirString, string zone)
     {
         //takes a direction and returns an offset (based on center of a cell) in world pos; used for placing props on edges of cell
+        /*MODIFIERS - symbols that effect the next direction character; used for more specific orienting
+         * : - halves the next offset
+         */
         Vector3 ret = Vector3.zero;
+        float modifier = 1f; //modifier resets after each letter
         char[] chars = dirString.ToLower().ToCharArray();
         foreach (char c in chars)
         {
             switch (c)
             {
                 case 'n':
-                    ret += getZoneNorthVector(zone) * .5f;
+                    ret += getZoneNorthVector(zone) * .5f * modifier;
+                    modifier = 1f;
                     break;
                 case 's':
-                    ret -= getZoneNorthVector(zone) * .5f;
+                    ret -= getZoneNorthVector(zone) * .5f * modifier;
+                    modifier = 1f;
                     break;
                 case 'e':
-                    ret += getZoneEastVector(zone) * .5f;
+                    ret += getZoneEastVector(zone) * .5f * modifier;
+                    modifier = 1f;
                     break;
                 case 'w':
-                    ret -= getZoneEastVector(zone) * .5f;
+                    ret -= getZoneEastVector(zone) * .5f * modifier;
+                    modifier = 1f;
                     break;
+                case ':':
+                    modifier *= .5f;
+                break;
             }
         }
         return ret;
