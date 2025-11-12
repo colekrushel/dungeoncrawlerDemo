@@ -210,9 +210,9 @@ public class RenderGrid : MonoBehaviour
         }
         //for certain tiles we want to change what tiles is placed on what tiles are bordering it
         GameObject floor;
-        if (cell.getFloorToAssign() == "grass1")
+        if (cell.getFloorToAssign() == "grass1" || cell.getFloorToAssign() == "lawn" || cell.getFloorToAssign() == "water")
         {
-            floor = getBorderedTile(cell);
+            floor = getBorderedTile(cell, cell.getFloorToAssign());
 
         } else
         {
@@ -554,39 +554,45 @@ public class RenderGrid : MonoBehaviour
         cell.entity.layer = cell.layer;
     }
 
-    GameObject getBorderedTile(DungeonCell cell)
+    GameObject getBorderedTile(DungeonCell cell, string type) //where type is 'water', 'lawn', ect
     {
+        
+        
         string floorURL = "";
         //for grass tiles, we want to place a border wherever the neighboring tile is not a grass tile.
 
         //figure out which neighbors are grass
-        List<string> neighbors = grids[cell.layer].getNighborsMatchingFilters(cell, "", "grass1");
+        List<string> neighbors = grids[cell.layer].getNighborsMatchingFilters(cell, "", type);
+        
+        //backwards compatability cause lazy
+        if (type == "grass1") type = "lawn";
+
         //grab the corresponding tile from resources
         switch (neighbors.Count)
         {
             case 0:
-                floorURL = "Prefabs/lawnVariants/" + cell.floorToAssign + "FullBorder";
+                floorURL = "Prefabs/floorVariants/" + type + "Variants/" + type + "FullBorder";
                 break;
             case 1:
-                floorURL = "Prefabs/lawnVariants/" + cell.floorToAssign + "ThreeBorder";
+                floorURL = "Prefabs/floorVariants/" + type + "Variants/" + type + "ThreeBorder";
                 break;
             case 2:
                 //determine if corner or parallel
                 //if first direction is opposite to the other direction then we want a parallel border
                 if (neighbors[0] == GridUtils.getOppositeDirection(neighbors[1]))
                 {
-                    floorURL = "Prefabs/lawnVariants/" + cell.floorToAssign + "ParallelBorder";
+                    floorURL = "Prefabs/floorVariants/" + type + "Variants/" + type + "ParallelBorder";
                 }
                 else
                 {
-                    floorURL = "Prefabs/lawnVariants/" + cell.floorToAssign + "CornerBorder";
+                    floorURL = "Prefabs/floorVariants/" + type + "Variants/" + type + "CornerBorder";
                 }
                 break;
             case 3:
-                floorURL = "Prefabs/lawnVariants/" + cell.floorToAssign + "OneBorder";
+                floorURL = "Prefabs/floorVariants/" + type + "Variants/" + type + "OneBorder";
                 break;
             case 4:
-                floorURL = "Prefabs/lawnVariants/" + cell.floorToAssign + "Default";
+                floorURL = "Prefabs/floorVariants/" + type + "Variants/" + type + "Default";
                 break;
 
         }

@@ -11,8 +11,8 @@ public static class GridDicts
     public static Dictionary<Color, string> colorToFloor = new Dictionary<Color, string>()
     {
         { Color.white, "bricks1" },
-        { new Color32(0, 123, 0, 255), "grass1" },
-        { new Color32(255, 0, 0, 255), "red" },
+        { new Color32(0, 123, 0, 255), "lawn" },
+        { new Color32(0, 0, 255, 255), "water" },
         { new Color32(0, 0, 0, 255), "black" },
 
     };

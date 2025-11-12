@@ -12,8 +12,8 @@ GameObject:
   - component: {fileID: 2696824462120294420}
   - component: {fileID: 5894066763793215080}
   - component: {fileID: 1704867403342630407}
-  m_Layer: 0
-  m_Name: Lawn
+  m_Layer: 4
+  m_Name: Path1
   m_TagString: Untagged
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
@@ -28,8 +28,8 @@ Transform:
   m_GameObject: {fileID: 1707002588967090796}
   serializedVersion: 2
   m_LocalRotation: {x: -0, y: -0, z: -0, w: 1}
-  m_LocalPosition: {x: 0, y: 0.31, z: -0.05}
-  m_LocalScale: {x: 1, y: 1, z: 0.9}
+  m_LocalPosition: {x: 0, y: 0.31, z: 0}
+  m_LocalScale: {x: 0.8, y: 1, z: 0.8}
   m_ConstrainProportionsScale: 0
   m_Children: []
   m_Father: {fileID: 4155244107254199393}
@@ -65,7 +65,7 @@ MeshRenderer:
   m_RenderingLayerMask: 1
   m_RendererPriority: 0
   m_Materials:
-  - {fileID: 2100000, guid: abcf45608dcb0df4ead716c9994f97f8, type: 2}
+  - {fileID: 2100000, guid: 52b7d70b1de7c4ce09662b77c14d9fda, type: 2}
   m_StaticBatchInfo:
     firstSubMesh: 0
     subMeshCount: 0
@@ -118,7 +118,7 @@ GameObject:
   m_Component:
   - component: {fileID: 4155244107254199393}
   m_Layer: 0
-  m_Name: grass1OneBorder
+  m_Name: waterFullBorder
   m_TagString: Untagged
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0

@@ -1,0 +1,1 @@
+this folder stores Standard Assets from Unity used in the project (downloaded from https://github.com/jamschutz/Unity-Standard-Assets/tree/master)

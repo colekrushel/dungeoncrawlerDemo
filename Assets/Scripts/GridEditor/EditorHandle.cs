@@ -158,6 +158,15 @@ public class EditorHandle : MonoBehaviour
         tileCeil.color = currSelected.transform.Find("Ceiling").GetComponent<Image>().color;
         //prop placement handlingGameObject menu = selectedObject.transform.Find("entityMenu").gameObject;
         GameObject menu = selectedObject.transform.Find("entityMenu").gameObject;
+        //match walls on tile pressed to the wall preset
+        bool useWalls = currSelected.transform.Find("useWallPreset").GetComponent<Toggle>().isOn;
+        if (useWalls)
+        {
+            selectedObject.transform.Find("N").GetComponent<Image>().color = currSelected.transform.Find("N").GetComponent<Image>().color;
+            selectedObject.transform.Find("E").GetComponent<Image>().color = currSelected.transform.Find("E").GetComponent<Image>().color;
+            selectedObject.transform.Find("S").GetComponent<Image>().color = currSelected.transform.Find("S").GetComponent<Image>().color;
+            selectedObject.transform.Find("W").GetComponent<Image>().color = currSelected.transform.Find("W").GetComponent<Image>().color;
+        }
         if (tileImg.sprite == GridDicts.typeToSprite["Prop"])
         {
             menu.transform.Find("PropString").gameObject.GetComponent<TMP_InputField>().text = globalPropName;
@@ -355,6 +364,8 @@ public class EditorHandle : MonoBehaviour
                     }
                     if(cell.breakableWallDirection != "")editorCell.transform.Find(cell.breakableWallDirection).gameObject.GetComponent<Image>().color = Color.green;
                     //handle background/floor
+                    //backwards compatibility from name changes 
+                    if (cell.floorToAssign == "grass1") cell.floorToAssign = "lawn";
                     Color color = GridDicts.floorToColor[cell.floorToAssign];
                     editorCell.transform.Find("Background").gameObject.GetComponent<Image>().color = color;
 
