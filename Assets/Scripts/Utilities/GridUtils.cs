@@ -756,14 +756,52 @@ public static class GridUtils
                 case ':':
                     modifier *= .5f;
                 break;
+                //IGNORE MODIFIERS FOR ROTATION SETTING
+                case '/':
+                    modifier = 0f;
+                    break;
             }
         }
         return ret;
     }
+    public static void RotatePropToDirection(string dirString, string zone, GameObject prop)
+    {
+        //perop's local right vector is always in the 'E' direction; rotate accordingly
 
+        Quaternion ret = Quaternion.identity;
+        float modifier = 0f; //modifier only appleis after a rotation char is detected (/)
+        char[] chars = dirString.ToLower().ToCharArray();
+        foreach (char c in chars)
+        {
+            switch (c)
+            {
+                case 'n':
+                    ret = Quaternion.AngleAxis(-90f * modifier, prop.transform.up) * prop.transform.rotation;
+                    modifier = 0f;
+                    break;
+                case 's':
+                    ret = Quaternion.AngleAxis(90f * modifier, prop.transform.up) * prop.transform.rotation;
 
-
-
-
-
+                    modifier = 0f;
+                    break;
+                case 'e':
+                    modifier = 0f;
+                    break;
+                case 'w':
+                    ret = Quaternion.AngleAxis(180f * modifier, prop.transform.up) * prop.transform.rotation;
+                    modifier = 0f;
+                    break;
+                //IGNORE MODIFIERS FOR ROTATION SETTING
+                case '/':
+                    modifier = 1f;
+                    break;
+            }
+        }
+        prop.transform.rotation = ret;
     }
+
+
+
+
+
+}

@@ -167,15 +167,15 @@ PrefabInstance:
     m_Modifications:
     - target: {fileID: -8679921383154817045, guid: 4eebf7af92b52084ba08c71260ce2c13, type: 3}
       propertyPath: m_LocalScale.x
-      value: 0.4
+      value: 0.5
       objectReference: {fileID: 0}
     - target: {fileID: -8679921383154817045, guid: 4eebf7af92b52084ba08c71260ce2c13, type: 3}
       propertyPath: m_LocalScale.y
-      value: 0.4
+      value: 0.5
       objectReference: {fileID: 0}
     - target: {fileID: -8679921383154817045, guid: 4eebf7af92b52084ba08c71260ce2c13, type: 3}
       propertyPath: m_LocalScale.z
-      value: 0.4
+      value: 0.5
       objectReference: {fileID: 0}
     - target: {fileID: -8679921383154817045, guid: 4eebf7af92b52084ba08c71260ce2c13, type: 3}
       propertyPath: m_LocalPosition.x
@@ -226,7 +226,8 @@ PrefabInstance:
       value: waterbench
       objectReference: {fileID: 0}
     m_RemovedComponents: []
-    m_RemovedGameObjects: []
+    m_RemovedGameObjects:
+    - {fileID: 2369165852163169784, guid: 4eebf7af92b52084ba08c71260ce2c13, type: 3}
     m_AddedGameObjects: []
     m_AddedComponents: []
   m_SourcePrefab: {fileID: 100100000, guid: 4eebf7af92b52084ba08c71260ce2c13, type: 3}

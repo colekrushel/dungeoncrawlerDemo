@@ -216,18 +216,28 @@ public class RenderGrid : MonoBehaviour
 
         } else
         {
-            try
+            //handle dual border tiles - tiles that change appearance based on whether they are bordering a tile of a specific type
+            //dual border tiles - bricks1water (changes bricks1 floor tiles depending on how many water tiles are bordering it
+            if((cell.getFloorToAssign() == "bricks1") && !cell.hasCeiling && grids[cell.layer].getNighborsMatchingFilters(cell, "", "water").Count > 0)
             {
-                floor = Instantiate(Resources.Load<GameObject>(floorURL));
+                floor = getBorderedTile(cell, cell.getFloorToAssign(), "water");
             }
-            catch (Exception e)
+            else
             {
-                Debug.Log("unable to set ceiling below as floor at " + cell.getPos() + "; defaulting to floor tile");
-                Debug.LogException(e);
-                floorURL = cell.tilesetPath + "/Floor";
-                floor = Instantiate(Resources.Load<GameObject>(floorURL));
+                try
+                {
+                    floor = Instantiate(Resources.Load<GameObject>(floorURL));
+                }
+                catch (Exception e)
+                {
+                    Debug.Log("unable to set ceiling below as floor at " + cell.getPos() + "; defaulting to floor tile");
+                    Debug.LogException(e);
+                    floorURL = cell.tilesetPath + "/Floor";
+                    floor = Instantiate(Resources.Load<GameObject>(floorURL));
+                }
             }
-            
+
+
         }
 
 
@@ -436,7 +446,9 @@ public class RenderGrid : MonoBehaviour
                 GameObject prop = Instantiate(Resources.Load<GameObject>(propURL));
                 prop.transform.position = floor.transform.position;
                 //move prop according to its orientation
+                //using 'bottom' zone because zones are rendered on the bottom before rotating to match zone orientation
                 prop.transform.localPosition = GridUtils.DirStringToWorldOffset(cell.propPlacementOrientation, "bottom");
+                GridUtils.RotatePropToDirection(cell.propPlacementOrientation, "bottom", prop);
                 prop.transform.SetParent(cellObject.transform);
             }
             catch (Exception e)
@@ -554,16 +566,23 @@ public class RenderGrid : MonoBehaviour
         cell.entity.layer = cell.layer;
     }
 
-    GameObject getBorderedTile(DungeonCell cell, string type) //where type is 'water', 'lawn', ect
+    GameObject getBorderedTile(DungeonCell cell, string type, string type2 = "") //where type is 'water', 'lawn', ect; type2 is used for hybrid tiles
     {
         
         
         string floorURL = "";
         //for grass tiles, we want to place a border wherever the neighboring tile is not a grass tile.
 
-        //figure out which neighbors are grass
-        List<string> neighbors = grids[cell.layer].getNighborsMatchingFilters(cell, "", type);
-        
+        //figure out which neighbors match
+        List<string> neighbors;
+        if (type2 != "") //use type2 as neighbor search type if given
+        {
+            neighbors = grids[cell.layer].getNighborsMatchingFilters(cell, "", type2);
+        } else
+        {
+            neighbors = grids[cell.layer].getNighborsMatchingFilters(cell, "", type);
+        }
+
         //backwards compatability cause lazy
         if (type == "grass1") type = "lawn";
 
@@ -571,34 +590,37 @@ public class RenderGrid : MonoBehaviour
         switch (neighbors.Count)
         {
             case 0:
-                floorURL = "Prefabs/floorVariants/" + type + "Variants/" + type + "FullBorder";
+                floorURL = "Prefabs/floorVariants/" + type + type2 + "Variants/" + type + type2 + "FullBorder";
                 break;
             case 1:
-                floorURL = "Prefabs/floorVariants/" + type + "Variants/" + type + "ThreeBorder";
+                floorURL = "Prefabs/floorVariants/" + type + type2 + "Variants/" + type + type2 + "ThreeBorder";
                 break;
             case 2:
                 //determine if corner or parallel
                 //if first direction is opposite to the other direction then we want a parallel border
                 if (neighbors[0] == GridUtils.getOppositeDirection(neighbors[1]))
                 {
-                    floorURL = "Prefabs/floorVariants/" + type + "Variants/" + type + "ParallelBorder";
+                    floorURL = "Prefabs/floorVariants/" + type + type2 + "Variants/" + type + type2 + "ParallelBorder";
                 }
                 else
                 {
-                    floorURL = "Prefabs/floorVariants/" + type + "Variants/" + type + "CornerBorder";
+                    floorURL = "Prefabs/floorVariants/" + type + type2 + "Variants/" + type + type2 + "CornerBorder";
                 }
                 break;
             case 3:
-                floorURL = "Prefabs/floorVariants/" + type + "Variants/" + type + "OneBorder";
+                floorURL = "Prefabs/floorVariants/" + type + type2 + "Variants/" + type + type2 + "OneBorder";
                 break;
             case 4:
-                floorURL = "Prefabs/floorVariants/" + type + "Variants/" + type + "Default";
+                floorURL = "Prefabs/floorVariants/" + type + type2 + "Variants/" + type + type2 + "Default";
                 break;
 
         }
+        //test for water only wants no border
+        if(type == "water") floorURL = "Prefabs/floorVariants/" + type + "Variants/" + type + "Default";
         //rotate it to match physical appearance
         GameObject tile = Instantiate(Resources.Load<GameObject>(floorURL));
-        tile.transform.Rotate(0, GridUtils.getBorderRotation(neighbors), 0);
+        if (type != "water")tile.transform.Rotate(0, GridUtils.getBorderRotation(neighbors), 0);
+
         return tile;
     }
 

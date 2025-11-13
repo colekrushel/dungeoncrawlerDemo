@@ -217,6 +217,10 @@ PrefabInstance:
       propertyPath: m_LocalEulerAnglesHint.z
       value: 0
       objectReference: {fileID: 0}
+    - target: {fileID: -5477749408508380018, guid: 4eebf7af92b52084ba08c71260ce2c13, type: 3}
+      propertyPath: m_LocalPosition.x
+      value: 0.192738
+      objectReference: {fileID: 0}
     - target: {fileID: -1732586397864053692, guid: 4eebf7af92b52084ba08c71260ce2c13, type: 3}
       propertyPath: m_IsActive
       value: 0
@@ -225,8 +229,13 @@ PrefabInstance:
       propertyPath: m_Name
       value: waterbench
       objectReference: {fileID: 0}
+    - target: {fileID: 4033610111340497810, guid: 4eebf7af92b52084ba08c71260ce2c13, type: 3}
+      propertyPath: m_LocalPosition.x
+      value: 0
+      objectReference: {fileID: 0}
     m_RemovedComponents: []
-    m_RemovedGameObjects: []
+    m_RemovedGameObjects:
+    - {fileID: 2369165852163169784, guid: 4eebf7af92b52084ba08c71260ce2c13, type: 3}
     m_AddedGameObjects: []
     m_AddedComponents: []
   m_SourcePrefab: {fileID: 100100000, guid: 4eebf7af92b52084ba08c71260ce2c13, type: 3}
