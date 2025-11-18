@@ -1,13 +1,8 @@
 using System;
-using System.Collections;
 using System.Collections.Generic;
 using TMPro;
-using TMPro.Examples;
-using UnityEditor;
 using UnityEngine;
-using UnityEngine.InputSystem;
 using UnityEngine.UI;
-using static TMPro.SpriteAssetUtilities.TexturePacker_JsonArray;
 
 public class AnimateUI : MonoBehaviour
 {
@@ -203,7 +198,7 @@ public class AnimateUI : MonoBehaviour
         //handle tray animation up and down
         if (moveTrayAmt != 0)
         {
-            iconTray.transform.position = iconTray.transform.position += new Vector3(0, moveTrayAmt, 0);
+            iconTray.transform.position = iconTray.transform.position += new Vector3(0, moveTrayAmt, 0) * Time.deltaTime * 100;
             totalMovement += moveTrayAmt;
             if (Mathf.Abs(totalMovement) >= trayOffset)
             {

@@ -1,6 +1,4 @@
-using NUnit.Framework;
 using System.Collections.Generic;
-using UnityEngine;
 
 //store player stats and modifiers from skills so they dont have to be constantly dereferenced
 public class PlayerStats 

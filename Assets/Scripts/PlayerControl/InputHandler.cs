@@ -1,16 +1,7 @@
-using JetBrains.Annotations;
-using NUnit.Framework.Constraints;
-using System.Collections;
+
 using System.Collections.Generic;
-using System.Net;
-using Unity.VisualScripting;
-using UnityEditor;
-using UnityEditor.Tilemaps;
 using UnityEngine;
 using UnityEngine.InputSystem;
-using UnityEngine.UI;
-using UnityEngine.UIElements;
-using static UnityEditor.Experimental.GraphView.GraphView;
 
 public class InputHandler : MonoBehaviour
 {
@@ -38,7 +29,7 @@ public class InputHandler : MonoBehaviour
     
 
     //input buffer
-    char bufferedInput; //hold buffered input
+    char bufferedInput = ']'; //hold buffered input
     const int bufferLifetime = 30; //frames that the buffered input should be held for
     int bufferCounter = 0; //count lifetime of buffered input
 
@@ -65,13 +56,13 @@ public class InputHandler : MonoBehaviour
         
         Player.setRotationFromOrientation();
         Player.playerObject.transform.position += Player.playerObject.transform.up/2;
-        //move player onto 0,0 tile
     }
 
     // Update is called once per frame
     void Update()
     {
-        
+        Debug.Log("update");
+        Debug.Log("player" + Player.playerObject.name);
         //only decrement count when an input is held in the buffer
         if(bufferedInput != ']')bufferCounter -= 1;
         //remove buffered input after its lifetime expires
@@ -129,16 +120,26 @@ public class InputHandler : MonoBehaviour
             Player.playerObject.transform.position += new Vector3(moveAmount * moveDir.x, moveAmount * moveDir.y, moveAmount * moveDir.z);
 
             float bounds = speedMultiplier * moveDir.magnitude;
+            float timeBonus = Time.deltaTime * 3;
             //check if movement complete
             Vector3 dist = (Player.playerObject.transform.position - finalPosition);
-            if ( Mathf.Abs(dist.x) < (.01f*bounds) && Mathf.Abs(dist.z) < (.01f * bounds) && Mathf.Abs(dist.y) < (.01f * bounds))
+            if ( Mathf.Abs(dist.x) < (.01f*bounds+timeBonus) && Mathf.Abs(dist.z) < (.01f * bounds + timeBonus ) && Mathf.Abs(dist.y) < (.01f * bounds + timeBonus ))
             {
                 isMoving = false;          
                 Player.playerObject.transform.position = finalPosition;
                 OnMoveEnd();
             }
         }
+        
+        Debug.Log("mouse1: "  + InputSystem.GetDevice<Mouse>().name);
+        Debug.Log("mouse2: " + InputSystem.GetDevice<Mouse>().position.ReadValue());
+        Debug.Log("mouse3: " + Mouse.current);
+        if (!Mouse.current.enabled)
+        {
+            InputSystem.EnableDevice(Mouse.current);
+        }
         Vector2 startPos = Mouse.current.position.ReadValue();
+        Debug.Log("startpos " + startPos);
         if(Player.rightCooldown > 0)Player.rightCooldown -= Time.deltaTime;
         if(Player.leftCooldown > 0)Player.leftCooldown -= Time.deltaTime;
         //if player is blocking then decrease shield health; otherwise restore it
@@ -168,7 +169,7 @@ public class InputHandler : MonoBehaviour
         {
             handleLook();
         }
-            
+        Debug.Log("update3");
 
     }
 
@@ -177,7 +178,7 @@ public class InputHandler : MonoBehaviour
     {
         if (value.isPressed)
         {
-            //Debug.Log(value);
+            Debug.Log("pressed" + value);
             if (!loaded) //load grid into input script on first input 
             {
                 RenderGrid gridScript = gridParent.GetComponent<RenderGrid>();

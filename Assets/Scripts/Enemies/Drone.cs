@@ -1,4 +1,3 @@
-using Unity.VisualScripting;
 using UnityEngine;
 
 //a derived enemy class

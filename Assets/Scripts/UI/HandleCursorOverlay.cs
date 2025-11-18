@@ -1,6 +1,4 @@
-using System.Collections.Generic;
 using UnityEngine;
-using UnityEngine.EventSystems;
 
 //handle transitions for the cursor overlay ui 
 public class HandleCursorOverlay : MonoBehaviour

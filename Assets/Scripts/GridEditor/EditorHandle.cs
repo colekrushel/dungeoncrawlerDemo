@@ -1,16 +1,12 @@
-using System;
-using System.Collections;
+
 using System.Collections.Generic;
 using System.IO;
 using TMPro;
-using Unity.VisualScripting;
 using UnityEditor;
-using UnityEditor.Build;
 using UnityEngine;
 using UnityEngine.EventSystems;
 using UnityEngine.Tilemaps;
 using UnityEngine.UI;
-using static UnityEngine.EventSystems.EventTrigger;
 
 public class EditorHandle : MonoBehaviour
 {
@@ -534,7 +530,9 @@ public class EditorHandle : MonoBehaviour
             sr.WriteLine(json);
             sr.Close();
             clayer++;
+            #if UNITY_EDITOR
             AssetDatabase.Refresh();
+            #endif
         }
     }
 

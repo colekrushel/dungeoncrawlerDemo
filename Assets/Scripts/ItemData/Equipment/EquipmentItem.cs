@@ -1,6 +1,4 @@
-using Mono.Cecil;
 using UnityEngine;
-using UnityEngine.UI;
 
 [CreateAssetMenu(fileName = "EquipmentItem", menuName = "Scriptable Objects/EquipmentItem")]
 public class EquipmentItem : ScriptableObject

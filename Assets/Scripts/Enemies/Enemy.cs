@@ -1,10 +1,8 @@
-using NUnit.Framework;
-using System.Collections;
+
 using System.Collections.Generic;
 using System.Linq;
 using UnityEngine;
-using UnityEngine.Diagnostics;
-using UnityEngine.UIElements;
+
 
 //base enemy class
 public class Enemy : MonoBehaviour, IHittable
