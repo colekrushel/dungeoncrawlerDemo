@@ -61,8 +61,8 @@ public class InputHandler : MonoBehaviour
     // Update is called once per frame
     void Update()
     {
-        Debug.Log("update");
-        Debug.Log("player" + Player.playerObject.name);
+        //Debug.Log("update");
+        //Debug.Log("player" + Player.playerObject.name);
         //only decrement count when an input is held in the buffer
         if(bufferedInput != ']')bufferCounter -= 1;
         //remove buffered input after its lifetime expires
@@ -131,15 +131,15 @@ public class InputHandler : MonoBehaviour
             }
         }
         
-        Debug.Log("mouse1: "  + InputSystem.GetDevice<Mouse>().name);
-        Debug.Log("mouse2: " + InputSystem.GetDevice<Mouse>().position.ReadValue());
-        Debug.Log("mouse3: " + Mouse.current);
+        //Debug.Log("mouse1: "  + InputSystem.GetDevice<Mouse>().name);
+        //Debug.Log("mouse2: " + InputSystem.GetDevice<Mouse>().position.ReadValue());
+        //Debug.Log("mouse3: " + Mouse.current);
         if (!Mouse.current.enabled)
         {
             InputSystem.EnableDevice(Mouse.current);
         }
         Vector2 startPos = Mouse.current.position.ReadValue();
-        Debug.Log("startpos " + startPos);
+        //Debug.Log("startpos " + startPos);
         if(Player.rightCooldown > 0)Player.rightCooldown -= Time.deltaTime;
         if(Player.leftCooldown > 0)Player.leftCooldown -= Time.deltaTime;
         //if player is blocking then decrease shield health; otherwise restore it
@@ -169,7 +169,7 @@ public class InputHandler : MonoBehaviour
         {
             handleLook();
         }
-        Debug.Log("update3");
+        //Debug.Log("update3");
 
     }
 
@@ -178,7 +178,7 @@ public class InputHandler : MonoBehaviour
     {
         if (value.isPressed)
         {
-            Debug.Log("pressed" + value);
+            //Debug.Log("pressed" + value);
             if (!loaded) //load grid into input script on first input 
             {
                 RenderGrid gridScript = gridParent.GetComponent<RenderGrid>();
@@ -640,7 +640,7 @@ public class InputHandler : MonoBehaviour
                 //Debug.Log("Hit object name: " + hit.collider.gameObject.name);
                 float dist = hit.distance;
 
-                if(dist < 1)
+                if(dist < 1.5)
                 {
                     //gather all unique models hit into a list and perform a 'hit' on each one
                     GameObject objectHit = hit.collider.gameObject;
@@ -659,11 +659,12 @@ public class InputHandler : MonoBehaviour
         {
             GameObject objectHit = objectsHit[i];
             //play particle effects on each object
-            
+
             //item.hitParticles.GetComponent<ParticleSystem>().Play();
 
-            //try to get an enemy component from parents
-            Enemy enemyScript = objectHit.GetComponentInParent<Enemy>();
+            //try to get an enemy component from hierarchy of object hit
+            Debug.Log(objectHit.name + " hit ");
+            Enemy enemyScript = objectHit.transform.GetComponentInParent<Enemy>();
             BreakablePart bp = objectHit.GetComponent<BreakablePart>();
             float effectiveness = 1f;
             if (enemyScript != null)

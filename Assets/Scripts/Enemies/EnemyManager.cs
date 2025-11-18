@@ -1,3 +1,4 @@
+using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
 
@@ -68,13 +69,21 @@ public class EnemyManager : MonoBehaviour
         //handle movement manager entry?
     }
 
-    public static void killEnemy(Enemy enemy, int dropAmt)
+    public static void removeEnemy(Enemy enemy, int dropAmt)
     {
+        //remove enemy from game logic without removing its model
         activeEnemies.Remove(enemy);
-        Destroy(enemy.positionObject);
-        //handle on death fx and drops
         Player.addCurrency(dropAmt);
     }
+    public static void killEnemy(Enemy enemy, int dropAmt)
+    {
+        //destroy enemy model
+        Destroy(enemy.positionObject);
+        //UIUtils.fadeObject(enemy.positionObject, false, 2);
+        //handle on death fx and drops
+    }
+
+   
 
     public static bool enemyOnPos(Vector2 pos, int layer)
     {

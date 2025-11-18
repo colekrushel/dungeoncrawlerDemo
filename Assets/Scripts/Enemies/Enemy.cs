@@ -1,4 +1,5 @@
 
+using System.Collections;
 using System.Collections.Generic;
 using System.Linq;
 using UnityEngine;
@@ -312,8 +313,16 @@ public class Enemy : MonoBehaviour, IHittable
         if (HP < 0)
         {
             //play death animation
-            animator.Play("Death");
+            //animator.Play("Death");
+
+            //generic death animation
+            animator.enabled = false;
+
+            positionObject.AddComponent<Rigidbody>();
+            positionObject.GetComponent<Rigidbody>().AddForce(Player.playerObject.transform.forward * 100);
             currentState = enemyState.None;
+            EnemyManager.removeEnemy(this, this.dropAmount);
+            StartCoroutine(onDeath());
             
         }
         //return effectiveness
@@ -321,9 +330,11 @@ public class Enemy : MonoBehaviour, IHittable
     }
 
     //called from point in death animation where death should be handled
-    public void onDeath()
+
+
+    public IEnumerator onDeath()
     {
-        //tell manager to destroy object
+        yield return new WaitForSeconds(1);
         EnemyManager.killEnemy(this, this.dropAmount);
     }
 

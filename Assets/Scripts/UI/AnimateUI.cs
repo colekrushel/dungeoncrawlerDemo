@@ -77,7 +77,7 @@ public class AnimateUI : MonoBehaviour
     public static bool cursorInsideTray = false; //keep track of when cursor enters and exits taskbar instead of constantly checking its position
     public static int trayIdleThreshold = 2; //if taskbar is left alone for this many seconds then it will recede
     public static float trayIdleTimer = 0; //keep track of time since taskbar was not idle (cursor inside it)
-    private static int trayOffset = 100; //amount to move tray down/back up by
+    private static int trayOffset = 200; //amount to move tray down/back up by
     private static int moveTrayAmt = 0;
     private static int totalMovement = 0;
     private static bool trayUp = true;
