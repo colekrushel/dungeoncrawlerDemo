@@ -69,11 +69,10 @@ public class EnemyManager : MonoBehaviour
         //handle movement manager entry?
     }
 
-    public static void removeEnemy(Enemy enemy, int dropAmt)
+    public static void removeEnemy(Enemy enemy)
     {
         //remove enemy from game logic without removing its model
         activeEnemies.Remove(enemy);
-        Player.addCurrency(dropAmt);
     }
     public static void killEnemy(Enemy enemy, int dropAmt)
     {

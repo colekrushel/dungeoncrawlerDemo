@@ -3,17 +3,18 @@ using System.Collections;
 using System.Collections.Generic;
 using System.Linq;
 using UnityEngine;
+using static UnityEditor.Progress;
 
 
 //base enemy class
 public class Enemy : MonoBehaviour, IHittable
 {
-    [SerializeField]protected Vector2 pos; //position on grid
+    [SerializeField] protected Vector2 pos; //position on grid
     protected int layer = 0; //current layer
     [SerializeField] protected string zone;
     protected float HP; //hit points
     protected int baseDamage;
-    protected int actionRange; //tiles player must be within to initiate an action
+    protected float actionRange; //tiles player must be within to initiate an action
     protected int alertRange; //tiles player must be within to initiate chase
     protected float ICD;  //internal cool down - when this number gets below 0, triggers an action - goes down by around 1 per second
     protected float ICDBase; //number ICD is set to when reset; smaller number means faster enemy behavior 
@@ -23,8 +24,9 @@ public class Enemy : MonoBehaviour, IHittable
     [SerializeField] protected EnemyAction[] enemyActions;
     //all enemies also have parts. parts are tied to gameobjects on the enemy model and have their own hp bar. they are also tied to specific actions, such that some actions cannot be performed if one or all parts are dead.
     [SerializeField] protected EnemyPart[] parts;
+    [SerializeField] protected GameObject breakFX;
     protected EnemyAction currentAction;
-    enum enemyState { Idle, Charging, Attacking, Stunned, None};
+    enum enemyState { Idle, Charging, Attacking, Stunned, Ragdoll, None };
     enemyState currentState = enemyState.Idle;
     [SerializeField] string currMovementDir = "";
     protected int dropAmount; //amount of currency to drop on kill
@@ -54,15 +56,14 @@ public class Enemy : MonoBehaviour, IHittable
                 RaycastHit hit = playerCheck();
                 //use positions for checking attack range instead of the raycast length as we dont know where on the player the hit might have been [and attack ranges are tile-based]
                 Vector3 distanceBetween = (Player.playerObject.transform.position - positionObject.transform.position); distanceBetween.y = 0;
-                float magn = (Player.getPos() - pos).magnitude;    
-                
+                float magn = (Player.getPos() - pos).magnitude;
                 if (hit.collider.gameObject && hit.collider.gameObject.name == "Player" && magn <= actionRange)
                 {
                     setupAction();
                 } else {
                     move(hit);
                 }
-                    
+
                 break;
             //if enemy is charging an attack, then play the attack animation and handling
             case enemyState.Charging:
@@ -88,7 +89,7 @@ public class Enemy : MonoBehaviour, IHittable
         EnemyAction selectedAction = enemyActions[ranIndex];
         //check if action is possible to be performed (parts are not broken; all associated parts must be broken for the action to be disabled)
         int c = 0;
-        while(!canPerformAction(selectedAction) && c < 100)
+        while (!canPerformAction(selectedAction) && c < 100)
         {
             //if cant perform the action then pick a new one until one we can perform has been picked
             ranIndex = Random.Range(0, enemyActions.Length);
@@ -115,8 +116,9 @@ public class Enemy : MonoBehaviour, IHittable
                 startAction = false;
             }
         }
-        if(startAction)//start attack
+        if (startAction)//start attack
         {
+            actionRange = selectedAction.actionRange;
             //set up override animator and attack values
             AnimatorOverrideController overrideController = new AnimatorOverrideController(animator.runtimeAnimatorController);
             overrideController["DroneCharge"] = selectedAction.chargeAnim;
@@ -136,7 +138,7 @@ public class Enemy : MonoBehaviour, IHittable
         //return true if a single part is not broken or action has no parts; false otherwise
         foreach (EnemyPart part in parts)
         {
-            if (action.associatedParts.Contains(part.partName) && !part.isBroken){
+            if (action.associatedParts.Contains(part.partName) && !part.isBroken) {
                 retval = true; break;
             }
         }
@@ -151,7 +153,7 @@ public class Enemy : MonoBehaviour, IHittable
         bool playerFound = (hit.collider.gameObject.name == "Player" && hit.distance < alertRange);
         Vector3 newPos = Vector3.zero;
         char dir = ' ';
-        if (currMovementDir != "")dir = currMovementDir[0];
+        if (currMovementDir != "") dir = currMovementDir[0];
         //different movement behavior based on whether enemy is active or not; unactive enemy moves randomly but active enemy follows player
         if (!playerFound && currMovementDir == "") //determine movement direction
         {
@@ -173,9 +175,8 @@ public class Enemy : MonoBehaviour, IHittable
             currMovementDir = dir.ToString();
         } if (playerFound)
         {
-            
+
             //TODO
-            //rework facing system (maybe do this later when an enemy with a proper 'face' is implemented
             //sometimes enemy will continue to move even though the player is right in front of them?
             //enemies can still move into each other sometimes (has to do with when theyre attacking?)
 
@@ -211,7 +212,7 @@ public class Enemy : MonoBehaviour, IHittable
         }
         else
         {
-            
+
             //enemy is not facing the movement direction; rotate enemy towards the direction
             //get amount to rotate (either 90 or -90)
 
@@ -226,7 +227,7 @@ public class Enemy : MonoBehaviour, IHittable
         //pos.x = newPos.x; pos.y = newPos.z;
         //MovementManager.moveObject(positionObject, newPos, .01f);
 
-        
+
         //UIUtils.updateSingleMapCell((int)pos.x, (int)pos.y, GridDicts.typeToSprite["Enemy"]);
 
     }
@@ -236,7 +237,10 @@ public class Enemy : MonoBehaviour, IHittable
         //do a linecast to the player and return its hit info
         RaycastHit hit;
         //move cast out of the floor
-        Physics.Linecast(positionObject.transform.position + .5f * positionObject.transform.up, Player.playerObject.transform.position, out hit);
+        //layermask to ignore other enemies
+        int enemyLayer = LayerMask.NameToLayer("Enemy");
+        int layerMask = ~(1 << enemyLayer); //Exclude enemy layer
+        Physics.Linecast(positionObject.transform.position + .5f * positionObject.transform.up, Player.playerObject.transform.position, out hit, layerMask);
         return hit;
     }
     public void snap(Vector2 p, int l)
@@ -245,7 +249,7 @@ public class Enemy : MonoBehaviour, IHittable
         pos = p;
         layer = l;
         Vector3 newPos = GridUtils.coordToWorld(p, zone, l);
-       // positionObject.transform.position = new Vector3(pos.x, l, pos.y);
+        // positionObject.transform.position = new Vector3(pos.x, l, pos.y);
         positionObject.transform.position = newPos;
     }
 
@@ -255,9 +259,10 @@ public class Enemy : MonoBehaviour, IHittable
         Vector3 distanceBetween = (Player.playerObject.transform.position - positionObject.transform.position);
         distanceBetween.y = 0;
         float magn = distanceBetween.magnitude;
-        if(magn > actionRange)
+        if (magn > actionRange)
         {
             //if out of range then dont apply attack
+            //Debug.Log("enemy attack missed, dist between is " + magn + " action range is " + actionRange);
         } else
         {
             int damage = baseDamage * 1; //attacks will have some kind of attack damage modifier
@@ -270,14 +275,27 @@ public class Enemy : MonoBehaviour, IHittable
     public float hitPart(float damage, GameObject partHit)
     {
         float effectiveness = 1;
+
         if (currentState == enemyState.Stunned) effectiveness = 2;
         EnemyPart part = getPartFromObject(partHit);
-        if (part != null && currentAction != null)
+        if (part != null)
         {
             //only deal damage if part hit is associated with the current action 
-            bool inUse = currentAction.associatedParts.Contains(part.partName);
-            if (!inUse) return effectiveness;
+            //bool inUse = currentAction.associatedParts.Contains(part.partName);
+            //inUse = true; //override for now
+            //if (!inUse) return effectiveness;
+
+            //deal damage to each part; bonus if stunned
+            if (currentState != enemyState.Stunned) effectiveness = part.effectiveness;
+            damage *= effectiveness;
+
+            //part onhit fx
+            Renderer r = part.partModel.GetComponent<Renderer>();
+            StartCoroutine(partHitFX(.5f, r));
+            
+
             part.currentHP -= damage;
+            HP -= damage;
 
             if (part.currentHP < 0)
             {
@@ -287,43 +305,70 @@ public class Enemy : MonoBehaviour, IHittable
                 part.isBroken = true;
                 //if a part was broken then stagger the enemy
                 animator.Play("Stagger");
-                ICD = ICDBase * 2;
+                UIUtils.playPartBreakEffect(part.partModel.transform.position, part, breakFX);
+                ICD = ICDBase;
                 currentState = enemyState.Stunned;
                 currentAction = null;
             }
         }
         return effectiveness;
     }
+
+    public IEnumerator partHitFX(float d, Renderer targetRenderer)
+    {
+        targetRenderer.material.color = Color.red;
+        yield return new WaitForSeconds(d);
+        targetRenderer.material.color = Color.white;
+    }
     public float hitByPlayer(float damage)
     {
         float effectiveness = 1;
-        //if enemy is stunned then do more damage
-        if(currentState == enemyState.Stunned)
-        {
-            damage *= 2;
-            effectiveness *= 2;
-        }
-        UIUtils.addMessageToLog("player hit enemy for " + damage + " damage", Color.green);
+        ////if enemy is stunned then do more damage
+        //if(currentState == enemyState.Stunned)
+        //{
+        //    damage *= 2;
+        //    effectiveness *= 2;
+        //}
+        //UIUtils.addMessageToLog("player hit enemy for " + damage + " damage", Color.green);
 
-        //apply the onhit effect (shake object)
+        ////apply the onhit effect (shake object)
         MovementManager.shakeObject(positionObject, .04f, 1f, .2f, positionObject.transform.position);
-        //check if enemy was killed 
-        HP -= damage;
+
+        ////check if enemy was killed 
+        //HP -= damage;
         //Debug.Log("dealt " + damage + " damage to enemy");
         if (HP < 0)
         {
             //play death animation
             //animator.Play("Death");
 
-            //generic death animation
-            animator.enabled = false;
-
-            positionObject.AddComponent<Rigidbody>();
-            positionObject.GetComponent<Rigidbody>().AddForce(Player.playerObject.transform.forward * 100);
-            currentState = enemyState.None;
-            EnemyManager.removeEnemy(this, this.dropAmount);
-            StartCoroutine(onDeath());
             
+
+            //first time death
+            if (currentState != enemyState.Ragdoll)
+            {
+                //generic death animation
+                animator.enabled = false;
+                Physics.gravity = GridUtils.getZoneUpVector(zone) * -1 * Physics.gravity.magnitude;
+                positionObject.AddComponent<Rigidbody>();
+                positionObject.GetComponent<Rigidbody>().AddForce(Player.playerObject.transform.forward * 100);
+                currentState = enemyState.Ragdoll;
+                EnemyManager.removeEnemy(this);
+                Player.addCurrency(this.dropAmount);
+                StartCoroutine(onDeath());
+            } else
+            {
+                //beating ragdoll; only apply physics and maybe give reduced drops per hit
+                positionObject.GetComponent<Rigidbody>().AddForce(Player.playerObject.transform.forward * 100);
+                Player.addCurrency(this.dropAmount / 10);
+            }
+            
+
+            //set gravity to match orientation of current zone
+
+
+
+
         }
         //return effectiveness
         return effectiveness;

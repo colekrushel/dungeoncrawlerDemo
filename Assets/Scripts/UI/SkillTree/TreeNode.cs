@@ -135,7 +135,7 @@ public class TreeNode : MonoBehaviour, IPointerEnterHandler, IPointerExitHandler
     {
         Debug.Log("clicked on " + nodeSkill.name);
         //attempt to purchase skill
-        if (requirementsMet())
+        if (requirementsMet() && !unlocked)
         {
             unlockNode(); //are skill effects applied here or somewhere else?
             Player.addCurrency(nodeSkill.price * -1);

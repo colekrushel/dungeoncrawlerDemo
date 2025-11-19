@@ -1,4 +1,5 @@
 using System;
+using System.Collections;
 using System.Collections.Generic;
 using TMPro;
 using UnityEngine;
@@ -77,10 +78,11 @@ public class AnimateUI : MonoBehaviour
     public static bool cursorInsideTray = false; //keep track of when cursor enters and exits taskbar instead of constantly checking its position
     public static int trayIdleThreshold = 2; //if taskbar is left alone for this many seconds then it will recede
     public static float trayIdleTimer = 0; //keep track of time since taskbar was not idle (cursor inside it)
-    private static int trayOffset = 200; //amount to move tray down/back up by
-    private static int moveTrayAmt = 0;
-    private static int totalMovement = 0;
+    private static int trayOffset = 112; //amount to move tray down/back up by
+    private static float moveTrayAmt = 0;
+    private static float totalMovement = 0;
     private static bool trayUp = true;
+    private static bool forceTrayOn;
 
     void Update()
     {
@@ -173,7 +175,7 @@ public class AnimateUI : MonoBehaviour
         }
 
         //handle tray idle timer and flags for animation up and down
-        if (cursorInsideTray)
+        if (cursorInsideTray || forceTrayOn)
         {
             //move tray up if it is not already up
             if (!trayUp)
@@ -183,6 +185,12 @@ public class AnimateUI : MonoBehaviour
             else
             {
                 trayIdleTimer = 0;
+            }
+            //reset when done adding currency
+            if (trayUp && !cursorInsideTray && forceTrayOn && currencyToBeAdded == 0)
+            {
+                moveTrayAmt = -2;
+                forceTrayOn = false;
             }
         }
         else if (trayUp)
@@ -194,22 +202,29 @@ public class AnimateUI : MonoBehaviour
                 //move tray down
                 moveTrayAmt = -2;
             }
+
+
         }
         //handle tray animation up and down
         if (moveTrayAmt != 0)
         {
             iconTray.transform.position = iconTray.transform.position += new Vector3(0, moveTrayAmt, 0) * Time.deltaTime * 100;
-            totalMovement += moveTrayAmt;
+            totalMovement += moveTrayAmt * Time.deltaTime * 100;
             if (Mathf.Abs(totalMovement) >= trayOffset)
             {
+                
                 moveTrayAmt = 0;
                 if (totalMovement > 0)
                 {
                     trayUp = true;
+                    //snap tray back down
+                    iconTray.transform.position -= new Vector3(0, totalMovement - trayOffset, 0);
                 }
                 else
                 {
                     trayUp = false;
+                    //snap tray back up
+                    iconTray.transform.position -= new Vector3(0, trayOffset+totalMovement, 0);
                 }
                 totalMovement = 0;
                 trayIdleTimer = 0;
@@ -260,9 +275,16 @@ public class AnimateUI : MonoBehaviour
 
     public static void addCurrency(int amt)
     {
+        //when adding currency, move the tray up so the user can see the increase
+        forceTrayOn = true;
         currencyToBeAdded += amt;
     }
 
+    private IEnumerator closeTray()
+    {
+        yield return new WaitForSeconds(1);
+        cursorInsideTray = false;
+    }
     private void OnMousePositionChanged(Vector2 newPosition)
     {
         Debug.Log($"Global mouse position changed: {newPosition}");

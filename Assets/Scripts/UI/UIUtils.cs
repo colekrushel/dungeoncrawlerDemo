@@ -4,6 +4,7 @@ using TMPro;
 using Unity.VisualScripting;
 using UnityEngine;
 using UnityEngine.UI;
+using static UnityEditor.Progress;
 
 
 public class UIUtils : MonoBehaviour 
@@ -388,6 +389,18 @@ public class UIUtils : MonoBehaviour
         particleSystem.Play();
         //destroy when finished playing
         Destroy(particleEffect, particleSystem.main.duration); 
+    }
+
+    public static void playPartBreakEffect(Vector3 worldPos, EnemyPart part, GameObject particles)
+    {
+        //to play the effect we want to instantiate a gameobject with the item's particle system at the hit location, play it, and then destroy the object when done
+        GameObject particleEffect = Instantiate(particles, worldPos, Quaternion.identity);
+        particleEffect.transform.LookAt(Player.playerObject.transform.position);
+        ParticleSystem particleSystem = particleEffect.GetComponent<ParticleSystem>();
+        //modify particle system based on effectiveness
+        particleSystem.Play();
+        //destroy when finished playing
+        Destroy(particleEffect, particleSystem.main.duration);
     }
 
     public static void addCurrency(int amt)

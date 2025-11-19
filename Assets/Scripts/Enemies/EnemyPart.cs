@@ -7,5 +7,6 @@ public class EnemyPart : MonoBehaviour
     [SerializeField] public float maxHP;
     [SerializeField] public string partName;
     [SerializeField] public GameObject partModel;
+    [SerializeField] public float effectiveness;
     public bool isBroken = false;
 }

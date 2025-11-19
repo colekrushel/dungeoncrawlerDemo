@@ -626,7 +626,7 @@ public class InputHandler : MonoBehaviour
         //get point range * 10 units in diff direction
         Vector2 endPoint = diff.normalized * (range*10) + startPos;
         //line cast at that point and x amount of intermediary points
-        float intermediaryPointCnt = 10;
+        float intermediaryPointCnt = 50;
 
         List<GameObject> objectsHit = new List<GameObject>();
         List<RaycastHit> hits = new List<RaycastHit>();
@@ -663,7 +663,7 @@ public class InputHandler : MonoBehaviour
             //item.hitParticles.GetComponent<ParticleSystem>().Play();
 
             //try to get an enemy component from hierarchy of object hit
-            Debug.Log(objectHit.name + " hit ");
+            //Debug.Log(objectHit.name + " hit ");
             Enemy enemyScript = objectHit.transform.GetComponentInParent<Enemy>();
             BreakablePart bp = objectHit.GetComponent<BreakablePart>();
             float effectiveness = 1f;
@@ -672,7 +672,8 @@ public class InputHandler : MonoBehaviour
                 enemyHit = enemyScript;
                 //we want to deal damage to each part but only hit the enemy once; some effects we only want to happen once
                 effectiveness = enemyScript.hitPart(damage, objectHit);
-                UIUtils.playAttackHitEffect(hits[i].point, item, effectiveness);
+                
+                
                 
             } else if(bp != null)
             {
