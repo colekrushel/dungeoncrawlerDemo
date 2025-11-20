@@ -3,7 +3,8 @@ using System.Collections.Generic;
 //store player stats and modifiers from skills so they dont have to be constantly dereferenced
 public class PlayerStats 
 {
-    //List<Buff> activeBuffs;
+    BuffManager BuffManager;
+    
 
     float baseDamage;
     float damageMult = 1;
@@ -141,10 +142,7 @@ public class PlayerStats
 
     public void addBuff(Buff buff)
     {
-        //activeBuffs.Add(buff);
+        BuffManager.addBuff(buff);
     }
-    public void removeBuff(Buff buff)
-    {
-        //activeBuffs.Remove(buff);
-    }
+
 }

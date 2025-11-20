@@ -4,16 +4,11 @@ using UnityEngine.EventSystems;
 public class SkillBox : MonoBehaviour, IPointerEnterHandler, IPointerExitHandler, IPointerDownHandler
 {
     Skill boxSkill;
-    // Start is called once before the first execution of Update after the MonoBehaviour is created
-    void Start()
+    public bool onCooldown = false;
+    
+    public void setSkill(Skill skill)
     {
-        
-    }
-
-    // Update is called once per frame
-    void Update()
-    {
-        
+        boxSkill = skill;
     }
 
     public void OnPointerEnter(PointerEventData pointerEventData)
@@ -27,8 +22,12 @@ public class SkillBox : MonoBehaviour, IPointerEnterHandler, IPointerExitHandler
 
     public void OnPointerDown(PointerEventData pointerEventData)
     {
-        Debug.Log("clicked on " + this.name);
         //activate skill
-
+        if (!onCooldown)
+        {
+            //boxSkill.ExecuteSkillEffects();
+            HandleSkillBar.activateBox(boxSkill);
+            onCooldown = true;
+        }
     }
 }

@@ -12,11 +12,16 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 7e7467fb73cf4d449aaccc33d0e5022a, type: 3}
   m_Name: testskill
   m_EditorClassIdentifier: 
+  icon: {fileID: 21300000, guid: 1a8d8318a94c3c142b4f327f314eda08, type: 3}
   description: i am a text skill
   price: 100
   skillEffects:
   - rid: 1292136801848787007
   - rid: 1292136801848787008
+  - rid: 8963085120012288074
+  time: 5
+  cooldown: 10
+  expire: 0
   references:
     version: 2
     RefIds:
@@ -28,6 +33,17 @@ MonoBehaviour:
         flat: 0
     - rid: 1292136801848787008
       type: {class: PassiveEffect, ns: , asm: Assembly-CSharp}
+      data:
+        stat: Damage
+        boost: 5
+        flat: 1
+    - rid: 8963085120012288074
+      type: {class: BuffEffect, ns: , asm: Assembly-CSharp}
+      data:
+        buffs:
+        - rid: 8963085120012288075
+    - rid: 8963085120012288075
+      type: {class: Buff, ns: , asm: Assembly-CSharp}
       data:
         stat: Damage
         boost: 5

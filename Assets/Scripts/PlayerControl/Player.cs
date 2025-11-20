@@ -151,6 +151,8 @@ public static class Player
         skills.Add(newSkill);
         //if it has passive effects then activate its effects immediately when added
         playerStats.addSkillModifiers(newSkill);
+        //update skillbox ui in case a buff was added
+        HandleSkillBar.reloadSkillBoxes();
     }
     
 

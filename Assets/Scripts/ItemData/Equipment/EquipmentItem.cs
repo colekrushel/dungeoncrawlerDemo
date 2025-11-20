@@ -5,7 +5,7 @@ public class EquipmentItem : ScriptableObject
 {
     [SerializeField] public enum type { Strike, Slash, Pierce, Shield}
     [SerializeField] public type equipType; //type of equipment
-    [SerializeField] public float baseDamage; // base damage of weapon;
+    [SerializeField] public float baseDamage; // base damage of weapon; multiplied by player's damage stat when calculating damage dealt
     [SerializeField] public float shieldHealth; // base health of shield type equipments
     [SerializeField] public float shieldDecay; // rate of shield health decay while held (hp per second)
     [SerializeField] public float shieldRegen; // rate of shield health recovery while not held (hp per second)

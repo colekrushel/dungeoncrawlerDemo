@@ -29,17 +29,19 @@ public class PassiveEffect : ISkillEffect
     
 }
 
+[Serializable]
 public class BuffEffect : ISkillEffect
 {
-    [SerializeReference] Buff buff;
-    [SerializeField]
-    public float cost; //cost in bits/mp
-    [SerializeField]
-    public float cooldown; //time between expire and use again in seconds
+    [SerializeReference, SubclassSelector] List<Buff> buffs;
+
     public void ActivateEffect()
     {
         //apply buff to the player
-        Player.playerStats.addBuff(buff);
+        foreach (Buff buff in buffs)
+        {
+            Player.playerStats.addBuff(buff);
+        }
+        
     }
 }
 

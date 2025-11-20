@@ -598,7 +598,7 @@ public class InputHandler : MonoBehaviour
         type = item.equipType;
 
         //add player stats
-        damage += Player.playerStats.getDamage();
+        damage *= Player.playerStats.getDamage();
         
         //different handling types
         switch (type)
