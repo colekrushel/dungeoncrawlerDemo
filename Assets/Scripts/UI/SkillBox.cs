@@ -3,9 +3,11 @@ using UnityEngine.EventSystems;
 
 public class SkillBox : MonoBehaviour, IPointerEnterHandler, IPointerExitHandler, IPointerDownHandler
 {
-    Skill boxSkill;
+    public Skill boxSkill;
     public bool onCooldown = false;
-    
+    public bool skillActive = false;
+    public bool skillFinished = false;
+
     public void setSkill(Skill skill)
     {
         boxSkill = skill;
@@ -25,9 +27,14 @@ public class SkillBox : MonoBehaviour, IPointerEnterHandler, IPointerExitHandler
         //activate skill
         if (!onCooldown)
         {
-            //boxSkill.ExecuteSkillEffects();
-            HandleSkillBar.activateBox(boxSkill);
             onCooldown = true;
+            skillActive = true;
+            skillFinished = false;
+            boxSkill.ExecuteSkillEffects();
+            HandleSkillBar.activateBox(boxSkill);
+
+            //refresh stats window to reflect skill changes
+            HandleSkillTree.fillStatsWindow(Player.playerStats.generateStatString());
         }
     }
 }

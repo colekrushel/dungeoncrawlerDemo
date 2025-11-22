@@ -12,7 +12,7 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 7e7467fb73cf4d449aaccc33d0e5022a, type: 3}
   m_Name: testskill2
   m_EditorClassIdentifier: 
-  icon: {fileID: 0}
+  icon: {fileID: 21300000, guid: 64a010f3c6ad810469cf4b8ced93923d, type: 3}
   description: lorem ipsum
   price: 100
   skillEffects:
@@ -41,10 +41,10 @@ MonoBehaviour:
       type: {class: BuffEffect, ns: , asm: Assembly-CSharp}
       data:
         buffs:
-        - rid: 8963085120012288077
-    - rid: 8963085120012288077
-      type: {class: Buff, ns: , asm: Assembly-CSharp}
+        - rid: 8963085143054221384
+    - rid: 8963085143054221384
+      type: {class: PassiveEffect, ns: , asm: Assembly-CSharp}
       data:
         stat: Health
         boost: 50
-        flat: 0
+        flat: 1

@@ -43,4 +43,17 @@ public class Skill : ScriptableObject, ISkill
         }
         return pfx;
     }
+
+    public List<BuffEffect> GetBuffSkillEffects()
+    {
+        List<BuffEffect> pfx = new List<BuffEffect>();
+        foreach (var effect in skillEffects)
+        {
+            if (effect is BuffEffect)
+            {
+                pfx.Add((BuffEffect)effect);
+            }
+        }
+        return pfx;
+    }
 }

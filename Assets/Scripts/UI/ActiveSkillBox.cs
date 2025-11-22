@@ -11,6 +11,7 @@ public class ActiveSkillBox
     public float skillTimer;
     public float skillLength;
     public SkillBox skillbox;
+    
     public ActiveSkillBox(float ctimer, float clength, float stimer, float slength, RectTransform trect, RectTransform tmask, SkillBox s)
     {
         cooldownLength = clength;

@@ -1,6 +1,5 @@
 using NUnit.Framework;
 using System.Collections.Generic;
-using System.Runtime.InteropServices;
 using TMPro;
 using UnityEngine;
 using UnityEngine.EventSystems;
@@ -100,12 +99,17 @@ public class TreeNode : MonoBehaviour, IPointerEnterHandler, IPointerExitHandler
             TextMeshProUGUI text = newStat.GetComponent<TextMeshProUGUI>();
             string affix = "";
             if (!effect.flat) affix = "%";
+            bool flipPositive = false;
+            if(effect.stat == "Cooldown") flipPositive = true;
             if (effect.boost < 0)
             {
-                text.color = Color.red;
+                if(!flipPositive) text.color = Color.red;
+                else text.color = Color.green;
+
                 text.text = effect.stat + " " + effect.boost.ToString() + affix;
             } else
             {
+                if(flipPositive) text.color = Color.red;
                 text.text = effect.stat + " +" + effect.boost.ToString() + affix;
             }
             newStat.transform.SetParent(dstats.transform, false);
@@ -133,7 +137,6 @@ public class TreeNode : MonoBehaviour, IPointerEnterHandler, IPointerExitHandler
 
     public void OnPointerDown(PointerEventData pointerEventData)
     {
-        Debug.Log("clicked on " + nodeSkill.name);
         //attempt to purchase skill
         if (requirementsMet() && !unlocked)
         {

@@ -2,9 +2,7 @@ using System.Collections.Generic;
 
 //store player stats and modifiers from skills so they dont have to be constantly dereferenced
 public class PlayerStats 
-{
-    BuffManager BuffManager;
-    
+{    
 
     float baseDamage;
     float damageMult = 1;
@@ -12,9 +10,10 @@ public class PlayerStats
     float baseHealth;
     float healthMult = 1;
 
-    /* unimplemented stats
-    float actionSpeedMult = 1;
+    float baseCooldown = 1;
+    float cooldownMult = 1;
 
+    /* unimplemented stats
     float moveSpeedMult = 1;
 
     float baseArmor
@@ -27,6 +26,7 @@ public class PlayerStats
         //fill with default values on initialization
         baseHealth = 10;
         baseDamage = 5;
+        baseCooldown = 1;
     }
 
     public PlayerStats(PlayerStats old)
@@ -49,23 +49,39 @@ public class PlayerStats
         return baseDamage * damageMult;
     }
 
+    public float getCooldown()
+    {
+        return baseCooldown * cooldownMult;
+    }
+
     public void addSkillModifiers(Skill newSkill)
     {
         List<PassiveEffect> fx = newSkill.GetPassiveSkillEffects();
         foreach (PassiveEffect effect in fx)
         {
-            switch (effect.stat.ToLower())
-            {
-                case "damage":
-                    if (effect.flat) baseDamage += effect.boost;
-                    else damageMult += effect.boost * .01f;
-                    break;
-                case "health":
-                    if (effect.flat) baseHealth += effect.boost;
-                    else healthMult += effect.boost * .01f;
-                    break;
-            }
+           addSkillModifiers(effect);
         }
+    }
+
+    public void addSkillModifiers(PassiveEffect effect, float mult = 1)
+    {
+        float boost = effect.boost * mult;
+        switch (effect.stat.ToLower())
+        {
+            case "damage":
+                if (effect.flat) baseDamage += boost;
+                else damageMult += boost * .01f;
+                break;
+            case "health":
+                if (effect.flat) baseHealth += boost;
+                else healthMult += boost * .01f;
+                break;
+            case "cooldown":
+                if (effect.flat) baseCooldown += boost;
+                else cooldownMult += boost * .01f;
+                break;
+        }
+        
     }
 
     //return a string of each stat in markup of
@@ -75,6 +91,7 @@ public class PlayerStats
         string ret = "";
         ret += "Health: " + baseHealth * healthMult + "\n(" + baseHealth + " * " + healthMult + ")\n";
         ret += "Damage: " + baseDamage * damageMult + "\n(" + baseDamage+ " * " + damageMult + ")\n";
+        ret += "Cooldown: " + baseCooldown * cooldownMult + "\n(" + baseCooldown + " * " + cooldownMult + ")\n";
         return ret;
     }
 
@@ -87,7 +104,7 @@ public class PlayerStats
         string ret = "";
         ret += "Health: " + returnDiffString("thealth", newstats.baseHealth * newstats.healthMult) + "\n(" + returnDiffString("bhealth", newstats.baseHealth) + " * " + returnDiffString("mhealth", newstats.healthMult) + ")\n";
         ret += "Damage: " + returnDiffString("tdamage", newstats.baseDamage * newstats.damageMult) + "\n(" + returnDiffString("bdamage", newstats.baseDamage) + " * " + returnDiffString("mdamage", newstats.damageMult) + ")\n";
-
+        ret += "Cooldown: " + returnDiffString("tcooldown", newstats.baseCooldown * newstats.cooldownMult) + "\n(" + returnDiffString("bcooldown", newstats.baseCooldown) + " * " + returnDiffString("mcooldown", newstats.cooldownMult) + ")\n";
         return ret;
     }
 
@@ -97,6 +114,7 @@ public class PlayerStats
         //determine which stat to check
         float baseStat = 0;
         float statMult = 0;
+        bool flipPositive = false; //for some stats a decrease should be labeled as positive(green) rather than red
         string stat = istat.Substring(1);
         switch (stat)
         {
@@ -108,6 +126,11 @@ public class PlayerStats
                 baseStat = baseDamage;
                 statMult = damageMult;
                 break;
+            case "cooldown":
+                baseStat = baseCooldown;
+                statMult = cooldownMult;
+                flipPositive = true;
+                break;
         }
         //determine if using total, base, or mult
         char c = istat[0];
@@ -115,22 +138,22 @@ public class PlayerStats
         switch (c)
         {
             case 't':
-                if (newval > baseStat * statMult) ret += "<color=green>";
-                else if (newval < baseStat * statMult) ret += "<color=red>";
+                if (newval > baseStat * statMult) {if (!flipPositive) ret += "<color=green>"; else ret += "<color=red>";}
+                else if (newval < baseStat * statMult) { if (!flipPositive) ret += "<color=red>"; else ret += "<color=green>"; }
                 else equal = true;
                 ret += newval;
                 if (!equal) ret += "</color>";
                 break;
             case 'b':
-                if (newval > baseStat) ret += "<color=green>";
-                else if (newval < baseStat) ret += "<color=red>";
+                if (newval > baseStat) { if (!flipPositive) ret += "<color=green>"; else ret += "<color=red>"; }
+                else if (newval < baseStat) { if (!flipPositive) ret += "<color=red>"; else ret += "<color=green>"; }
                 else equal = true;
                 ret += newval;
                 if (!equal) ret += "</color>";
                 break;
             case 'm':
-                if (newval > statMult) ret += "<color=green>";
-                else if (newval < statMult) ret += "<color=red>";
+                if (newval > statMult) { if (!flipPositive) ret += "<color=green>"; else ret += "<color=red>"; }
+                else if (newval < statMult) { if (!flipPositive) ret += "<color=red>"; else ret += "<color=green>"; }
                 else equal = true;
                 ret += newval;
                 if (!equal) ret += "</color>";
@@ -140,9 +163,24 @@ public class PlayerStats
         return ret;
     }
 
-    public void addBuff(Buff buff)
+
+    //buffs are just passive effects that are designated to be removed later
+    public void addBuff(PassiveEffect buff)
     {
-        BuffManager.addBuff(buff);
+        //apply the buff directly; its ok because passive effects are all applied additively.
+        addSkillModifiers(buff);
+        //buff will be removed when timer reaches 0 on the skillbox.
+    }
+
+    public void removeBuffs(Skill newSkill)
+    {
+        //to remove skill modifiers just inverse the effect because they are added additively
+        List<BuffEffect> fx = newSkill.GetBuffSkillEffects();
+        foreach (BuffEffect effect in fx)
+        {
+            foreach(PassiveEffect buff in effect.buffs)
+            addSkillModifiers(buff, -1);
+        }
     }
 
 }

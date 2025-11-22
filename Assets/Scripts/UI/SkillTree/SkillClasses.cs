@@ -32,12 +32,12 @@ public class PassiveEffect : ISkillEffect
 [Serializable]
 public class BuffEffect : ISkillEffect
 {
-    [SerializeReference, SubclassSelector] List<Buff> buffs;
+    [SerializeReference, SubclassSelector] public List<PassiveEffect> buffs;
 
     public void ActivateEffect()
     {
         //apply buff to the player
-        foreach (Buff buff in buffs)
+        foreach (PassiveEffect buff in buffs)
         {
             Player.playerStats.addBuff(buff);
         }

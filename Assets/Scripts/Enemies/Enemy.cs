@@ -256,8 +256,8 @@ public class Enemy : MonoBehaviour, IHittable
     public void attackHit()
     {
         //check if attack actually hit player
-        Vector3 distanceBetween = (Player.playerObject.transform.position - positionObject.transform.position);
-        distanceBetween.y = 0;
+        //subtract player height offset 
+        Vector3 distanceBetween = ((Player.playerObject.transform.position - Player.playerObject.transform.up * .5f) - positionObject.transform.position);
         float magn = distanceBetween.magnitude;
         if (magn > actionRange)
         {
@@ -350,8 +350,23 @@ public class Enemy : MonoBehaviour, IHittable
                 //generic death animation
                 animator.enabled = false;
                 Physics.gravity = GridUtils.getZoneUpVector(zone) * -1 * Physics.gravity.magnitude;
-                positionObject.AddComponent<Rigidbody>();
-                positionObject.GetComponent<Rigidbody>().AddForce(Player.playerObject.transform.forward * 100);
+                //make each part ragdoll by setting their rigidbodies to be kinematic at death
+
+                Rigidbody[] bodies = positionObject.GetComponentsInChildren<Rigidbody>();
+                foreach (Rigidbody b in bodies)
+                {
+                    b.isKinematic = false;
+                    b.AddForce(Player.playerObject.transform.forward * 100);
+                }
+
+                //positionObject.transform.get
+                //foreach (EnemyPart p in parts)
+                //{
+                //    GameObject partobj = p.partModel.gameObject;
+                //    partobj.AddComponent<Rigidbody>();
+                //    partobj.GetComponent<Rigidbody>().AddForce(Player.playerObject.transform.forward * 100);
+                //}
+
                 currentState = enemyState.Ragdoll;
                 EnemyManager.removeEnemy(this);
                 Player.addCurrency(this.dropAmount);

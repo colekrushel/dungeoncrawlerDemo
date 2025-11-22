@@ -72,7 +72,6 @@ public class HandleSkillBar : MonoBehaviour
         //set initial positions of rects
         transparency.offsetMin = new Vector2(transparency.offsetMin.x, (-1*boxHeight/2) - yOffset); //bottom
         transparency.offsetMax = new Vector2(transparency.offsetMax.x, (boxHeight/2) + yOffset); //top
-        Debug.Log(yOffset);
         activeSkillBoxes.Add(activesbox);
     }
 
@@ -86,13 +85,32 @@ public class HandleSkillBar : MonoBehaviour
             //only when appropriate
             if(box.skillbox.onCooldown && box.cooldownTimer <= boxHeight) //timer is in seconds; to get timer as a 
             {
-                box.cooldownTimer += (120 / box.cooldownLength) * Time.deltaTime * 2;
+                box.cooldownTimer += (120 / box.cooldownLength) * Time.deltaTime;
                 box.transparencyRect.offsetMin = new Vector2(box.transparencyRect.offsetMin.x, box.cooldownTimer - boxHeight + 60 - yOffset);
             } else
             {
                 //end animation and reset params
                 box.skillbox.onCooldown = false;
                 box.cooldownTimer = 0;
+                //when cooldown is finished, remove this box from the update loop because it has done its job
+                activeSkillBoxes.Remove(box);
+                break;
+            }
+
+            //handle timer 
+            if(box.skillbox.skillActive && box.skillTimer <= boxHeight)
+            {
+                box.skillTimer += (120 / box.skillLength) * Time.deltaTime;
+                //assuming boxheight is same as the width of timer bar
+                box.timerMask.offsetMax = new Vector2((boxHeight - box.skillTimer - boxHeight), box.timerMask.offsetMax.y);
+            } else if(!box.skillbox.skillFinished)
+            {
+                //skill is over; reset ui and stats
+                box.skillTimer = 0;
+                box.skillbox.skillActive = false;
+                Player.playerStats.removeBuffs(box.skillbox.boxSkill);
+                box.skillbox.skillFinished = true;
+                HandleSkillTree.fillStatsWindow(Player.playerStats.generateStatString());
             }
 
         }

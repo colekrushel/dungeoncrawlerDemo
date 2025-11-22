@@ -599,6 +599,7 @@ public class InputHandler : MonoBehaviour
 
         //add player stats
         damage *= Player.playerStats.getDamage();
+        cooldown *= Player.playerStats.getCooldown();
         
         //different handling types
         switch (type)
