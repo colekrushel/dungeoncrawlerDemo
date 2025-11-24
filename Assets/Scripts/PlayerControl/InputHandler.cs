@@ -1,4 +1,5 @@
 
+using System;
 using System.Collections.Generic;
 using UnityEngine;
 using UnityEngine.InputSystem;
@@ -173,6 +174,11 @@ public class InputHandler : MonoBehaviour
 
     }
 
+    void OnPause()
+    {
+        //return to desktop
+        HandleTray.desktopTransition(true);
+    }
 
     void OnMove2(InputValue value)
     {

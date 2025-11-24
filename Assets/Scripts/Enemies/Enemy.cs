@@ -33,7 +33,7 @@ public class Enemy : MonoBehaviour, IHittable
 
     private void Update()
     {
-        if (EnemyManager.switchingLock) return;
+        if (EnemyManager.switchingLock || EnemyManager.pauseEnemies) return;
         //handle ICD
         ICD -= Time.deltaTime;
         if (ICD < 0)
@@ -396,6 +396,18 @@ public class Enemy : MonoBehaviour, IHittable
     {
         yield return new WaitForSeconds(1);
         EnemyManager.killEnemy(this, this.dropAmount);
+    }
+
+    public void pause(bool paused)
+    {
+        //handle pausing animator and other params
+        if (paused)
+        {
+            animator.speed = 0;
+        } else
+        {
+            animator.speed = 1;
+        }
     }
 
     private EnemyPart getPartFromObject(GameObject obj)

@@ -18,6 +18,7 @@ public class HandleSkillBar : MonoBehaviour
     //offsets for boxes cause grid rect messes up recttransform anchors
     public static float xOffset;
     public static float yOffset;
+    public static bool paused = false;
 
 
     public void Awake()
@@ -79,6 +80,7 @@ public class HandleSkillBar : MonoBehaviour
     // Update is called once per frame
     void Update()
     {
+        if(paused) return;
         foreach (ActiveSkillBox box in activeSkillBoxes)
         {
             //handle cooldown/transparency layer

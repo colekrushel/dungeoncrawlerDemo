@@ -1,6 +1,8 @@
 using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
+using static UnityEditor.Experimental.GraphView.GraphView;
+using static UnityEditor.PlayerSettings;
 
 public class EnemyManager : MonoBehaviour
 {
@@ -11,6 +13,8 @@ public class EnemyManager : MonoBehaviour
     private static List<EnemySpawn> enemySpawns = new List<EnemySpawn>();
     //lock to prevent enemies from being modified during switch
     public static bool switchingLock = false;
+    //lock for when user is paused/at desktop
+    public static bool pauseEnemies = false;
     void Awake()
     {
         Instance = this;
@@ -82,6 +86,14 @@ public class EnemyManager : MonoBehaviour
         //handle on death fx and drops
     }
 
+    public static void handlePauseEnemies(bool pause)
+    {
+        pauseEnemies = pause;
+        foreach (Enemy enemy in activeEnemies)
+        {
+            enemy.pause(pause);
+        }
+    }
    
 
     public static bool enemyOnPos(Vector2 pos, int layer)

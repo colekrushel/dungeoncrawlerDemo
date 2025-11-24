@@ -72,7 +72,7 @@ public static class Player
     {
         gridPos = newpos;
         currentLayer = layer;
-        Debug.Log("MOVING PLAYER TO NEW LAYER " + layer);
+        //Debug.Log("MOVING PLAYER TO NEW LAYER " + layer);
     }
 
     static public Vector2 getPos()

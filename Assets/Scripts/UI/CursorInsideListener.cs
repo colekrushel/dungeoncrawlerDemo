@@ -13,6 +13,11 @@ public class CursorListener : MonoBehaviour, IPointerEnterHandler, IPointerExitH
             case "Tray":
                 AnimateUI.cursorInsideTray = true;
                 break;
+            case "DesktopIcon":
+                //for desktop icons we want to display the background on hover
+                //this.transform.Find("BackgroundOverlay").gameObject.SetActive(true); //assume background is a child of this object
+                StartCoroutine(UIUtils.fadeObject(this.transform.Find("BackgroundOverlay").gameObject, true, .2f));
+                break;
         }
         HandleCursorOverlay.setState(cursorStateOnHover);
     }
@@ -24,6 +29,10 @@ public class CursorListener : MonoBehaviour, IPointerEnterHandler, IPointerExitH
         {
             case "Tray":
                 AnimateUI.cursorInsideTray = false;
+                break;
+            case "DesktopIcon":
+                //this.transform.Find("BackgroundOverlay").gameObject.SetActive(true); //assume background is a child of this object
+                StartCoroutine(UIUtils.fadeObject(this.transform.Find("BackgroundOverlay").gameObject, false, .2f));
                 break;
         }
         HandleCursorOverlay.setState(HandleCursorOverlay.cursorState.none);

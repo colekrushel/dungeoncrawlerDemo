@@ -189,8 +189,9 @@ public class AnimateUI : MonoBehaviour
             //reset when done adding currency
             if (trayUp && !cursorInsideTray && forceTrayOn && currencyToBeAdded == 0)
             {
-                moveTrayAmt = -2;
+                //moveTrayAmt = -2;
                 forceTrayOn = false;
+                //trayIdleTimer = 0;
             }
         }
         else if (trayUp)
