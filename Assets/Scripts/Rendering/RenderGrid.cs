@@ -289,13 +289,13 @@ public class RenderGrid : MonoBehaviour
             //model fillers where there are no walls
             //railings (between non-ground-level walkable and empty tile where there is no wall) [NO-WALL FILLER]
             //doorways (between ceiling and non-ceiling tiles where there is no wall) [NO-WALL FILLER]
-
+            //Debug.Log(cell.tilesetPath);
             GameObject wall;
             if (walls[i] == cell.breakableWallDirection)
             {
                 wall = Instantiate(Resources.Load<GameObject>(cell.tilesetPath + "/WallBreakable"));
             }
-            else if (cell.hasCeiling && cell.layer > 0 && grid.getCellInDirection(cell, walls[i]) != null && grid.getCellInDirection(cell, walls[i]).type == "Empty")
+            else if ((cell.hasCeiling && (cell.layer > 0 || cell.tilesetPath == "Prefabs/gridTilesets/Indoor/Office")) && grid.getCellInDirection(cell, walls[i]) != null && grid.getCellInDirection(cell, walls[i]).type == "Empty")
             {
                 wall = Instantiate(Resources.Load<GameObject>(cell.tilesetPath + "/Window"));
             }
@@ -415,7 +415,7 @@ public class RenderGrid : MonoBehaviour
         {
             GameObject ceil = Instantiate(Resources.Load<GameObject>(cell.tilesetPath + "/Ceiling"));
             ceil.transform.SetParent(cellObject.transform);
-            ceil.transform.position = new Vector3(0, .9f, 0);
+            ceil.transform.position = new Vector3(0, 1f, 0);
         }
         //models/entities
         //we have cell type and entity facing position, assign subclasses and open

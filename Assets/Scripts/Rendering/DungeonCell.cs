@@ -132,7 +132,18 @@ public class DungeonCell
                 }
                 walls = newwalls;
                 UIUtils.updateMap();
-                break;
+                //play animation if an animator is attached to this object
+                Animator animator = cellObject.GetComponentInChildren<Animator>();
+                if(animator != null)
+                {
+                    animator.SetTrigger("Open");
+                    Debug.Log("attempting to play anim for breakable wall");
+                } else
+                {
+                    Debug.Log("couldnt find aniamtor in breakable wall");
+                }
+
+                    break;
             case BreakableConstruct.breakType.Item:
                 Debug.Log("item broken");
                 break;
