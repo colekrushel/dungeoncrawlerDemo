@@ -22,6 +22,8 @@ public static class GridUtils
         direction = direction.ToUpper();
         switch (direction)
         {
+            case "T": //tutorial
+                return "T";
             case "N":
                 return "S";
             case "E":
@@ -220,6 +222,9 @@ public static class GridUtils
             case "north":
                 ret = new Vector3(0, .5f, 23);
                 break;
+            case "tutorial":
+                ret = new Vector3(50f, 0, 0);
+                break;
 
         }
         return ret;
@@ -230,6 +235,7 @@ public static class GridUtils
         Vector3 ret = new Vector3();
         switch (zone)
         {
+            case "tutorial":
             case "bottom":
                 ret = new Vector3(0, 0, 1);
                 break;
@@ -254,6 +260,7 @@ public static class GridUtils
         Vector3 ret = new Vector3();
         switch (zone)
         {
+            case "tutorial":
             case "bottom":
                 ret = new Vector3(1, 0, 0);
                 break;
@@ -278,6 +285,7 @@ public static class GridUtils
         Vector3 ret = new Vector3();
         switch (zone)
         {
+            case "tutorial":
             case "bottom":
                 ret = new Vector3(0, 1, 0);
                 break;
@@ -302,6 +310,7 @@ public static class GridUtils
         Vector3 ret = Vector3.zero;
         switch (zone)
         {
+            case "tutorial":
             case "bottom":
                 ret = new Vector3(0, 0, 0);
                 break;
@@ -359,6 +368,9 @@ public static class GridUtils
         string destZone = null;
         switch (currzone)
         {
+            case "tutorial":
+                destZone = "bottom";
+                break;
             case "bottom":
                 switch (dir)
                 {
@@ -463,6 +475,10 @@ public static class GridUtils
         Vector2 newcoord = Vector2.zero;
         switch (currzone)
         {
+            case "tutorial": //hardcode tutorial arrival coord
+                newcoord.x = 1;
+                newcoord.y = 1;
+                break;
             case "bottom":
                 switch (destZone)
                 {
@@ -633,6 +649,7 @@ public static class GridUtils
         //and rotating it accordingly 
         switch (direction.ToUpper())
         {
+            case "T": //tutorial
             case "N":
                 ret = northQuat;
                 break;

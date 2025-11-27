@@ -13,6 +13,8 @@ public class RenderGrid : MonoBehaviour
     [SerializeField] TextAsset[] eastGridFiles;
     [SerializeField] TextAsset[] westGridFiles;
     [SerializeField] TextAsset[] topGridFiles;
+    [SerializeField] bool startInTutorial;
+    [SerializeField] TextAsset[] tutorialGridFiles;
     [SerializeField] GameObject RenderedGrids;
     string[] indoorTilesetTypes = new string[] { "StairsUp" };
     private void Start()
@@ -30,6 +32,11 @@ public class RenderGrid : MonoBehaviour
         GridUtils.westGrids = grids;
         loadZone(bottomGridFiles, "bottom");
         GridUtils.bottomGrids = grids;
+        if (startInTutorial)
+        {
+            loadZone(tutorialGridFiles, "tutorial");
+
+        }
         //determine current active grid
         //asign current active grid to utils
         GridUtils.grids = grids;
@@ -38,7 +45,11 @@ public class RenderGrid : MonoBehaviour
         UIUtils.updateMap();
 
         //spawn enemies
-        EnemyManager.zoneSwitch("bottom");
+        if (!startInTutorial)
+        {
+            EnemyManager.zoneSwitch("bottom");
+        }
+        
 
 
     }
@@ -86,6 +97,7 @@ public class RenderGrid : MonoBehaviour
         switch (side.ToLower())
         {
             case "bottom":
+            case "tutorial":
                 break;
             case "north":
                 currZone.transform.eulerAngles = new Vector3(-90, 0, 0);
@@ -482,7 +494,11 @@ public class RenderGrid : MonoBehaviour
             if(cell.type == "StairsUp")
             {
                 model = Instantiate(Resources.Load<GameObject>(cell.tilesetPath + "/Stairs"));
-            } else
+            } else if(cell.type == "ClosedDoor" && cell.tilesetPath == "Prefabs/gridTilesets/Indoor/Office")
+            {
+                model = Instantiate(Resources.Load<GameObject>(cell.tilesetPath + "/Door"));
+            }
+            else
             {
                 model = Instantiate(GridDicts.typeToModel[cell.type]);
             }

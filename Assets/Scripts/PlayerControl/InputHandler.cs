@@ -1,8 +1,10 @@
 
 using System;
+using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
 using UnityEngine.InputSystem;
+using UnityEngine.UI;
 
 public class InputHandler : MonoBehaviour
 {
@@ -10,12 +12,14 @@ public class InputHandler : MonoBehaviour
     [SerializeField] bool isCreator = false;
     [SerializeField] Vector2Int startpos;
     [SerializeField] new Camera camera;
+    [SerializeField] GameObject screencover;
     DungeonGrid[] grids;
     DungeonGrid grid;
     //Player player;
     const int cellWidth = 1;
     bool loaded = false;
     const int speedMultiplier = 3;
+    [SerializeField] string startingZone;
 
     //for animating player & camera movement
     //rotation
@@ -54,9 +58,12 @@ public class InputHandler : MonoBehaviour
         Player.playerObject = gameObject;
         Player.currentLayer = 0;
         SnapPlayer(startpos.x, startpos.y);
-        
+        //replace with loading the player's zone later
+        Player.orientation = startingZone;
         Player.setRotationFromOrientation();
         Player.playerObject.transform.position += Player.playerObject.transform.up/2;
+        Player.playerObject.transform.position += GridUtils.getZoneOffset(startingZone);
+
     }
 
     // Update is called once per frame
@@ -339,7 +346,7 @@ public class InputHandler : MonoBehaviour
                 //grant priority if player is on stairs and moving in direction opposite of stair facing
                 if (grid.getCell(Player.getPos()).type == "StairsUp" && GridUtils.getOppositeDirection(grid.getCell(Player.getPos()).entity.facing) == playerFacing) priority = true;
                 canMove = GridUtils.canMoveInDirection(playerPos, Player.currentLayer, playerFacing);
-                if(canMove || priority)
+                if (canMove || priority)
                 {
                     vOffset = determineVerticalOffset(dirOffset);
                     moveDir = Player.playerObject.transform.forward + Player.playerObject.transform.up * vOffset;
@@ -349,36 +356,45 @@ public class InputHandler : MonoBehaviour
                 }
                 //else check if player is attempting to go out of bounds and there is no wall blocking the way
                 //only allow player to transport on a forward movement
-                else if(GridUtils.canTransportInDirection(playerPos, Player.currentLayer, playerFacing))
+                else if (GridUtils.canTransportInDirection(playerPos, Player.currentLayer, playerFacing))
                 {
-                    
+
                     //if valid, determine which zone the player is moving into
                     string destZone = GridUtils.getTransportDestinationZone(playerPos, playerFacing, Player.orientation);
                     //Debug.Log("initiate transport from " + Player.orientation + " to " + destZone);
                     GridUtils.switchZone(destZone);
                     //and what their position & rotation should be set to
-                    Vector3 worldDest = GridUtils.getTransportDestinationWorldpos(playerPos, playerFacing, Player.orientation) + GridUtils.getZoneUpVector(destZone)/2;
+                    Vector3 worldDest = GridUtils.getTransportDestinationWorldpos(playerPos, playerFacing, Player.orientation) + GridUtils.getZoneUpVector(destZone) / 2;
                     string d = Player.orientation[0].ToString();
                     if (d == "b") d = Player.facing[0].ToString();
                     else d = GridUtils.getOppositeDirection(d);
                     Quaternion newRotation = GridUtils.getTransportDestinationQuaternion(destZone, d);
-                    //setup movement
-                    moveDir = worldDest - Player.playerObject.transform.position;
-                    finalPosition = worldDest;
-                    Vector2 newpos = GridUtils.getTransportDestinationCoord(playerPos, playerFacing, Player.orientation);
-                    Player.updatePos(newpos, GridUtils.getHighestTraversibleLayer(newpos, destZone));
-                    isMoving = true;
-                    //setup rotation
-                    isRotating = true;
-                    startRotation = Player.playerObject.transform.rotation;
-                    endRotation = newRotation;
-                    totalRotation = 0f;
 
-                    Player.orientation = destZone;
-                    grids = GridUtils.grids;
-                    grid = grids[Player.currentLayer];
-                    EnemyManager.zoneSwitch(destZone);
-                    UIUtils.updateMap();
+                    //if exiting the tutorial then...
+                    if (Player.orientation == "tutorial")
+                    {
+                        StartCoroutine(tutorialTransition(worldDest, playerPos, playerFacing, destZone, newRotation));
+                    }
+                    else
+                    {
+                        //setup movement
+                        moveDir = worldDest - Player.playerObject.transform.position;
+                        finalPosition = worldDest;
+                        Vector2 newpos = GridUtils.getTransportDestinationCoord(playerPos, playerFacing, Player.orientation);
+                        Player.updatePos(newpos, GridUtils.getHighestTraversibleLayer(newpos, destZone));
+                        isMoving = true;
+                        //setup rotation
+                        isRotating = true;
+                        startRotation = Player.playerObject.transform.rotation;
+                        endRotation = newRotation;
+                        totalRotation = 0f;
+
+                        Player.orientation = destZone;
+                        grids = GridUtils.grids;
+                        grid = grids[Player.currentLayer];
+                        EnemyManager.zoneSwitch(destZone);
+                        UIUtils.updateMap();
+                    }
 
                     
                 }
@@ -430,6 +446,43 @@ public class InputHandler : MonoBehaviour
         }
         
         
+    }
+
+    public IEnumerator tutorialTransition(Vector3 worldDest, Vector3 playerPos, string playerFacing, string destZone, Quaternion newRotation)
+    {
+        //fade in
+        screencover.SetActive(true);
+        StartCoroutine(UIUtils.fadeObject(screencover, true, .2f));
+        yield return new WaitForSeconds(0.5f);
+        //move
+        //setup movement
+        moveDir = worldDest - Player.playerObject.transform.position;
+        finalPosition = worldDest;
+        Vector2 newpos = GridUtils.getTransportDestinationCoord(playerPos, playerFacing, Player.orientation);
+        Player.updatePos(newpos, GridUtils.getHighestTraversibleLayer(newpos, destZone));
+        isMoving = true;
+        //setup rotation
+        isRotating = true;
+        startRotation = Player.playerObject.transform.rotation;
+        endRotation = newRotation;
+        totalRotation = 0f;
+
+        Player.orientation = destZone;
+        grids = GridUtils.grids;
+        grid = grids[Player.currentLayer];
+        EnemyManager.zoneSwitch(destZone);
+        UIUtils.updateMap();
+        //remove tutorial gameobjects
+        Destroy(GameObject.Find("tutorialskybox"));
+        //adjust lighting
+        RenderSettings.ambientIntensity = 1.5f;
+        yield return new WaitForSeconds(1);
+        //fade out
+        StartCoroutine(UIUtils.fadeObject(screencover, false, .2f));
+        yield return new WaitForSeconds(0.5f);
+        screencover.SetActive(false);
+
+
     }
 
     float determineVerticalOffset(int dirOffset)
@@ -685,7 +738,7 @@ public class InputHandler : MonoBehaviour
             } else if(bp != null)
             {
                 //just play an effect
-                effectiveness = bp.hitByPlayer(damage);
+                effectiveness = bp.hitByPlayer(damage, type);
                 UIUtils.playAttackHitEffect(hits[i].point, item, effectiveness);
                 
             }
@@ -693,7 +746,7 @@ public class InputHandler : MonoBehaviour
         //now perform the actual hit on the enemy (if necessary)
         if (enemyHit != null)
         {
-            enemyHit.hitByPlayer(damage);
+            enemyHit.hitByPlayer(damage, type);
         }
         //now apply recoil and cooldown to the player's hit action and display an indicator for this
         if(rightEquip)Player.rightCooldown = cooldown;

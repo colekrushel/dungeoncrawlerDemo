@@ -13,6 +13,7 @@ public static class Player
     public static string facing;
     public static bool inputLock = false;
     public static List<char> actionQueue = new List<char>();
+    
     //combat values
     public static PlayerStats playerStats = new PlayerStats();
     private static float totalHP = playerStats.getMaxHealth();
@@ -24,8 +25,8 @@ public static class Player
     
     //items
     public static PlayerInventory inventory = new PlayerInventory();
-    public static EquipmentItem leftItem = Resources.Load<EquipmentItem>("Equipment/Slasher"); //autoequip to save time testing
-    public static EquipmentItem rightItem = Resources.Load<EquipmentItem>("Equipment/Smasher");
+    public static EquipmentItem leftItem = Resources.Load<EquipmentItem>("Equipment/Smasher"); //autoequip to save time testing
+    public static EquipmentItem rightItem = Resources.Load<EquipmentItem>("Equipment/Slasher");
     public static float currentBlockHP;
     public static float maxBlockHP;
     //other misc data
@@ -37,9 +38,9 @@ public static class Player
     {
         //load player info without existing data; initialize player data
         //hardcoded now for testing
-        inventory.addItem("Slasher", "breacher");
-        //inventory.addItem("Blocker", "breacher");
         inventory.addItem("Smasher", "breacher");
+        //inventory.addItem("Blocker", "breacher");
+        inventory.addItem("Slasher", "breacher");
         //update equipment display
         HandleEquipment.displayEquips();
         HandleSkillTree.initializeTree(skills);

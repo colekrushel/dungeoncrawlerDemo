@@ -10,6 +10,6 @@ public class ConstantRotateMe : MonoBehaviour
     // Update is called once per frame
     void Update()
     {
-        this.transform.Rotate(xMul*speed, yMul*speed, zMul*speed);
+        this.transform.Rotate(xMul*speed*Time.deltaTime, yMul*speed * Time.deltaTime, zMul*speed * Time.deltaTime);
     }
 }

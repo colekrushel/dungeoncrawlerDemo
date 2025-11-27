@@ -3,7 +3,7 @@ using UnityEngine;
 [CreateAssetMenu(fileName = "EquipmentItem", menuName = "Scriptable Objects/EquipmentItem")]
 public class EquipmentItem : ScriptableObject
 {
-    [SerializeField] public enum type { Strike, Slash, Pierce, Shield}
+    [SerializeField] public enum type { Strike, Slash, Pierce, Shield, None}
     [SerializeField] public type equipType; //type of equipment
     [SerializeField] public float baseDamage; // base damage of weapon; multiplied by player's damage stat when calculating damage dealt
     [SerializeField] public float shieldHealth; // base health of shield type equipments

@@ -320,7 +320,7 @@ public class Enemy : MonoBehaviour, IHittable
         yield return new WaitForSeconds(d);
         targetRenderer.material.color = Color.white;
     }
-    public float hitByPlayer(float damage)
+    public float hitByPlayer(float damage, EquipmentItem.type type)
     {
         float effectiveness = 1;
         ////if enemy is stunned then do more damage
