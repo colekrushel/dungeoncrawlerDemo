@@ -26,6 +26,8 @@ public class Enemy : MonoBehaviour, IHittable
     [SerializeField] protected EnemyPart[] parts;
     [SerializeField] protected GameObject breakFX;
     protected EnemyAction currentAction;
+    enum enemyBehavior { Chase, Stationary, Wander}
+    [SerializeField] enemyBehavior behavior;
     enum enemyState { Idle, Charging, Attacking, Stunned, Ragdoll, None };
     enemyState currentState = enemyState.Idle;
     [SerializeField] string currMovementDir = "";
@@ -61,7 +63,11 @@ public class Enemy : MonoBehaviour, IHittable
                 {
                     setupAction();
                 } else {
-                    move(hit);
+                    if(behavior == enemyBehavior.Chase)
+                    {
+                        move(hit);
+                    }
+                    
                 }
 
                 break;

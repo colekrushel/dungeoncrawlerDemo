@@ -36,6 +36,11 @@ public class BreakablePart : MonoBehaviour, IHittable
 
     private void onBreak()
     {
+        if (breakType == BreakableConstruct.breakType.None)
+        {
+            //if none then only destroy object
+            return;
+        }
         //tell its parent construct that a part has been broken
         this.gameObject.GetComponentInParent<BreakableConstruct>().partBreak(this);
     }

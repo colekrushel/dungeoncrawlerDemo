@@ -8,7 +8,9 @@ public static class EnemyDicts
     public static void init()
     {
         //load enemy prefabs
-        enemyToModel.Add("Drone", Resources.Load<GameObject>("Prefabs/Enemies/Bat"));
+        enemyToModel.Add("Drone", Resources.Load<GameObject>("Prefabs/Enemies/BeeClean"));
         enemyToModel.Add("Bat", Resources.Load<GameObject>("Prefabs/Enemies/Bat"));
+        enemyToModel.Add("BeeClean", Resources.Load<GameObject>("Prefabs/Enemies/BeeClean"));
+        enemyToModel.Add("HiveClean", Resources.Load<GameObject>("Prefabs/Enemies/HiveClean"));
     }
 }
