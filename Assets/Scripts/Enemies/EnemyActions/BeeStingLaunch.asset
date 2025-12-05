@@ -19,7 +19,7 @@ MonoBehaviour:
   damage: 2
   actionType: 0
   effectInfo: 
-  actionRange: 1.1
+  actionRange: 2
   hitsFront: 1
   associatedObject: {fileID: 0}
   weight: 1

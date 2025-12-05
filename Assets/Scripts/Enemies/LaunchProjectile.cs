@@ -1,3 +1,4 @@
+using Unity.VisualScripting;
 using UnityEngine;
 
 //use as an animation event to trigger a projectile launch

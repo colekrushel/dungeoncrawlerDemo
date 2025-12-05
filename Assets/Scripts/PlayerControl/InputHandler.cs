@@ -723,7 +723,7 @@ public class InputHandler : MonoBehaviour
             //item.hitParticles.GetComponent<ParticleSystem>().Play();
 
             //try to get an enemy component from hierarchy of object hit
-            //Debug.Log(objectHit.name + " hit ");
+            Debug.Log(objectHit.name + " hit ");
             Enemy enemyScript = objectHit.transform.GetComponentInParent<Enemy>();
             BreakablePart bp = objectHit.GetComponent<BreakablePart>();
             float effectiveness = 1f;
@@ -735,9 +735,10 @@ public class InputHandler : MonoBehaviour
                 
                 
                 
-            } else if(bp != null)
+            } if(bp != null)
             {
                 //just play an effect
+                ////Debug.Log(("HIT PART " + bp.name));
                 effectiveness = bp.hitByPlayer(damage, type);
                 UIUtils.playAttackHitEffect(hits[i].point, item, effectiveness);
                 

@@ -14,7 +14,7 @@ public class Enemy : MonoBehaviour, IHittable
     [SerializeField] protected string zone;
     protected float HP; //hit points
     protected int baseDamage;
-    protected float actionRange; //tiles player must be within to initiate an action
+    protected float actionRange; //tiles player must be within to initiate an action - same as longest action the enemy has
     protected int alertRange; //tiles player must be within to initiate chase
     protected float ICD;  //internal cool down - when this number gets below 0, triggers an action - goes down by around 1 per second
     protected float ICDBase; //number ICD is set to when reset; smaller number means faster enemy behavior 
@@ -59,9 +59,10 @@ public class Enemy : MonoBehaviour, IHittable
                 //use positions for checking attack range instead of the raycast length as we dont know where on the player the hit might have been [and attack ranges are tile-based]
                 Vector3 distanceBetween = (Player.playerObject.transform.position - positionObject.transform.position); distanceBetween.y = 0;
                 float magn = (Player.getPos() - pos).magnitude;
+                
                 if (hit.collider.gameObject && hit.collider.gameObject.name == "Player" && magn <= actionRange)
                 {
-                    setupAction();
+                    setupAction(magn);
                 } else {
                     if(behavior == enemyBehavior.Chase)
                     {
@@ -88,14 +89,14 @@ public class Enemy : MonoBehaviour, IHittable
         }
     }
 
-    private void setupAction()
+    private void setupAction(float dist)
     {
         //pick action from the list
         int ranIndex = Random.Range(0, enemyActions.Length);
         EnemyAction selectedAction = enemyActions[ranIndex];
         //check if action is possible to be performed (parts are not broken; all associated parts must be broken for the action to be disabled)
         int c = 0;
-        while (!canPerformAction(selectedAction) && c < 100)
+        while (!canPerformAction(selectedAction, dist) && c < 100)
         {
             //if cant perform the action then pick a new one until one we can perform has been picked
             ranIndex = Random.Range(0, enemyActions.Length);
@@ -104,8 +105,9 @@ public class Enemy : MonoBehaviour, IHittable
         }
         currentAction = selectedAction;
         //before attacking, determine if attack would actually hit the player. if not then turn to move to/face the player.
+        //dont do this for anything with a range of 1.4 or greater (2+ tiles)
         bool startAction = true;
-        if (currentAction.hitsFront)
+        if (selectedAction.actionRange <= 1.4 && currentAction.hitsFront)
         {
             //check if player is in front of the enemy
             if (GridUtils.getDirectionBetween(pos, Player.getPos()) == GridUtils.getDirectionOfObjectFacing(positionObject, zone))
@@ -137,14 +139,15 @@ public class Enemy : MonoBehaviour, IHittable
 
     }
 
-    private bool canPerformAction(EnemyAction action)
+    private bool canPerformAction(EnemyAction action, float dist)
     {
         bool retval = false;
-        if (action.associatedParts.Length == 0) return true;
+        //check for associated parts availability and dist between player and enemy
+        if (action.associatedParts.Length == 0 && dist <= action.actionRange) return true;
         //return true if a single part is not broken or action has no parts; false otherwise
         foreach (EnemyPart part in parts)
         {
-            if (action.associatedParts.Contains(part.partName) && !part.isBroken) {
+            if (action.associatedParts.Contains(part.partName) && !part.isBroken && dist <= action.actionRange) {
                 retval = true; break;
             }
         }
@@ -308,6 +311,7 @@ public class Enemy : MonoBehaviour, IHittable
                 //broke the part; now apply an effect and change the part to its broken appearance
                 effectiveness = 2;
                 part.partModel.GetComponent<MeshRenderer>().enabled = false;
+                part.partModel.GetComponent<BoxCollider>().enabled = false;
                 part.isBroken = true;
                 //if a part was broken then stagger the enemy
                 animator.Play("Stagger");

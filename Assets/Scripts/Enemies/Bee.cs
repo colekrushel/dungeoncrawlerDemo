@@ -9,7 +9,7 @@ public class Bee : Enemy
         //layer = l;
         HP = 50;
         baseDamage = 2;
-        actionRange = 1;
+        actionRange = 2;
         alertRange = 5;
         ICDBase = 1f;
         ICD = ICDBase;
