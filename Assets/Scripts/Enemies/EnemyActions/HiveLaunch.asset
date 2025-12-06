@@ -13,14 +13,15 @@ MonoBehaviour:
   m_Name: HiveLaunch
   m_EditorClassIdentifier: 
   chargeAnim: {fileID: 7400000, guid: bb2cf80a6d9342e4e8b245f450a5d48e, type: 2}
-  chargeDelay: 0.5
+  chargeDelay: 1
   actionAnim: {fileID: 7400000, guid: 6eb76c23ce73eb246bf7fa47d46b7823, type: 2}
   attackDelay: 1
   damage: 2
-  actionType: 0
+  actionType: 3
   effectInfo: 
-  actionRange: 1.1
-  hitsFront: 1
+  actionRange: 2
+  hitsFront: 0
   associatedObject: {fileID: 0}
   weight: 1
   associatedParts: []
+  cellAttack: {fileID: 11400000, guid: fe64c4854717ca54d8ac9c41fe8ded71, type: 2}

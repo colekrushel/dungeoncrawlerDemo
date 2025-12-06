@@ -196,6 +196,10 @@ public class RenderGrid : MonoBehaviour
     {
         //parent container for cell
         GameObject cellObject = new GameObject();
+        //add cellframe to be toggled on for displaying enemy cell-based attacks
+        //GameObject cellframe = Instantiate(Resources.Load<GameObject>("Prefabs/cellframe"));
+        //cellframe.SetActive(false);
+        //cellframe.transform.SetParent(cellObject.transform);
         string[] walls = cell.getWalls();
 
         cell.layer = grid.layer;

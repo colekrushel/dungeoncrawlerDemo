@@ -9,7 +9,7 @@ public class EnemyAction : ScriptableObject
     [SerializeField] public AnimationClip actionAnim;
     [SerializeField] public float attackDelay;//for longer/shorter attack animations; multiplier
     [SerializeField] public float damage;
-    public enum ActionType { Attack, Buff, Debuff } 
+    public enum ActionType { Attack, Buff, Debuff, CellAttack } 
     [SerializeField] public ActionType actionType;
     [SerializeField] public string effectInfo; //for extra effects the action may have
     [SerializeField] public float actionRange; //within how many tiles should the action effect the player or other entities
@@ -17,4 +17,5 @@ public class EnemyAction : ScriptableObject
     [SerializeField] public GameObject associatedObject; //extra object associated with the action, like spawning a projectile or particle effects, ect
     [SerializeField] public int weight; //how likely this action is to be picked; higher the better
     [SerializeField] public string[] associatedParts; //set to the same name as the parts because you cannot serialize components from prefabs
+    [SerializeField] public CellAttack cellAttack; //cellattack object to be executed from the animation event if the actiontype is cellattack
 }

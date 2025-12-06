@@ -25,3 +25,4 @@ MonoBehaviour:
   weight: 1
   associatedParts:
   - Stinger
+  cellAttack: {fileID: 0}

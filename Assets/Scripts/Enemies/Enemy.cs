@@ -124,6 +124,12 @@ public class Enemy : MonoBehaviour, IHittable
                 startAction = false;
             }
         }
+        //if cell attack then assign the associated cellAction prefab with the enemy's startAction script; this lets enemies have multiple different cellAttacks.
+        if(selectedAction.actionType == EnemyAction.ActionType.CellAttack)
+        {
+            StartCellAttack sca = positionObject.GetComponentInChildren<StartCellAttack>();
+            sca.setAttack(selectedAction.cellAttack);
+        }
         if (startAction)//start attack
         {
             actionRange = selectedAction.actionRange;

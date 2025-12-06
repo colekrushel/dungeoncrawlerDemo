@@ -1,0 +1,20 @@
+%YAML 1.1
+%TAG !u! tag:unity3d.com,2011:
+--- !u!114 &11400000
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 0}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: bda7e9da2c79ea54b8e6befa934e7d86, type: 3}
+  m_Name: spikeAttack
+  m_EditorClassIdentifier: Assembly-CSharp::CellAttack
+  type: 2
+  range: 1
+  attackObject: {fileID: 5396117388848442303, guid: 1d80c2e73c5974e4fade7739d7dfddf4, type: 3}
+  nextAttack: {fileID: 11400000, guid: f4abc9044e12a7c4e96e48b2eb5442e0, type: 2}
+  chance: 0
+  randMax: 0

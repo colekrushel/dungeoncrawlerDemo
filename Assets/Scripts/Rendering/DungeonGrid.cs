@@ -1,6 +1,7 @@
 using UnityEngine;
 using System.Collections.Generic;
 using System;
+using UnityEngine.Rendering;
 
 [Serializable]
 public class DungeonGrid 
@@ -32,6 +33,41 @@ public class DungeonGrid
     public DungeonCell getCell(Vector2 pos)
     {
         return cellGrid[(int)pos.y][(int)pos.x];
+    }
+
+    public List<DungeonCell> getCellsAroundPoint(Vector2 pos, int radius)
+    {
+        //inclusive
+        List<DungeonCell> ret = new List<DungeonCell>();
+        for (int y = (int)pos.y + radius; y >= pos.y - radius; y--)
+        {
+            for(int x = (int)pos.x-radius;x <= pos.x + radius; x++)
+            {
+                DungeonCell cell = getCell(x, y);
+                //exclude enemy's cell
+                if(pos != new Vector2(x, y))ret.Add(cell);
+            }
+        }
+        return ret;
+    }
+
+    public List<DungeonCell> getCellRingAroundPoint(Vector2 pos, int radius)
+    {
+        //inclusive
+        List<DungeonCell> ret = new List<DungeonCell>();
+        //horizontal rows first
+        for (int x = (int)pos.x - radius; x <= pos.x + radius; x++)
+        {
+            ret.Add(getCell(x, (int)pos.y + radius));
+            ret.Add(getCell(x, (int)pos.y - radius));
+        }
+        //vertical columns
+        for (int y = (int)pos.y + radius-1; y >= pos.y - radius+1; y--)
+        {
+            ret.Add(getCell((int)pos.x + radius, y));
+            ret.Add(getCell((int)pos.x - radius, y));
+        }
+        return ret;
     }
 
     public void printGrid()
