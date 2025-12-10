@@ -3,6 +3,7 @@ using UnityEngine.EventSystems;
 
 public class SkillBox : MonoBehaviour, IPointerEnterHandler, IPointerExitHandler, IPointerDownHandler
 {
+    public GameObject boxObject;
     public Skill boxSkill;
     public bool onCooldown = false;
     public bool skillActive = false;

@@ -30,7 +30,7 @@ public static class Player
     public static float currentBlockHP;
     public static float maxBlockHP;
     //other misc data
-    private static int currencyHeld = 1000;
+    private static int currencyHeld = 5000;
     public static List<Skill> skills = new List<Skill>();
     
 
@@ -150,6 +150,15 @@ public static class Player
     static public void addSkill(Skill newSkill)
     {
         skills.Add(newSkill);
+        //if the skills has a replaces field filled out, then remove that skill from the player (player is guaranteed to have it)
+        //skill being removed will have an active component, so disable that first.
+        if(newSkill.replaces != null)
+        {
+            HandleSkillBar.deactivateBox(newSkill.replaces);
+            skills.Remove(newSkill.replaces);
+        }
+
+        
         //if it has passive effects then activate its effects immediately when added
         playerStats.addSkillModifiers(newSkill);
         //update skillbox ui in case a buff was added

@@ -2,6 +2,7 @@
 using System;
 using System.Collections;
 using System.Collections.Generic;
+using TMPro;
 using UnityEngine;
 using UnityEngine.InputSystem;
 using UnityEngine.UI;
@@ -723,18 +724,28 @@ public class InputHandler : MonoBehaviour
             //item.hitParticles.GetComponent<ParticleSystem>().Play();
 
             //try to get an enemy component from hierarchy of object hit
-            Debug.Log(objectHit.name + " hit ");
+            //Debug.Log(objectHit.name + " hit ");
             Enemy enemyScript = objectHit.transform.GetComponentInParent<Enemy>();
             BreakablePart bp = objectHit.GetComponent<BreakablePart>();
             float effectiveness = 1f;
             if (enemyScript != null)
             {
                 enemyHit = enemyScript;
-                //we want to deal damage to each part but only hit the enemy once; some effects we only want to happen once
-                effectiveness = enemyScript.hitPart(damage, objectHit);
-                
-                
-                
+                //we only want to deal damage to parts; check if object hit is a part
+                EnemyPart part = enemyHit.getPartFromObject(objectHit);
+                if (part != null)
+                {
+                    effectiveness = enemyScript.hitPart(damage, part);
+                    //activate damage text for each hit
+                    GameObject dmgTxt = Instantiate(Resources.Load<GameObject>("Prefabs/UI/DamageText"));
+                    dmgTxt.GetComponent<TextMeshProUGUI>().text = damage.ToString();
+                    dmgTxt.transform.localScale = Vector3.one * (.3f + damage/12) ;
+                    dmgTxt.transform.position = camera.WorldToScreenPoint(hits[i].transform.position);
+                    dmgTxt.transform.SetParent(GameObject.Find("PlayerUI").transform);
+                    StartCoroutine(UIUtils.fadeObject(dmgTxt, true, .2f));
+                    //rest of the damage text animation and handling will be done by a script on the prefab object
+                }
+
             } if(bp != null)
             {
                 //just play an effect

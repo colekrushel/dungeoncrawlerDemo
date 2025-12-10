@@ -1,4 +1,5 @@
 using NUnit.Framework;
+using System;
 using System.Collections.Generic;
 using TMPro;
 using UnityEngine;
@@ -17,8 +18,7 @@ public class TreeNode : MonoBehaviour, IPointerEnterHandler, IPointerExitHandler
 
     //ui display handling
     private GameObject background;
-    private GameObject icon;
-    private GameObject border;
+
     public GameObject descriptionWindow;
     public HoverMe descHover;
     //grab description components at wake so they dont have to be grabbed multiple times
@@ -27,12 +27,14 @@ public class TreeNode : MonoBehaviour, IPointerEnterHandler, IPointerExitHandler
     private GameObject dstats;
     private TextMeshProUGUI dprice;
     [SerializeField] GameObject attribute;
+    [SerializeField] string displayName;
+    [SerializeField] Sprite onImage;
+    [SerializeField] Sprite offImage;
+    [SerializeField] GameObject[] outgoingConnections;
 
     public void Awake()
     {
-        background = transform.Find("BCKG").gameObject;
-        icon = transform.Find("Icon").gameObject;
-        border = transform.Find("Border").gameObject;
+        background = transform.Find("Border").gameObject;
         dname = descriptionWindow.transform.Find("Name").GetComponent<TextMeshProUGUI>();
         ddesc = descriptionWindow.transform.Find("Description").GetComponent<TextMeshProUGUI>();
         dstats = descriptionWindow.transform.Find("Stats").gameObject;
@@ -53,16 +55,29 @@ public class TreeNode : MonoBehaviour, IPointerEnterHandler, IPointerExitHandler
     private void lockNode()
     {
         unlocked = false;
-        background.GetComponent<Image>().color = Color.black;
-        border.GetComponent<Image>().color = Color.black;
+        background.GetComponent<Image>().sprite = offImage;
+        //border.GetComponent<Image>().color = Color.black;
     }
 
     private void unlockNode()
     {
         unlocked = true;
-        background.GetComponent<Image>().color = Color.white;
-        border.GetComponent<Image>().color = Color.blue;
+        background.GetComponent<Image>().sprite = onImage;
         Player.addSkill(nodeSkill);
+        //when this node is unlocked, enable all outgoing connections
+        foreach (GameObject conn in outgoingConnections)
+        {
+            enableConnection(conn);
+        }
+    }
+
+    private void enableConnection(GameObject connection)
+    {
+        //disable off
+        connection.transform.Find("Off").gameObject.SetActive(false);
+        //enable on
+        connection.transform.Find("On").gameObject.SetActive(true);
+
     }
 
     public void OnPointerEnter(PointerEventData pointerEventData)
@@ -80,7 +95,7 @@ public class TreeNode : MonoBehaviour, IPointerEnterHandler, IPointerExitHandler
     private void fillWindow()
     {
         //read skill info and fill the appropriate text components
-        dname.text = nodeSkill.name;
+        dname.text = displayName;
         ddesc.text = nodeSkill.description;
         dprice.text = nodeSkill.price.ToString();
         if (!requirementsMet()) dprice.color = Color.red;
@@ -112,6 +127,41 @@ public class TreeNode : MonoBehaviour, IPointerEnterHandler, IPointerExitHandler
                 if(flipPositive) text.color = Color.red;
                 text.text = effect.stat + " +" + effect.boost.ToString() + affix;
             }
+            newStat.transform.SetParent(dstats.transform, false);
+        }
+        //grab skill effects
+        List<BuffEffect> buffSkillEffects = nodeSkill.GetBuffSkillEffects();
+        List<PassiveEffect> passiveBuffSkillEffects = new List<PassiveEffect>();
+        foreach (BuffEffect effect in buffSkillEffects)
+        {
+            foreach (PassiveEffect buff in effect.buffs)
+            {
+                passiveBuffSkillEffects.Add(buff);
+            }
+        }
+        //put skill effects as stats
+        foreach (PassiveEffect effect in passiveBuffSkillEffects)
+        {
+            GameObject newStat = Instantiate(attribute);
+            newStat.name = effect.stat;
+            TextMeshProUGUI text = newStat.GetComponent<TextMeshProUGUI>();
+            string affix = "";
+            if (!effect.flat) affix = "%";
+            bool flipPositive = false;
+            if (effect.stat == "Cooldown") flipPositive = true;
+            if (effect.boost < 0)
+            {
+                if (!flipPositive) text.color = Color.red;
+                else text.color = Color.green;
+
+                text.text = effect.stat + " " + effect.boost.ToString() + affix;
+            }
+            else
+            {
+                if (flipPositive) text.color = Color.red;
+                text.text = effect.stat + " +" + effect.boost.ToString() + affix;
+            }
+            text.text += " [A]";
             newStat.transform.SetParent(dstats.transform, false);
         }
     }

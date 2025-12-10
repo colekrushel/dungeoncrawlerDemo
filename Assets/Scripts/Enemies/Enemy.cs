@@ -122,6 +122,9 @@ public class Enemy : MonoBehaviour, IHittable
                 Quaternion targetRotation = Quaternion.AngleAxis(angle, positionObject.transform.up) * positionObject.transform.rotation;
                 MovementManager.rotateObject(positionObject, targetRotation, 1f);
                 startAction = false;
+                //update map after rotation
+                UIUtils.updateMap();
+
             }
         }
         //if cell attack then assign the associated cellAction prefab with the enemy's startAction script; this lets enemies have multiple different cellAttacks.
@@ -287,46 +290,43 @@ public class Enemy : MonoBehaviour, IHittable
 
     }
 
-    public float hitPart(float damage, GameObject partHit)
+    public float hitPart(float damage, EnemyPart partHit)
     {
         float effectiveness = 1;
 
         if (currentState == enemyState.Stunned) effectiveness = 2;
-        EnemyPart part = getPartFromObject(partHit);
-        if (part != null)
+        
+        EnemyPart part = partHit;
+        //bool inUse = currentAction.associatedParts.Contains(part.partName);
+        //inUse = true; //override for now
+        //if (!inUse) return effectiveness;
+
+        //deal damage to each part; bonus if stunned
+        if (currentState != enemyState.Stunned) effectiveness = part.effectiveness;
+        damage *= effectiveness;
+
+        //part onhit fx
+        Renderer r = part.partModel.GetComponent<Renderer>();
+        StartCoroutine(partHitFX(.5f, r));     
+
+        part.currentHP -= damage;
+        HP -= damage;
+
+        if (part.currentHP <= 0)
         {
-            //only deal damage if part hit is associated with the current action 
-            //bool inUse = currentAction.associatedParts.Contains(part.partName);
-            //inUse = true; //override for now
-            //if (!inUse) return effectiveness;
-
-            //deal damage to each part; bonus if stunned
-            if (currentState != enemyState.Stunned) effectiveness = part.effectiveness;
-            damage *= effectiveness;
-
-            //part onhit fx
-            Renderer r = part.partModel.GetComponent<Renderer>();
-            StartCoroutine(partHitFX(.5f, r));
-            
-
-            part.currentHP -= damage;
-            HP -= damage;
-
-            if (part.currentHP < 0)
-            {
-                //broke the part; now apply an effect and change the part to its broken appearance
-                effectiveness = 2;
-                part.partModel.GetComponent<MeshRenderer>().enabled = false;
-                part.partModel.GetComponent<BoxCollider>().enabled = false;
-                part.isBroken = true;
-                //if a part was broken then stagger the enemy
-                animator.Play("Stagger");
-                UIUtils.playPartBreakEffect(part.partModel.transform.position, part, breakFX);
-                ICD = ICDBase;
-                currentState = enemyState.Stunned;
-                currentAction = null;
-            }
+            //broke the part; now apply an effect and change the part to its broken appearance
+            effectiveness = 2;
+            part.partModel.GetComponent<MeshRenderer>().enabled = false;
+            part.partModel.GetComponent<BoxCollider>().enabled = false;
+            part.isBroken = true;
+            //if a part was broken then stagger the enemy
+            animator.Play("Stagger");
+            UIUtils.playPartBreakEffect(part.partModel.transform.position, part, breakFX);
+            ICD = ICDBase;
+            currentState = enemyState.Stunned;
+            currentAction = null;
         }
+        
         return effectiveness;
     }
 
@@ -336,7 +336,7 @@ public class Enemy : MonoBehaviour, IHittable
         yield return new WaitForSeconds(d);
         targetRenderer.material.color = Color.white;
     }
-    public float hitByPlayer(float damage, EquipmentItem.type type)
+    public float hitByPlayer(float damage, EquipmentItem.type type) //doesnt do damage to the enemy but checks for death
     {
         float effectiveness = 1;
         ////if enemy is stunned then do more damage
@@ -426,7 +426,7 @@ public class Enemy : MonoBehaviour, IHittable
         }
     }
 
-    private EnemyPart getPartFromObject(GameObject obj)
+    public EnemyPart getPartFromObject(GameObject obj)
     {
         //loop through parts and check if they match the partname of the given game object
         EnemyPart objPart = obj.GetComponent<EnemyPart>();

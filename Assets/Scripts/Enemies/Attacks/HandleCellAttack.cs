@@ -30,7 +30,6 @@ public class HandleCellAttack : MonoBehaviour
     {
         yield return new WaitUntil(() => animator.GetCurrentAnimatorStateInfo(0).normalizedTime > 1 && !animator.IsInTransition(0));
         //after finish, start new attack if applicable and kill self
-        Debug.Log("attack finished; sending death signal");
         caller.onattackend();
         //animator.StopPlayback();
         Destroy(this.gameObject);

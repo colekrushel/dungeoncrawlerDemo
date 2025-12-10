@@ -49,7 +49,7 @@ public class UIUtils : MonoBehaviour
     //'pops' in the window by toggling it and performing a little animation
     public static void popIn(GameObject window)
     {
-        fadeObject(window, true, 0.2f);
+        fadeObject(window, true, 0.2f); //doesnt work?
         window.SetActive(true);
     }
 
@@ -68,7 +68,7 @@ public class UIUtils : MonoBehaviour
     }
 
     //update a single cell on the map given a grid pos, mainly used to update enemy pos on map
-    public static void updateSingleMapCell(int gridx, int gridy, Sprite spriteToPlace)
+    public static void updateSingleMapCell(int gridx, int gridy, Sprite spriteToPlace, Enemy associatedEnem = null)
     {
         //assuming item is on current layer
         //get corresponding index on map 
@@ -83,6 +83,31 @@ public class UIUtils : MonoBehaviour
             //update map with given sprite
             GameObject mapCell = mapGrid.transform.GetChild(cellY * 5 + cellX).gameObject;
             mapCell.transform.Find("Icon").gameObject.GetComponent<Image>().sprite = spriteToPlace;
+            //if an enemy sprite is being placed then rotate it to match the enemy's current rotation
+            if(associatedEnem != null)
+            {
+                //get rotation dir
+                string dir = GridUtils.getDirectionOfObjectFacing(associatedEnem.positionObject, Player.orientation);
+                switch (dir)
+                {
+                    case "N":
+                        mapCell.transform.Find("Icon").transform.rotation = Quaternion.Euler(0, 0, 180);
+                        break;
+                    case "E":
+                        mapCell.transform.Find("Icon").transform.rotation = Quaternion.Euler(0, 0, 90);
+                        break;
+                    case "S":
+                        mapCell.transform.Find("Icon").transform.rotation = Quaternion.Euler(0, 0, 0);
+                        break;
+                    case "W":
+                        mapCell.transform.Find("Icon").transform.rotation = Quaternion.Euler(0, 0, 270);
+                        break;
+                }
+            } else
+            {
+                //else reset rotation
+                mapCell.transform.Find("Icon").transform.rotation = Quaternion.Euler(0, 0, 180);
+            }
         }
     }
     
@@ -133,7 +158,7 @@ public class UIUtils : MonoBehaviour
                     DungeonCell realCell = grid.getCell(x, y);
                     //cell on map - assign sprite from typeToSprite dict and background from floorToColor dict
                     //ignore some entities used for instantiation
-                    if (realCell.type == "Enemy")
+                    if (realCell.type == "Enemy" || realCell.type == "Prop")
                     {
                         mapCell.transform.Find("Icon").gameObject.GetComponent<Image>().sprite = GridDicts.typeToSprite["None"];
                     } else
@@ -155,7 +180,18 @@ public class UIUtils : MonoBehaviour
                         }
                             
                     }
-                }              
+                    //for impassable props (props with no modifiers) we want to draw the map cell as being surrounded by walls to signify that it is not traversible.
+                    if(realCell.type == "Prop" && !realCell.isTraversible() && realCell.getPos() != Player.getPos()) //and ignore player's position because player's tile is always considered untraversible
+                    {
+                        mapCell.transform.Find("N").gameObject.GetComponent<Image>().color = Color.black;
+                        mapCell.transform.Find("E").gameObject.GetComponent<Image>().color = Color.black;
+                        mapCell.transform.Find("S").gameObject.GetComponent<Image>().color = Color.black;
+                        mapCell.transform.Find("W").gameObject.GetComponent<Image>().color = Color.black;
+                    }
+
+                }
+                //reset rotation; necessary because some types change their rotation
+                mapCell.transform.Find("Icon").transform.rotation = Quaternion.Euler(0, 0, 0);
             }
             //also call enemy updates
             EnemyManager.updateMapWithEnemyInfo(grid.layer);
@@ -194,7 +230,7 @@ public class UIUtils : MonoBehaviour
     //}
 
     //from https://stackoverflow.com/questions/44933517/fading-in-out-gameobject
-    public static IEnumerator fadeObject(GameObject objectToFade, bool fadeIn, float duration)
+    public static IEnumerator fadeObject(GameObject objectToFade, bool fadeIn, float duration, bool destroyWhenFinished = false)
     {
         float counter = 0f;
 
@@ -218,7 +254,7 @@ public class UIUtils : MonoBehaviour
         Image tempImage = objectToFade.GetComponent<Image>();
         RawImage tempRawImage = objectToFade.GetComponent<RawImage>();
         MeshRenderer tempRenderer = objectToFade.GetComponent<MeshRenderer>();
-        Text tempText = objectToFade.GetComponent<Text>();
+        TextMeshProUGUI tempText = objectToFade.GetComponent<TextMeshProUGUI>();
         CanvasGroup tempGroup = objectToFade.GetComponent<CanvasGroup>();
 
         //Check if this is a Sprite
@@ -302,6 +338,11 @@ public class UIUtils : MonoBehaviour
         }
         //when finished hiding canvas group, disable it
         if (mode == 5 && !fadeIn) objectToFade.GetComponent<Canvas>().enabled = false;
+        //if set, destroy object when done
+        if (destroyWhenFinished)
+        {
+            Destroy(objectToFade);
+        }
     }
 
     public static void addMessageToLog(string message, Color color)

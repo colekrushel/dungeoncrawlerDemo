@@ -145,7 +145,17 @@ public class DungeonCell
 
                     break;
             case BreakableConstruct.breakType.Item:
-                Debug.Log("item broken");
+                //Debug.Log("item broken");
+                //Debug.Log(entity.dataString);
+                if( int.TryParse(entity.dataString, out wc))
+                {
+                    //currency is contained in the item
+                    Player.addCurrency(wc);
+                } else
+                {
+                    //equipment is contained in the item
+                    Player.inventory.addItem(entity.dataString, "breacher");
+                }
                 break;
             case BreakableConstruct.breakType.Door:
                 //open door

@@ -37,7 +37,8 @@ public class AnimateUI : MonoBehaviour
         rightEffectMask = GameObject.Find("AttackContainer").transform.Find("RightAttackMask").GetComponent<Image>();
         leftMaskImage = cursorOverlay.transform.Find("CursorOffset").Find("AttackCooldownIndicator").Find("LeftMask").GetComponentInChildren<Image>();
         rightMaskImage = cursorOverlay.transform.Find("CursorOffset").Find("AttackCooldownIndicator").Find("RightMask").GetComponentInChildren<Image>();
-
+        currencyChangeObject = GameObject.Find("CurrencyChangePreview").transform.Find("Amt").gameObject;
+        currencyChangeText = currencyChangeObject.GetComponent<TextMeshProUGUI>();
     }
 
     //animate constant scrolling effects
@@ -83,6 +84,9 @@ public class AnimateUI : MonoBehaviour
     private static float totalMovement = 0;
     private static bool trayUp = true;
     private static bool forceTrayOn;
+    //fade in currency gain/loss display
+    private static GameObject currencyChangeObject;
+    private TextMeshProUGUI currencyChangeText;
 
     void Update()
     {
@@ -161,15 +165,20 @@ public class AnimateUI : MonoBehaviour
         //increment currency every frame
         if(currencyToBeAdded > 0)
         {
+            //increment currency count
             currencyText.text = (int.Parse(currencyText.text.ToString()) + currencyAddedPerUpdate).ToString();
             currencyToBeAdded -= currencyAddedPerUpdate;
+            //decrement currency change preview
+            currencyChangeText.text = (int.Parse(currencyChangeText.text.ToString()) - currencyAddedPerUpdate).ToString();
             //prevent overflow
-            if(currencyToBeAdded < 0) currencyToBeAdded = 0;
+            if (currencyToBeAdded < 0) currencyToBeAdded = 0;
         } else if(currencyToBeAdded < 0)
         {
-            //handle subtracting currency
+            //handle subtracting currency (decrement count)
             currencyText.text = (int.Parse(currencyText.text.ToString()) - currencyAddedPerUpdate).ToString();
             currencyToBeAdded += currencyAddedPerUpdate;
+            //increment currency change preview
+            currencyChangeText.text = (int.Parse(currencyChangeText.text.ToString()) + currencyAddedPerUpdate).ToString();
             //prevent overflow
             if (currencyToBeAdded > 0) currencyToBeAdded = 0;
         }
@@ -192,6 +201,8 @@ public class AnimateUI : MonoBehaviour
                 //moveTrayAmt = -2;
                 forceTrayOn = false;
                 //trayIdleTimer = 0;
+                //reset currency change preview as well
+                Instance.StartCoroutine(UIUtils.fadeObject(currencyChangeObject, false, .5f));
             }
         }
         else if (trayUp)
@@ -231,6 +242,7 @@ public class AnimateUI : MonoBehaviour
                 trayIdleTimer = 0;
             }
         }
+        
 
     }
 
@@ -279,6 +291,9 @@ public class AnimateUI : MonoBehaviour
         //when adding currency, move the tray up so the user can see the increase
         forceTrayOn = true;
         currencyToBeAdded += amt;
+        //display number gained
+        currencyChangeObject.GetComponent<TextMeshProUGUI>().text = amt.ToString();
+        Instance.StartCoroutine(UIUtils.fadeObject(currencyChangeObject, true, .5f));
     }
 
     private IEnumerator closeTray()

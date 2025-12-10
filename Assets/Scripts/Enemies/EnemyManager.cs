@@ -116,7 +116,9 @@ public class EnemyManager : MonoBehaviour
             bool enemyNearPlayer = cellX >= 0 && cellX <= 4 && cellY >= 0 && cellY <= 4; 
             if (enemy.getLayer() == layer && enemyNearPlayer)
             {
-                UIUtils.updateSingleMapCell((int)enemy.getPos().x, (int)enemy.getPos().y, GridDicts.typeToSprite["Enemy"]);
+                Sprite esprite = GridDicts.typeToSprite["Enemy"];
+
+                UIUtils.updateSingleMapCell((int)enemy.getPos().x, (int)enemy.getPos().y, GridDicts.typeToSprite["Enemy"], enemy);
             }
         }
     }

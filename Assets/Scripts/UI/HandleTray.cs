@@ -18,12 +18,13 @@ public class HandleTray : MonoBehaviour
     {
         closeWindow("Log");
         closeWindow("Weapons");
-        closeWindow("SkillTree");
+        //closeWindow("SkillTree");
         closeWindow("SkillBar");
         closeWindow("Map");
         closeWindow("AppStore");
         //start the game paused/on the desktop
         desktopTransition(true);
+        
     }
 
     public void closeWindow(string windowName) {
@@ -83,6 +84,8 @@ public class HandleTray : MonoBehaviour
 
     public static void desktopTransition(bool openDesktop)
     {
+        //reset cursor status to normal when transitioning because cursor state only resets when leaving the element, and the transition doesnt satisfy this for whatever reason
+        HandleCursorOverlay.setState(HandleCursorOverlay.cursorState.none);
         //when returning to the desktop, the game should be paused; unpause when opening game
         if (openDesktop)
         {

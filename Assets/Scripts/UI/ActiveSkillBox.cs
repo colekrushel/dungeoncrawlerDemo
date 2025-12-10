@@ -20,6 +20,7 @@ public class ActiveSkillBox
         cooldownTimer = ctimer;
         transparencyRect = trect;
         timerMask = tmask;
+
         skillbox = s;
 
     }

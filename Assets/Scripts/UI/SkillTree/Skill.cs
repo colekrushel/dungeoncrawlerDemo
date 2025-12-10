@@ -22,6 +22,8 @@ public class Skill : ScriptableObject, ISkill
     public enum expireType { time, onHit, takeDamage } //ways for the buff to expire
     [SerializeField]
     public expireType expire;
+    [SerializeField]
+    public Skill replaces; //skill that this one replaces/upgrades
 
     public void ExecuteSkillEffects()
     {

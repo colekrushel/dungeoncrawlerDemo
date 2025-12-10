@@ -68,6 +68,7 @@ public class HandleSkillBar : MonoBehaviour
 
         //assume all buffs are timer based for now 
         RectTransform timer = sbox.transform.Find("Timer").Find("TimerMask").GetComponent<RectTransform>();
+        sbox.GetComponent<SkillBox>().boxObject = sbox;
         ActiveSkillBox activesbox = new ActiveSkillBox(0, s.cooldown, 0, s.time, transparency, timer, sbox.GetComponent<SkillBox>());
 
         //set initial positions of rects
@@ -76,6 +77,32 @@ public class HandleSkillBar : MonoBehaviour
         activeSkillBoxes.Add(activesbox);
     }
 
+    public static void deactivateBox(Skill s)
+    {
+        Debug.Log("deactivate box");
+        //forcefully deactivate a skill; used when a skill is being replaced 
+        foreach (ActiveSkillBox box in activeSkillBoxes)
+        {
+            if(box.skillbox.boxSkill == s)
+            {
+                
+                //skill found in active box; stop it and remove the box from active boxes
+                box.skillTimer = 0;
+                box.skillbox.skillActive = false;
+                Player.playerStats.removeBuffs(box.skillbox.boxSkill);
+                box.skillbox.skillFinished = true;
+                HandleSkillTree.fillStatsWindow(Player.playerStats.generateStatString());
+                box.skillbox.onCooldown = false;
+                box.cooldownTimer = 0;
+                //when cooldown is finished, remove this box from the update loop because it has done its job
+                activeSkillBoxes.Remove(box);
+                break;
+            }
+        }
+        //remove object
+        GameObject sbox = Instance.transform.Find(s.name).gameObject;
+        Destroy(sbox);
+    }
 
     // Update is called once per frame
     void Update()
