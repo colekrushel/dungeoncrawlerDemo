@@ -619,6 +619,8 @@ public class InputHandler : MonoBehaviour
 
     void OnRightDown(InputValue value)
     {
+        //only handle if weapon upgrade is obtained.
+        if (!HandleEquipment.getUpgradeStatus()) return;
         //if shield equipped then handle it now
         if (Player.rightItem != null && Player.rightItem.equipType == EquipmentItem.type.Shield)
         {
@@ -633,6 +635,8 @@ public class InputHandler : MonoBehaviour
 
     void OnRightUp(InputValue value)
     {
+        //only handle if weapon upgrade is obtained.
+        if (!HandleEquipment.getUpgradeStatus()) return;
         Vector2 startPos = Mouse.current.position.ReadValue();
         float diff = Mathf.Abs(startPos.x - rightStartPos.x + startPos.y - rightStartPos.y);
         if (Player.rightItem != null && Player.rightCooldown <= 0 && diff > 5) executeAttack(rightStartPos, startPos, true);
@@ -681,7 +685,7 @@ public class InputHandler : MonoBehaviour
         }
 
         //draw the ui element for the attack
-        UIUtils.drawAttack(startPos, endPos, range, effect, !rightEquip);
+        UIUtils.drawAttack(startPos, endPos, range, effect, !rightEquip, item.animSpeedMult);
         //perform calculations to find what was hit by the attack
         Vector2 diff = endPos - startPos;
         //get point range * 10 units in diff direction

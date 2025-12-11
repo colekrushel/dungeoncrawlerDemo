@@ -372,7 +372,7 @@ public class UIUtils : MonoBehaviour
         }
     }
 
-    public static void drawAttack(Vector2 startPos, Vector2 endPos, float range, Texture effectImg, bool left)
+    public static void drawAttack(Vector2 startPos, Vector2 endPos, float range, Texture effectImg, bool left, float speedmult)
     {
         GameObject mask;
         if (left) mask = attackContainer.transform.Find("LeftAttackMask").gameObject;
@@ -393,7 +393,7 @@ public class UIUtils : MonoBehaviour
         //calc angle
         float angle = Mathf.Atan2(diff.y, diff.x) * Mathf.Rad2Deg;
         attackContainer.transform.localEulerAngles = new Vector3(0, 0, angle);
-        AnimateUI.setEffect(img, left);
+        AnimateUI.setEffect(img, left, speedmult);
     }
 
     public static void playAttackHitEffect(Vector3 worldPos, EquipmentItem item, float effectiveness) //where effectiveness is a damage mult based on the part of the enemy hit/enemy state (eg stunned enemies would be 2)

@@ -54,9 +54,11 @@ public class AnimateUI : MonoBehaviour
     private static Image leftEffectMask;
     private static RawImage leftEffectImage;
     private static bool playLeftEffect = false;
+    private static float leftSpeedMult = 1;
     private static Image rightEffectMask;
     private static RawImage rightEffectImage;
     private static bool playRightEffect = false;
+    private static float rightSpeedMult = 1;
     // vars for camera shake
     [SerializeField] private new Camera camera; // set this via inspector
     static float shake = 0;
@@ -123,7 +125,7 @@ public class AnimateUI : MonoBehaviour
         //animate effects
         if (playLeftEffect)
         {
-            leftEffectImage.uvRect = new Rect(leftEffectImage.uvRect.position + new Vector2(1, 0) * Time.deltaTime * 10, leftEffectImage.uvRect.size);
+            leftEffectImage.uvRect = new Rect(leftEffectImage.uvRect.position + new Vector2(1, 0) * leftSpeedMult * Time.deltaTime * 10, leftEffectImage.uvRect.size);
             if(leftEffectImage.uvRect.x > 1)
             {
                 //if effect has done a complete pass then stop animating it
@@ -133,7 +135,7 @@ public class AnimateUI : MonoBehaviour
         }
         if (playRightEffect)
         {
-            rightEffectImage.uvRect = new Rect(rightEffectImage.uvRect.position + new Vector2(1, 0) * Time.deltaTime * 10, rightEffectImage.uvRect.size);
+            rightEffectImage.uvRect = new Rect(rightEffectImage.uvRect.position + new Vector2(1, 0) * rightSpeedMult * Time.deltaTime * 10, rightEffectImage.uvRect.size);
             if (rightEffectImage.uvRect.x > 1)
             {
                 //if effect has done a complete pass then stop animating it
@@ -246,7 +248,7 @@ public class AnimateUI : MonoBehaviour
 
     }
 
-    public static void setEffect(RawImage img, bool left)
+    public static void setEffect(RawImage img, bool left, float speedmult)
     {
         if (left)
         {
@@ -255,6 +257,7 @@ public class AnimateUI : MonoBehaviour
             leftEffectImage.transform.localPosition = Vector3.zero;
             playLeftEffect = true;
             leftEffectMask.color = new Color(0, 0, 0, .01f);
+            leftSpeedMult = speedmult;
         } else
         {
             rightEffectImage = img;
@@ -262,6 +265,7 @@ public class AnimateUI : MonoBehaviour
             rightEffectImage.transform.localPosition = Vector3.zero;
             playRightEffect = true;
             rightEffectMask.color = new Color(0, 0, 0, .01f);
+            rightSpeedMult = speedmult;
         }
 
         

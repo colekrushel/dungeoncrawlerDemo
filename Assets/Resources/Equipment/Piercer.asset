@@ -10,18 +10,18 @@ MonoBehaviour:
   m_Enabled: 1
   m_EditorHideFlags: 0
   m_Script: {fileID: 11500000, guid: 09388ffff21d5be429b4953bc852ed3b, type: 3}
-  m_Name: Smasher
+  m_Name: Piercer
   m_EditorClassIdentifier: 
-  equipType: 0
-  baseDamage: 2
+  equipType: 2
+  baseDamage: 4
   shieldHealth: 0
   shieldDecay: 0
   shieldRegen: 0
-  range: 30
-  recoil: 0.5
+  range: 10
+  recoil: 1
   cooldown: 1
-  icon: {fileID: 21300000, guid: 02aa6a00dfe030245bd0f10a7bdcdb88, type: 3}
-  logo: {fileID: 21300000, guid: a409056a5f1946648a743a302aac6af0, type: 3}
+  icon: {fileID: 21300000, guid: a0e79148801ec7443a4544ec0ffb89d9, type: 3}
+  logo: {fileID: 21300000, guid: d4c654b1108091a4a93556d8c3a96f35, type: 3}
   hitParticles: {fileID: 6397834174913037371, guid: c7b7bbc32f85ba846840d2729512567f, type: 3}
-  effect: {fileID: 2800000, guid: e3203d6eba194c5499920f43ddaaa0ea, type: 3}
-  animSpeedMult: 0.5
+  effect: {fileID: 2800000, guid: 659db6f0e9d564649af8a151393f20de, type: 3}
+  animSpeedMult: 2

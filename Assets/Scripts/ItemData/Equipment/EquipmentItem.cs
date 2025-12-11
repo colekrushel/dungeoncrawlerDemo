@@ -16,4 +16,5 @@ public class EquipmentItem : ScriptableObject
     [SerializeField] public Sprite logo;
     [SerializeField] public GameObject hitParticles;
     [SerializeField] public Texture effect;
+    [SerializeField] public float animSpeedMult; //multiplier for how fast the weapon effect should pass by the screen; higher number means faster, base 1
 }

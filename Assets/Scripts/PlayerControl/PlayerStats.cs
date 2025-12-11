@@ -15,7 +15,7 @@ public class PlayerStats
 
     float currencyMult = 1;
 
-    bool real;
+    bool real;//stop playerstats created for preview purposes from affecting the actual stats 
 
     /* unimplemented stats
     float moveSpeedMult = 1;
@@ -43,7 +43,7 @@ public class PlayerStats
         baseHealth = old.baseHealth;
         baseCooldown = old.baseCooldown;
         cooldownMult = old.cooldownMult;
-        real = false; //stop playerstats created for preview purposes from affecting the actual stats 
+        real = false; 
     }
 
     public float getMaxHealth()

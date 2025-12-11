@@ -10,10 +10,29 @@ public class HandleEquipment : MonoBehaviour
     public static GameObject EquipmentBox;
     public static List<GameObject> EquipmentPanels;
     public static MonoBehaviour Instance { get; private set; }
+    private static bool upgraded = false; //whether or not the app has been upgraded to dual-wielding capacity yet.
     public void Awake()
     {
         Instance = this;
         EquipmentBox = transform.Find("Items").gameObject;
+    }
+
+    public static void onUpgradeObtain()
+    {
+        upgraded = true;
+        //just load the autoequipped right weapon because i dont want to handle null equipped weapons
+        updateEquipped(false);
+
+        //change icon and text to imply equippability
+        //GameObject parent = Instance.transform.parent.transform.Find("RightEquip").gameObject;
+        //parent.transform.Find("Box").Find("Icon").gameObject.GetComponent<Image>().sprite = GridDicts.typeToSprite["None"];
+        //parent.transform.Find("Box").Find("Logo").gameObject.GetComponent<Image>().enabled = false;
+        //parent.transform.Find("Stats").Find("Text").gameObject.GetComponent<TextMeshProUGUI>().text = "AWAITING SELECTION";
+    }
+
+    public static bool getUpgradeStatus()
+    {
+        return upgraded;
     }
 
     public static void displayEquips()
@@ -42,7 +61,12 @@ public class HandleEquipment : MonoBehaviour
 
         }
         updateEquipped(true);
-        updateEquipped(false);
+        if (upgraded)
+        {
+            //only handle right if upgraded
+            updateEquipped(false);
+        }
+        
     }
 
     public static void updateEquipped(bool updateLeft)
@@ -88,7 +112,7 @@ public class HandleEquipment : MonoBehaviour
             returnstr += "Health: " + item.shieldHealth + "\n" + "Regen: " + item.shieldRegen + "\n" + "Decay: " + item.shieldDecay + "\n" + "Cooldown: " + item.cooldown;
         } else
         {
-            returnstr += "Damage: " + item.baseDamage + "\n" + "Range: " + item.range + "\n" + "Cooldown: " + item.cooldown;
+            returnstr += "Damage: " + item.baseDamage + "\n" + "Range: " + item.range + "\n" + "Cooldown: " + item.cooldown + "\n" + "Type: " + item.equipType.ToString();
         }
         return returnstr;
     }
@@ -100,13 +124,9 @@ public class HandleEquipment : MonoBehaviour
         bool left = true;
         PointerEventData e = eventData as PointerEventData;
         if (e.button == PointerEventData.InputButton.Right) left = false;
-
+        if (!left && !upgraded) return; //if unupgraded and right click then cancel behavior
         //triggered when clicking on an item in the grid;
         Player.equipItem(item, left);
-
-        //assign clicked item to player equipped
-        Debug.Log(left);
-        Debug.Log("clicked on " + box.name);
 
         //fill the appropriate detailbox with the selected equipment's icon and stats
         updateEquipped(left);
