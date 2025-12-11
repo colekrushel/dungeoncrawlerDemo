@@ -18,7 +18,7 @@ public class HandleTray : MonoBehaviour
     {
         closeWindow("Log");
         closeWindow("Weapons");
-        //closeWindow("SkillTree");
+        closeWindow("SkillTree");
         closeWindow("SkillBar");
         closeWindow("Map");
         closeWindow("AppStore");

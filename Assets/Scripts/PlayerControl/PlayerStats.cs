@@ -13,6 +13,10 @@ public class PlayerStats
     float baseCooldown = 1;
     float cooldownMult = 1;
 
+    float currencyMult = 1;
+
+    bool real;
+
     /* unimplemented stats
     float moveSpeedMult = 1;
 
@@ -27,6 +31,7 @@ public class PlayerStats
         baseHealth = 10;
         baseDamage = 5;
         baseCooldown = 1;
+        real = true;
     }
 
     public PlayerStats(PlayerStats old)
@@ -36,6 +41,9 @@ public class PlayerStats
         damageMult = old.damageMult;
         healthMult = old.healthMult;
         baseHealth = old.baseHealth;
+        baseCooldown = old.baseCooldown;
+        cooldownMult = old.cooldownMult;
+        real = false; //stop playerstats created for preview purposes from affecting the actual stats 
     }
 
     public float getMaxHealth()
@@ -43,7 +51,7 @@ public class PlayerStats
         return baseHealth * healthMult;
     }
 
-    //damage formula: (weapon dmg + player base dmg * player mult) - enemy armor
+    //damage formula: (player base dmg * player mult * weapon mult) - enemy armor
     public float getDamage()
     {
         return baseDamage * damageMult;
@@ -53,6 +61,11 @@ public class PlayerStats
     {
         return baseCooldown * cooldownMult;
     }
+    
+    public float getCurrencyMult()
+    {
+        return currencyMult;
+    }
 
     public void addSkillModifiers(Skill newSkill)
     {
@@ -60,6 +73,15 @@ public class PlayerStats
         foreach (PassiveEffect effect in fx)
         {
            addSkillModifiers(effect);
+        }
+    }
+
+    public void addSkillModifiers(Skill newSkill, float mult)
+    {
+        List<PassiveEffect> fx = newSkill.GetPassiveSkillEffects();
+        foreach (PassiveEffect effect in fx)
+        {
+            addSkillModifiers(effect, mult);
         }
     }
 
@@ -73,12 +95,18 @@ public class PlayerStats
                 else damageMult += boost * .01f;
                 break;
             case "health":
-                if (effect.flat) baseHealth += boost;
-                else healthMult += boost * .01f;
+                //when health is added increase player's current and total health by that amt
+                float addedamt = 0;
+                if (effect.flat) { baseHealth += boost; addedamt = boost; }
+                else { healthMult += boost * .01f; addedamt = baseHealth * (boost * .01f); }
+                if(real)Player.addMaxHP(addedamt);
                 break;
             case "cooldown":
                 if (effect.flat) baseCooldown += boost;
                 else cooldownMult += boost * .01f;
+                break;
+            case "currency":
+                currencyMult += boost * .01f;
                 break;
         }
         

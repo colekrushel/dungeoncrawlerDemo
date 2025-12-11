@@ -13,7 +13,7 @@ MonoBehaviour:
   m_Name: damageUpPassiveM
   m_EditorClassIdentifier: Assembly-CSharp::Skill
   icon: {fileID: 21300000, guid: e314269a5daaf9443a8d2910a2f71a1f, type: 3}
-  description: Damage Up Small
+  description: Damage Up Medium
   price: 3000
   skillEffects:
   - rid: 311031170042429507

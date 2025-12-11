@@ -10,17 +10,17 @@ MonoBehaviour:
   m_Enabled: 1
   m_EditorHideFlags: 0
   m_Script: {fileID: 11500000, guid: 7e7467fb73cf4d449aaccc33d0e5022a, type: 3}
-  m_Name: DMGUPV3
+  m_Name: HPUPV2
   m_EditorClassIdentifier: Assembly-CSharp::Skill
-  icon: {fileID: 21300000, guid: e314269a5daaf9443a8d2910a2f71a1f, type: 3}
-  description: Temp Damage Boost++
-  price: 2000
+  icon: {fileID: 21300000, guid: 1fe91f5e221233d4c805b61fa6139f13, type: 3}
+  description: Temp Health Barrier+
+  price: 1000
   skillEffects:
   - rid: 311031170042429505
   time: 30
   cooldown: 60
   expire: 0
-  replaces: {fileID: 11400000, guid: 93b6727093840b341a60bf044bda5759, type: 2}
+  replaces: {fileID: 11400000, guid: f10a91fb02a6c1b429aa30ffe313a627, type: 2}
   references:
     version: 2
     RefIds:
@@ -32,6 +32,6 @@ MonoBehaviour:
     - rid: 311031170042429506
       type: {class: PassiveEffect, ns: , asm: Assembly-CSharp}
       data:
-        stat: Damage
-        boost: 50
+        stat: Health
+        boost: 100
         flat: 0

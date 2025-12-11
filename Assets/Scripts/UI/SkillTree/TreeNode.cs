@@ -31,6 +31,8 @@ public class TreeNode : MonoBehaviour, IPointerEnterHandler, IPointerExitHandler
     [SerializeField] Sprite onImage;
     [SerializeField] Sprite offImage;
     [SerializeField] GameObject[] outgoingConnections;
+    [SerializeField]
+    public List<TreeNode> linkedNodes; //linked nodes; only 1 linked node can be activated at a time.
 
     public void Awake()
     {
@@ -69,14 +71,36 @@ public class TreeNode : MonoBehaviour, IPointerEnterHandler, IPointerExitHandler
         {
             enableConnection(conn);
         }
+        //when this node is unlocked, lock all linked nodes (they can still be bought but effects are removed)
+        foreach (TreeNode node in linkedNodes)
+        {
+            node.removeNode();
+        }
+    }
+
+    public void removeNode()
+    {
+        //remove node from player's skills and lock it if necessary
+        if (unlocked)
+        {
+            initializeNode(true);
+            Player.removeSkill(nodeSkill);
+        }
+
     }
 
     private void enableConnection(GameObject connection)
     {
+        //bring uv coords over from off into on
+        Rect uvrect = connection.transform.Find("Off").GetComponentInChildren<RawImage>().uvRect;
+        connection.transform.Find("On").GetComponentInChildren<RawImage>().uvRect = uvrect;
         //disable off
-        connection.transform.Find("Off").gameObject.SetActive(false);
+        //connection.transform.Find("Off").gameObject.SetActive(false);
+        StartCoroutine(UIUtils.fadeObject(connection.transform.Find("Off").Find("RI").gameObject, false, .5f));
         //enable on
-        connection.transform.Find("On").gameObject.SetActive(true);
+        StartCoroutine(UIUtils.fadeObject(connection.transform.Find("On").Find("RI").gameObject, true, .5f));
+        //connection.transform.Find("On").gameObject.SetActive(true);
+
 
     }
 

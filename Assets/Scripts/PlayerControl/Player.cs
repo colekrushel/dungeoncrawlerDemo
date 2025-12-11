@@ -91,6 +91,18 @@ public static class Player
         return currencyHeld;
     }
 
+    static public void addMaxHP(float amt)
+    {
+        currentHP += amt;
+        totalHP += amt;
+        //if removing health (from skill end) then only take away max hp, and only take away current hp up to maxHP levels
+        if(amt < 0)
+        {
+            totalHP += amt;
+            if(currentHP > totalHP) currentHP = totalHP;
+        }
+    }
+
     static public void printPos()
     {
         Debug.Log(gridPos.x);
@@ -136,6 +148,7 @@ public static class Player
 
     static public void addCurrency(int amt)
     {
+        if (amt > 0) amt = (int) ((float)amt * playerStats.getCurrencyMult());
         currencyHeld += amt;
         AnimateUI.addCurrency(amt);
     }
@@ -163,6 +176,21 @@ public static class Player
         playerStats.addSkillModifiers(newSkill);
         //update skillbox ui in case a buff was added
         HandleSkillBar.reloadSkillBoxes();
+    }
+
+    static public void removeSkill(Skill newSkill)
+    {
+        //check if player actually has skill first; if not then return an error
+        if (!skills.Contains(newSkill))
+        {
+            Debug.LogError("TRIED TO REMOVE SKILL " + newSkill.name + " FROM PLAYER BUT PLAYER DID NOT POSSESS SKILL.");
+        }
+        else
+        {
+            skills.Remove(newSkill);
+            //guaranteed to be passive skill so remove effects from stats
+            playerStats.addSkillModifiers(newSkill, -1);
+        }
     }
     
 
