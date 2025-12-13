@@ -1694,7 +1694,7 @@ BoxCollider:
   m_ProvidesContacts: 0
   m_Enabled: 1
   serializedVersion: 3
-  m_Size: {x: 0.5, y: 1, z: 0.5}
+  m_Size: {x: 0.5, y: 0.5, z: 0.5}
   m_Center: {x: 0, y: 0, z: 0}
 --- !u!54 &88525248
 Rigidbody:
@@ -15357,13 +15357,13 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   bottomGridFiles:
-  - {fileID: 4900000, guid: a3295488bb7e39f46856a56f1aecd9db, type: 3}
-  - {fileID: 4900000, guid: 18ef7cc43f5b8244f84ef8549e71660d, type: 3}
-  - {fileID: 4900000, guid: d2280e3d5b1f4114f8d8da61946f7a84, type: 3}
+  - {fileID: 4900000, guid: cbb3584ba03992448baa261df1c295b1, type: 3}
+  - {fileID: 4900000, guid: 1754297c1ea0242468bcaaa3dd5fe07c, type: 3}
+  - {fileID: 4900000, guid: d558b76e4c47efd4ca07c52a11fe04d9, type: 3}
   northGridFiles:
-  - {fileID: 4900000, guid: b279ba8f3bfdf1a4987cbca41da45f2a, type: 3}
-  - {fileID: 4900000, guid: e98300c45c31ffc48b56d41c1546509c, type: 3}
-  - {fileID: 4900000, guid: 8ee88bbe654c8704c8eebc11296edea4, type: 3}
+  - {fileID: 4900000, guid: 38db672f44835e744b2d185253561f8e, type: 3}
+  - {fileID: 4900000, guid: cc33994c1797f734f833e1e024b4479c, type: 3}
+  - {fileID: 4900000, guid: f80eabbb6f83e5246a660ffe83251a46, type: 3}
   southGridFiles:
   - {fileID: 4900000, guid: 94cf2ca2043ffe44aa8cac3eb2b188ae, type: 3}
   - {fileID: 4900000, guid: 71033a3a168a2914c9aa6ffba9e26bf3, type: 3}

@@ -154,8 +154,22 @@ public class DungeonCell
                 } else
                 {
                     //equipment is contained in the item
-                    Player.inventory.addItem(entity.dataString, "breacher");
+                    try
+                    {
+                        Debug.Log("attempting to give player equipment " + entity.dataString);
+                        Player.inventory.addItem(entity.dataString, "breacher");
+                        HandleEquipment.displayEquips();
+                    } catch {
+                        Debug.Log("equipment failed, distributing upgrade instead");
+                        if(entity.dataString == "WeaponUpgrade")
+                        {
+                            HandleEquipment.onUpgradeObtain();
+                        }
+                    }
+
                 }
+                //after item is broken make cell traversible
+                traversible = true;
                 break;
             case BreakableConstruct.breakType.Door:
                 //open door

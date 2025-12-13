@@ -96,25 +96,31 @@ public static class GridUtils
         return rdeg;
     }
 
-    static public bool canMoveInDirection(Vector2 pos, int layer, string dir)
+    static public bool canMoveInDirection(Vector2 pos, int layer, string dir, bool enemy = false)
     {
         bool canMove = false;
         DungeonGrid grid = grids[layer];
+        DungeonCell cell = new DungeonCell();
         switch (dir)
         {
             case "S":
+                cell = grid.getCell(pos - new Vector2(0, 1));
                 canMove = grid.canMoveBetween(pos, pos - new Vector2(0, 1), 'S');
                 break;
             case "W":
+                cell = grid.getCell(pos - new Vector2(1, 0));
                 canMove = grid.canMoveBetween(pos, pos - new Vector2(1, 0), 'W');
                 break;
-            case "N":                
+            case "N":
+                cell = grid.getCell(pos + new Vector2(0, 1));
                 canMove = grid.canMoveBetween(pos, pos + new Vector2(0, 1), 'N');
                 break;
             case "E":
+                cell = grid.getCell(pos + new Vector2(1, 0));
                 canMove = grid.canMoveBetween(pos, pos + new Vector2(1, 0), 'E');
                 break;
         }
+        if (cell != null && enemy && cell.type == "StairsUp") return false; //prevent enemies from moving onto stairs
         return canMove;
     }
 

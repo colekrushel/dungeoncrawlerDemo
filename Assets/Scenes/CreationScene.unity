@@ -482,6 +482,8 @@ MonoBehaviour:
   isCreator: 1
   startpos: {x: 0, y: 0}
   camera: {fileID: 0}
+  screencover: {fileID: 0}
+  startingZone: 
   interactWindow: {fileID: 0}
   firewall: {fileID: 0}
 --- !u!114 &88525243
@@ -6152,7 +6154,7 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 826d9cc24ebf09b4b8def46a5bd00961, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  gridSize: 10
+  gridSize: 20
   wallSize: 5
   tileGrid: {fileID: 300552969}
   currSelected: {fileID: 2133323266}
@@ -6615,6 +6617,8 @@ MonoBehaviour:
   eastGridFiles: []
   westGridFiles: []
   topGridFiles: []
+  startInTutorial: 0
+  tutorialGridFiles: []
   RenderedGrids: {fileID: 0}
 --- !u!4 &1029283034
 Transform:

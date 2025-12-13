@@ -279,7 +279,7 @@ public class RenderGrid : MonoBehaviour
             if (W != null && !W.hasCeiling && !W.hasWall("E") && !cell.hasWall("W")) doorways.Add("W");
 
         }
-        else if(!cell.hasCeiling && cell.layer > 0 && cell.traversible)//assign railings between non-ground level non-ceiling and empty tiles where there are no walls
+        else if(!cell.hasCeiling && cell.layer > 0)//assign railings between non-ground level non-ceiling and empty tiles where there are no walls
         {
             DungeonCell N = grid.getCellInDirection(cell, "N");
             if (N != null && N.type == "Empty" && !N.hasWall("S") && !cell.hasWall("N")) railings.Add("N");
@@ -290,7 +290,9 @@ public class RenderGrid : MonoBehaviour
             DungeonCell W = grid.getCellInDirection(cell, "W");
             if (W != null && W.type == "Empty" && !W.hasWall("E") && !cell.hasWall("W")) railings.Add("W");
         }
-        
+        //limit windows to 1 per tile
+        int windowcount = 0;
+        int maxwindows = 4;
         for (int i = 0; i < walls.Length; i++)
         {
             //determine wall based on whether cell has a ceiling or not
@@ -307,13 +309,16 @@ public class RenderGrid : MonoBehaviour
             //doorways (between ceiling and non-ceiling tiles where there is no wall) [NO-WALL FILLER]
             //Debug.Log(cell.tilesetPath);
             GameObject wall;
+       
             if (walls[i] == cell.breakableWallDirection)
             {
                 wall = Instantiate(Resources.Load<GameObject>(cell.tilesetPath + "/WallBreakable"));
             }
-            else if ((cell.hasCeiling && (cell.layer > 0 || cell.tilesetPath == "Prefabs/gridTilesets/Indoor/Office")) && grid.getCellInDirection(cell, walls[i]) != null && grid.getCellInDirection(cell, walls[i]).type == "Empty")
+            else if (windowcount < maxwindows && (cell.hasCeiling && (cell.layer > 0 || cell.tilesetPath == "Prefabs/gridTilesets/Indoor/Office")) && grid.getCellInDirection(cell, walls[i]) != null && grid.getCellInDirection(cell, walls[i]).type == "Empty")
             {
                 wall = Instantiate(Resources.Load<GameObject>(cell.tilesetPath + "/Window"));
+                //wall = Instantiate(Resources.Load<GameObject>("Prefabs/gridTilesets/Indoor/Office/Window"));
+                windowcount++;
             }
             else 
             {

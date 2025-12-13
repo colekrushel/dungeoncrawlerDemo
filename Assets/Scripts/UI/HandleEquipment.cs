@@ -39,7 +39,12 @@ public class HandleEquipment : MonoBehaviour
     {
         //fill the grid with equipment from the player's inventory
         if(EquipmentBox == null) EquipmentBox = Instance.transform.Find("Items").gameObject;
-        //add a box for every NEW equipment item
+        //add a box for every equipment item
+        //kill the boxes
+        for (int i = EquipmentBox.transform.childCount - 1; i >= 0; i--)
+        {
+            Destroy(EquipmentBox.transform.GetChild(i).gameObject);
+        }
         foreach (EquipmentItem equipment in Player.inventory.equipmentItems)
         {
             //check if item is already present in ui

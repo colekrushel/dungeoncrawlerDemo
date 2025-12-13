@@ -49,7 +49,7 @@ MonoBehaviour:
   zone: 
   positionObject: {fileID: 0}
   enemyActions:
-  - {fileID: 11400000, guid: ad72da5589a5bdd4a89512fec81b1fab, type: 2}
+  - {fileID: 11400000, guid: 15123ce5fc15f03449f26a5fed1b6b79, type: 2}
   parts:
   - {fileID: 4986853108981971502}
   - {fileID: 438756137558337104}
@@ -106,7 +106,7 @@ GameObject:
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
   m_StaticEditorFlags: 0
-  m_IsActive: 1
+  m_IsActive: 0
 --- !u!4 &4730932714235735652
 Transform:
   m_ObjectHideFlags: 0
@@ -533,9 +533,18 @@ PrefabInstance:
     - targetCorrespondingSourceObject: {fileID: 919132149155446097, guid: 5800cfdbc9172ff41a80d49cd6ddda81, type: 3}
       insertIndex: -1
       addedObject: {fileID: 155160129590696497}
+    - targetCorrespondingSourceObject: {fileID: 919132149155446097, guid: 5800cfdbc9172ff41a80d49cd6ddda81, type: 3}
+      insertIndex: -1
+      addedObject: {fileID: 1023210289158708395}
     - targetCorrespondingSourceObject: {fileID: 9040162396442793869, guid: 5800cfdbc9172ff41a80d49cd6ddda81, type: 3}
       insertIndex: -1
       addedObject: {fileID: 4986853108981971502}
+    - targetCorrespondingSourceObject: {fileID: 9040162396442793869, guid: 5800cfdbc9172ff41a80d49cd6ddda81, type: 3}
+      insertIndex: -1
+      addedObject: {fileID: 436869665444681435}
+    - targetCorrespondingSourceObject: {fileID: 9040162396442793869, guid: 5800cfdbc9172ff41a80d49cd6ddda81, type: 3}
+      insertIndex: -1
+      addedObject: {fileID: 1737158565766142631}
     - targetCorrespondingSourceObject: {fileID: -4808272525616550948, guid: 5800cfdbc9172ff41a80d49cd6ddda81, type: 3}
       insertIndex: -1
       addedObject: {fileID: 622165682226143186}
@@ -702,6 +711,7 @@ MonoBehaviour:
   MaxHP: 1
   breakType: 3
   breakableBy: 0
+  breakValue: 0
 --- !u!65 &971828105469971808
 BoxCollider:
   m_ObjectHideFlags: 0
@@ -744,6 +754,7 @@ MonoBehaviour:
   MaxHP: 1
   breakType: 3
   breakableBy: 0
+  breakValue: 0
 --- !u!65 &3449732354416923752
 BoxCollider:
   m_ObjectHideFlags: 0
@@ -786,6 +797,7 @@ MonoBehaviour:
   MaxHP: 1
   breakType: 3
   breakableBy: 0
+  breakValue: 0
 --- !u!65 &5070734996764349936
 BoxCollider:
   m_ObjectHideFlags: 0
@@ -828,6 +840,7 @@ MonoBehaviour:
   MaxHP: 1
   breakType: 3
   breakableBy: 0
+  breakValue: 0
 --- !u!65 &6325319890584910769
 BoxCollider:
   m_ObjectHideFlags: 0
@@ -870,6 +883,7 @@ MonoBehaviour:
   MaxHP: 1
   breakType: 3
   breakableBy: 0
+  breakValue: 0
 --- !u!65 &6585234486663646021
 BoxCollider:
   m_ObjectHideFlags: 0
@@ -912,6 +926,7 @@ MonoBehaviour:
   MaxHP: 1
   breakType: 3
   breakableBy: 0
+  breakValue: 0
 --- !u!65 &347327921042222832
 BoxCollider:
   m_ObjectHideFlags: 0
@@ -954,6 +969,7 @@ MonoBehaviour:
   MaxHP: 1
   breakType: 3
   breakableBy: 0
+  breakValue: 0
 --- !u!65 &4688829398457354907
 BoxCollider:
   m_ObjectHideFlags: 0
@@ -996,6 +1012,7 @@ MonoBehaviour:
   MaxHP: 1
   breakType: 3
   breakableBy: 0
+  breakValue: 0
 --- !u!65 &2371295787097431212
 BoxCollider:
   m_ObjectHideFlags: 0
@@ -1038,6 +1055,7 @@ MonoBehaviour:
   MaxHP: 1
   breakType: 3
   breakableBy: 0
+  breakValue: 0
 --- !u!65 &4805519108709878514
 BoxCollider:
   m_ObjectHideFlags: 0
@@ -1080,6 +1098,7 @@ MonoBehaviour:
   MaxHP: 1
   breakType: 3
   breakableBy: 0
+  breakValue: 0
 --- !u!65 &2619400482664858359
 BoxCollider:
   m_ObjectHideFlags: 0
@@ -1122,6 +1141,7 @@ MonoBehaviour:
   MaxHP: 1
   breakType: 3
   breakableBy: 0
+  breakValue: 0
 --- !u!65 &229837718961195562
 BoxCollider:
   m_ObjectHideFlags: 0
@@ -1166,6 +1186,43 @@ MonoBehaviour:
   partModel: {fileID: 2649928079430639902}
   effectiveness: 2
   isBroken: 0
+--- !u!65 &436869665444681435
+BoxCollider:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 2649928079430639902}
+  m_Material: {fileID: 0}
+  m_IncludeLayers:
+    serializedVersion: 2
+    m_Bits: 0
+  m_ExcludeLayers:
+    serializedVersion: 2
+    m_Bits: 0
+  m_LayerOverridePriority: 0
+  m_IsTrigger: 0
+  m_ProvidesContacts: 0
+  m_Enabled: 1
+  serializedVersion: 3
+  m_Size: {x: 3.08, y: 2.77, z: 2.000001}
+  m_Center: {x: 0, y: 0, z: 0}
+--- !u!114 &1737158565766142631
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 2649928079430639902}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: b22767b1bd2b1f948a77f0f795e2aa30, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: Assembly-CSharp::ConstantRotateMe
+  speed: 100
+  xMul: 0
+  yMul: 1
+  zMul: 0
 --- !u!1 &3625895214985498430 stripped
 GameObject:
   m_CorrespondingSourceObject: {fileID: -1449402351455225427, guid: 5800cfdbc9172ff41a80d49cd6ddda81, type: 3}
@@ -1187,6 +1244,7 @@ MonoBehaviour:
   MaxHP: 1
   breakType: 3
   breakableBy: 0
+  breakValue: 0
 --- !u!65 &1641128271612454249
 BoxCollider:
   m_ObjectHideFlags: 0
@@ -1229,6 +1287,7 @@ MonoBehaviour:
   MaxHP: 1
   breakType: 3
   breakableBy: 0
+  breakValue: 0
 --- !u!65 &3602729380143703313
 BoxCollider:
   m_ObjectHideFlags: 0
@@ -1271,6 +1330,7 @@ MonoBehaviour:
   MaxHP: 1
   breakType: 3
   breakableBy: 0
+  breakValue: 0
 --- !u!65 &6540093366993190449
 BoxCollider:
   m_ObjectHideFlags: 0
@@ -1313,6 +1373,7 @@ MonoBehaviour:
   MaxHP: 1
   breakType: 3
   breakableBy: 0
+  breakValue: 0
 --- !u!65 &2325143591462388850
 BoxCollider:
   m_ObjectHideFlags: 0
@@ -1355,6 +1416,7 @@ MonoBehaviour:
   MaxHP: 1
   breakType: 3
   breakableBy: 0
+  breakValue: 0
 --- !u!65 &2504110803653600087
 BoxCollider:
   m_ObjectHideFlags: 0
@@ -1441,6 +1503,7 @@ MonoBehaviour:
   MaxHP: 1
   breakType: 3
   breakableBy: 0
+  breakValue: 0
 --- !u!65 &8618167601439223208
 BoxCollider:
   m_ObjectHideFlags: 0
@@ -1560,6 +1623,33 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: Assembly-CSharp::StartCellAttack
   enemy: {fileID: 732619973141067727}
+--- !u!54 &1023210289158708395
+Rigidbody:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 6157016148188056514}
+  serializedVersion: 5
+  m_Mass: 1
+  m_LinearDamping: 0
+  m_AngularDamping: 0.05
+  m_CenterOfMass: {x: 0, y: 0, z: 0}
+  m_InertiaTensor: {x: 1, y: 1, z: 1}
+  m_InertiaRotation: {x: 0, y: 0, z: 0, w: 1}
+  m_IncludeLayers:
+    serializedVersion: 2
+    m_Bits: 0
+  m_ExcludeLayers:
+    serializedVersion: 2
+    m_Bits: 0
+  m_ImplicitCom: 1
+  m_ImplicitTensor: 1
+  m_UseGravity: 1
+  m_IsKinematic: 1
+  m_Interpolate: 0
+  m_Constraints: 0
+  m_CollisionDetection: 0
 --- !u!4 &6789683572424282488 stripped
 Transform:
   m_CorrespondingSourceObject: {fileID: -8679921383154817045, guid: 5800cfdbc9172ff41a80d49cd6ddda81, type: 3}
@@ -1586,6 +1676,7 @@ MonoBehaviour:
   MaxHP: 1
   breakType: 3
   breakableBy: 0
+  breakValue: 0
 --- !u!65 &2588253665777411827
 BoxCollider:
   m_ObjectHideFlags: 0
@@ -1672,6 +1763,7 @@ MonoBehaviour:
   MaxHP: 1
   breakType: 3
   breakableBy: 0
+  breakValue: 0
 --- !u!65 &1630615984393146917
 BoxCollider:
   m_ObjectHideFlags: 0
@@ -1758,6 +1850,7 @@ MonoBehaviour:
   MaxHP: 1
   breakType: 3
   breakableBy: 0
+  breakValue: 0
 --- !u!65 &8714863279776001888
 BoxCollider:
   m_ObjectHideFlags: 0

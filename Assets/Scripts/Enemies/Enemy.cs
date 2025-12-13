@@ -207,7 +207,7 @@ public class Enemy : MonoBehaviour, IHittable
             currMovementDir = dir.ToString();
         }
         //second step: check if move is legal or not
-        if (currMovementDir != "" && !GridUtils.canMoveInDirection(pos, layer, dir.ToString()))
+        if (currMovementDir != "" && !GridUtils.canMoveInDirection(pos, layer, dir.ToString(), true))
         {
             //if move would be illegal then dont move and reset movement direction
             currMovementDir = "";

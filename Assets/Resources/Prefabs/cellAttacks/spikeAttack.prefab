@@ -14,6 +14,8 @@ GameObject:
   - component: {fileID: 8248235167514979343}
   - component: {fileID: 8006464013077196992}
   - component: {fileID: 4657357275340189899}
+  - component: {fileID: 4482620193954095986}
+  - component: {fileID: 5233496104668101528}
   m_Layer: 0
   m_Name: Cone
   m_TagString: Untagged
@@ -389,6 +391,39 @@ MeshCollider:
   m_Convex: 0
   m_CookingOptions: 30
   m_Mesh: {fileID: 0}
+--- !u!65 &4482620193954095986
+BoxCollider:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 3675622197417473429}
+  m_Material: {fileID: 0}
+  m_IncludeLayers:
+    serializedVersion: 2
+    m_Bits: 0
+  m_ExcludeLayers:
+    serializedVersion: 2
+    m_Bits: 0
+  m_LayerOverridePriority: 0
+  m_IsTrigger: 1
+  m_ProvidesContacts: 0
+  m_Enabled: 1
+  serializedVersion: 3
+  m_Size: {x: 0.5, y: 1, z: 0.5}
+  m_Center: {x: 0, y: 0, z: 0}
+--- !u!114 &5233496104668101528
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 3675622197417473429}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 7080730f77c059b49b4161bec85fcb03, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: Assembly-CSharp::HitPlayerOnCell
 --- !u!1 &5396117388848442303
 GameObject:
   m_ObjectHideFlags: 0
@@ -460,6 +495,7 @@ MonoBehaviour:
   m_EditorClassIdentifier: Assembly-CSharp::HandleCellAttack
   chargeLength: 10
   cellframe: {fileID: 7827658994873127441}
+  caller: {fileID: 0}
 --- !u!1001 &6944559094816632640
 PrefabInstance:
   m_ObjectHideFlags: 0

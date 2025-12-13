@@ -27,7 +27,7 @@ public class StartCellAttack : MonoBehaviour
     public IEnumerator doAttack(CellAttack atk)
     {
         if (atk == null) yield break;
-        Debug.Log("starting cell attack");
+        //Debug.Log("starting cell attack");
         //start attack by instantiating an attackobject on each affected cell
 
         //determine which cell gameobjects will be affected
@@ -62,6 +62,7 @@ public class StartCellAttack : MonoBehaviour
             GameObject attack = Instantiate(atk.attackObject);
             attack.GetComponent<HandleCellAttack>().caller = this;
             attack.transform.position = cell.transform.position;
+            attack.transform.rotation = Quaternion.Euler(GridUtils.getZoneRotationEuler(Player.orientation));
             attack.transform.SetParent(cell.transform);
         }
         //start next attack by waiting for the charge time and calling this recursively
@@ -69,7 +70,7 @@ public class StartCellAttack : MonoBehaviour
         {
             //wait for the attack to finish
             yield return new WaitUntil(cannextattack);
-            Debug.Log("death signal receieved");
+            //Debug.Log("death signal receieved");
             //attackObject = attackObject.nextAttack;
             startnext = false;
             StartCoroutine(doAttack(atk.nextAttack));

@@ -6,6 +6,7 @@ public class BreakablePart : MonoBehaviour, IHittable
     [SerializeField] public float MaxHP;
     [SerializeField] public BreakableConstruct.breakType breakType;
     [SerializeField] public EquipmentItem.type breakableBy;
+    [SerializeField] public int breakValue; //for fielditems
     //[SerializeField] GameObject 
 
     public float hitByPlayer(float damage, EquipmentItem.type type)
@@ -39,6 +40,12 @@ public class BreakablePart : MonoBehaviour, IHittable
         if (breakType == BreakableConstruct.breakType.None)
         {
             //if none then only destroy object
+            return;
+        }
+        if (breakType == BreakableConstruct.breakType.FieldItem)
+        {
+            //lone breakable parts that have their own rewards
+            Player.addCurrency(breakValue);
             return;
         }
         //tell its parent construct that a part has been broken

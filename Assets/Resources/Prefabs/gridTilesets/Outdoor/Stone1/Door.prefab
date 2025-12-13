@@ -518,6 +518,8 @@ MeshRenderer:
   m_RayTracingAccelStructBuildFlagsOverride: 0
   m_RayTracingAccelStructBuildFlags: 1
   m_SmallMeshCulling: 1
+  m_ForceMeshLod: -1
+  m_MeshLodSelectionBias: 0
   m_RenderingLayerMask: 1
   m_RendererPriority: 0
   m_Materials:
@@ -539,6 +541,7 @@ MeshRenderer:
   m_AutoUVMaxDistance: 0.5
   m_AutoUVMaxAngle: 89
   m_LightmapParameters: {fileID: 0}
+  m_GlobalIlluminationMeshLod: 0
   m_SortingLayerID: 0
   m_SortingLayer: 0
   m_SortingOrder: 0
@@ -757,6 +760,8 @@ MeshRenderer:
   m_RayTracingAccelStructBuildFlagsOverride: 0
   m_RayTracingAccelStructBuildFlags: 1
   m_SmallMeshCulling: 1
+  m_ForceMeshLod: -1
+  m_MeshLodSelectionBias: 0
   m_RenderingLayerMask: 1
   m_RendererPriority: 0
   m_Materials:
@@ -779,6 +784,7 @@ MeshRenderer:
   m_AutoUVMaxDistance: 0.5
   m_AutoUVMaxAngle: 89
   m_LightmapParameters: {fileID: 0}
+  m_GlobalIlluminationMeshLod: 0
   m_SortingLayerID: 0
   m_SortingLayer: 0
   m_SortingOrder: 0
@@ -877,6 +883,8 @@ MeshRenderer:
   m_RayTracingAccelStructBuildFlagsOverride: 0
   m_RayTracingAccelStructBuildFlags: 1
   m_SmallMeshCulling: 1
+  m_ForceMeshLod: -1
+  m_MeshLodSelectionBias: 0
   m_RenderingLayerMask: 1
   m_RendererPriority: 0
   m_Materials:
@@ -898,6 +906,7 @@ MeshRenderer:
   m_AutoUVMaxDistance: 0.5
   m_AutoUVMaxAngle: 89
   m_LightmapParameters: {fileID: 0}
+  m_GlobalIlluminationMeshLod: 0
   m_SortingLayerID: 0
   m_SortingLayer: 0
   m_SortingOrder: 0
@@ -1031,6 +1040,8 @@ MonoBehaviour:
   HP: 5
   MaxHP: 5
   breakType: 2
+  breakableBy: 0
+  breakValue: 0
 --- !u!1001 &2431487619407220316
 PrefabInstance:
   m_ObjectHideFlags: 0
@@ -1329,9 +1340,11 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 786e413d122a74c41b7d6db8d243dd03, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  HP: 5
-  MaxHP: 5
+  HP: 1
+  MaxHP: 1
   breakType: 2
+  breakableBy: 4
+  breakValue: 0
 --- !u!65 &7098687471404742491
 BoxCollider:
   m_ObjectHideFlags: 0
@@ -1461,6 +1474,8 @@ MonoBehaviour:
   HP: 5
   MaxHP: 5
   breakType: 2
+  breakableBy: 0
+  breakValue: 0
 --- !u!65 &3467448146028548379
 BoxCollider:
   m_ObjectHideFlags: 0

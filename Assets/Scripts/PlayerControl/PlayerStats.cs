@@ -29,7 +29,7 @@ public class PlayerStats
     {
         //fill with default values on initialization
         baseHealth = 10;
-        baseDamage = 5;
+        baseDamage = 2;
         baseCooldown = 1;
         real = true;
     }

@@ -1,7 +1,8 @@
-using UnityEngine;
-using System.Collections.Generic;
 using System;
+using System.Collections.Generic;
+using UnityEngine;
 using UnityEngine.Rendering;
+using static UnityEditor.PlayerSettings;
 
 [Serializable]
 public class DungeonGrid 
@@ -27,11 +28,13 @@ public class DungeonGrid
 
     public DungeonCell getCell(int x, int y)
     {
+        if (x < 0 || y < 0 || x >= width || y >= height) return null;
         return cellGrid[y][x];
     }
 
     public DungeonCell getCell(Vector2 pos)
     {
+        if(pos.x < 0 || pos.y < 0 || pos.x >= width || pos.y >= height) return null;
         return cellGrid[(int)pos.y][(int)pos.x];
     }
 
@@ -45,7 +48,7 @@ public class DungeonGrid
             {
                 DungeonCell cell = getCell(x, y);
                 //exclude enemy's cell
-                if(pos != new Vector2(x, y))ret.Add(cell);
+                if(cell != null && pos != new Vector2(x, y))ret.Add(cell);
             }
         }
         return ret;
@@ -67,6 +70,7 @@ public class DungeonGrid
             ret.Add(getCell((int)pos.x + radius, y));
             ret.Add(getCell((int)pos.x - radius, y));
         }
+        ret.RemoveAll(delegate (DungeonCell o) { return o == null; });
         return ret;
     }
 
@@ -130,7 +134,7 @@ public class DungeonGrid
 
     public bool canMoveBetween(Vector2 pos1, Vector2 pos2, char dir)
     {
-        //2 grid coordinates as inpute
+        //2 grid coordinates as input
         //check if there are no walls between the 2 coords
         bool canMove = false;
         DungeonCell cell1 = getCell((int)pos1.x, (int)pos1.y);

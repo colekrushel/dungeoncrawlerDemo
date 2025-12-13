@@ -518,13 +518,13 @@ public class InputHandler : MonoBehaviour
         else if (grid.getCellInDirection(grid.getCell(Player.getPos()), dir).type == "StairsUp")
         {
             //moving up onto stairs present on current layer
-            Debug.Log("moving onto stairs on current layer!");
+            //Debug.Log("moving onto stairs on current layer!");
             returnval = 0.75f;
             Player.between = new System.Tuple<float, float>(Player.currentLayer, Player.currentLayer + 1);
         } else if (Player.currentLayer != 0 && grids[Player.currentLayer].getCellInDirection(grids[Player.currentLayer].getCell(Player.getPos()), dir).type == "StairsDown")
         {
             //moving down onto stairs on lower layer
-            Debug.Log("moving onto stairs on lower layer!");
+            //Debug.Log("moving onto stairs on lower layer!");
             returnval = -0.25f;
             //decrement player layer when moving down
             Player.currentLayer -= 1;
@@ -742,8 +742,10 @@ public class InputHandler : MonoBehaviour
                     effectiveness = enemyScript.hitPart(damage, part);
                     //activate damage text for each hit
                     GameObject dmgTxt = Instantiate(Resources.Load<GameObject>("Prefabs/UI/DamageText"));
-                    dmgTxt.GetComponent<TextMeshProUGUI>().text = damage.ToString();
-                    dmgTxt.transform.localScale = Vector3.one * (.3f + damage/12) ;
+                    TextMeshProUGUI t = dmgTxt.GetComponent<TextMeshProUGUI>();
+                    t.text = (damage * effectiveness).ToString();
+                    if(effectiveness > 1)t.color = Color.green;
+                    dmgTxt.transform.localScale = Vector3.one * (.3f + (damage*effectiveness)/12) ;
                     dmgTxt.transform.position = camera.WorldToScreenPoint(hits[i].transform.position);
                     dmgTxt.transform.SetParent(GameObject.Find("PlayerUI").transform);
                     StartCoroutine(UIUtils.fadeObject(dmgTxt, true, .2f));

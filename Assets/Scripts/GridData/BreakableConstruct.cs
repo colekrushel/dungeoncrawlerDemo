@@ -5,7 +5,7 @@ using UnityEngine;
 public class BreakableConstruct : MonoBehaviour
 {
     public BreakablePart[] breakableParts;
-    public enum breakType { Wall, Item, Door, None}
+    public enum breakType { Wall, Item, Door, None, FieldItem}
     public breakType btype;
     public Action onBreak;
     public bool isBroken = false;

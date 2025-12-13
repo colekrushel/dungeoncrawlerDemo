@@ -41,11 +41,11 @@ public static class Player
         inventory.addItem("Smasher", "breacher");
         //inventory.addItem("Blocker", "breacher");
         inventory.addItem("Slasher", "breacher");
-        inventory.addItem("Piercer", "breacher");
+        //inventory.addItem("Piercer", "breacher");
         //update equipment display
         HandleEquipment.displayEquips();
         HandleSkillTree.initializeTree(skills);
-        HandleEquipment.onUpgradeObtain();
+        //HandleEquipment.onUpgradeObtain();
     }
 
     static public void loadPlayerInfo(PlayerSerializableData data)
