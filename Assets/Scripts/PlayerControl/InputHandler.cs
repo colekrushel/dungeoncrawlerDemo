@@ -743,7 +743,10 @@ public class InputHandler : MonoBehaviour
                     //activate damage text for each hit
                     GameObject dmgTxt = Instantiate(Resources.Load<GameObject>("Prefabs/UI/DamageText"));
                     TextMeshProUGUI t = dmgTxt.GetComponent<TextMeshProUGUI>();
-                    t.text = (damage * effectiveness).ToString();
+                    //round text to 1 decimal
+                    float realdmg = damage * effectiveness;
+                    decimal d = Decimal.Round((decimal)realdmg, 1);
+                    t.text = d.ToString();
                     if(effectiveness > 1)t.color = Color.green;
                     dmgTxt.transform.localScale = Vector3.one * (.3f + (damage*effectiveness)/12) ;
                     dmgTxt.transform.position = camera.WorldToScreenPoint(hits[i].transform.position);

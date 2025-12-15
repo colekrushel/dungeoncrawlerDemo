@@ -15,8 +15,8 @@ public class Projectile : MonoBehaviour
         {
             Destroy(gameObject);
         }
-        //move projectile in forwards direction because its rotation is set at instantiation
-        transform.position += transform.forward * Time.deltaTime * 2;
+        //move projectile in right direction because its rotation is set at instantiation so that the right/x vector is looking at the player
+        transform.position += transform.right * Time.deltaTime * 2;
     }
 
     private void OnTriggerEnter(Collider other)

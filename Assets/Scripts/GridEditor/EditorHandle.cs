@@ -2,6 +2,7 @@
 using System.Collections.Generic;
 using System.IO;
 using TMPro;
+using Unity.VisualScripting;
 using UnityEditor;
 using UnityEngine;
 using UnityEngine.EventSystems;
@@ -453,6 +454,7 @@ public class EditorHandle : MonoBehaviour
                     {
                         cell.floorType = p.gameObject.GetComponent<Image>().color.ToString();
                         cell.floorToAssign = GridDicts.colorToFloor[p.gameObject.GetComponent<Image>().color];
+                        
 
                     }
                     else if (i == 5)//icon (type) data
@@ -460,7 +462,8 @@ public class EditorHandle : MonoBehaviour
                         cell.type = GridDicts.spriteToType[p.GetComponent<Image>().sprite];
                         if (cell.type == "None" )
                         {
-                            cell.traversible = true;
+                            if (cell.floorToAssign == "water") cell.traversible = false; //except make water tiles nontraversible
+                            else cell.traversible = true;
                         }
                     } else if (i == 6)//ceiling 
                     {

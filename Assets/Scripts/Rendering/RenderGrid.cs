@@ -267,16 +267,17 @@ public class RenderGrid : MonoBehaviour
         //assign doorways (between ceiling and non ceiling tiles where there are no walls between
         List<String> doorways = new List<String>();
         List<String> railings = new List<String>();
+        //don't put doorways between stairup tiles and indoor tiles
         if (cell.hasCeiling)
         {
             DungeonCell N = grid.getCellInDirection(cell, "N");
-            if (N != null && !N.hasCeiling && !N.hasWall("S") && !cell.hasWall("N")) doorways.Add("N");
+            if (N != null && !N.hasCeiling && !N.hasWall("S") && !cell.hasWall("N") && N.type != "StairsUp") doorways.Add("N");
             DungeonCell E = grid.getCellInDirection(cell, "E");
-            if (E != null && !E.hasCeiling && !E.hasWall("W") && !cell.hasWall("E")) doorways.Add("E");
+            if (E != null && !E.hasCeiling && !E.hasWall("W") && !cell.hasWall("E") && E.type != "StairsUp") doorways.Add("E");
             DungeonCell S = grid.getCellInDirection(cell, "S");
-            if (S != null && !S.hasCeiling && !S.hasWall("N") && !cell.hasWall("S")) doorways.Add("S");
+            if (S != null && !S.hasCeiling && !S.hasWall("N") && !cell.hasWall("S") && S.type != "StairsUp") doorways.Add("S");
             DungeonCell W = grid.getCellInDirection(cell, "W");
-            if (W != null && !W.hasCeiling && !W.hasWall("E") && !cell.hasWall("W")) doorways.Add("W");
+            if (W != null && !W.hasCeiling && !W.hasWall("E") && !cell.hasWall("W") && W.type != "StairsUp") doorways.Add("W");
 
         }
         else if(!cell.hasCeiling && cell.layer > 0)//assign railings between non-ground level non-ceiling and empty tiles where there are no walls

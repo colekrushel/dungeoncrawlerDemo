@@ -117,7 +117,7 @@ public class HandleEquipment : MonoBehaviour
             returnstr += "Health: " + item.shieldHealth + "\n" + "Regen: " + item.shieldRegen + "\n" + "Decay: " + item.shieldDecay + "\n" + "Cooldown: " + item.cooldown;
         } else
         {
-            returnstr += "Damage: " + item.baseDamage + "\n" + "Range: " + item.range + "\n" + "Cooldown: " + item.cooldown + "\n" + "Type: " + item.equipType.ToString();
+            returnstr += "BASEDMG: " + item.baseDamage + "\n" + "RNG: " + item.range + "\n" + "ATKDLY: " + item.cooldown + "\n" + "TYPE: " + item.equipType.ToString().ToUpper();
         }
         return returnstr;
     }

@@ -1,6 +1,6 @@
 using UnityEngine;
 
-public class Hive : Enemy
+public class Bee2 : Enemy
 {
     private void Awake()
     {
@@ -9,12 +9,12 @@ public class Hive : Enemy
         //layer = l;
         HP = 50;
         baseDamage = 2;
-        actionRange = 4;
-        alertRange = 4;
-        ICDBase = 2f;
+        actionRange = 8;
+        alertRange = 8;
+        ICDBase = 1f;
         ICD = ICDBase;
         animator = gameObject.GetComponentInChildren<Animator>();
-        dropAmount = 500;
+        dropAmount = 700;
 
     }
 }

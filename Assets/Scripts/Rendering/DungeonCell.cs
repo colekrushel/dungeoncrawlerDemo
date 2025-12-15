@@ -64,6 +64,15 @@ public class DungeonCell
         {
             if (dir != entity.facing && GridUtils.getOppositeDirection(dir) != entity.facing) hasWall = true;
             if (dir == entity.facing || dir == GridUtils.getOppositeDirection(entity.facing)) hasWall = false;
+            //only allowed to enter stairs from the facing direction
+            if(type == "StairsUp")if(dir != (entity.facing)) hasWall = true;
+            //only allowed to enter stairsdown from opposite facing direction of stairsup below it
+            if(type == "StairsDown" && GridUtils.grids != null)
+            {
+                //below
+                DungeonCell belowcell = GridUtils.grids[layer - 1].getCell(gridX, gridY);
+                if(dir != GridUtils.getOppositeDirection(belowcell.entity.facing)) hasWall= true;
+            }
         }
         return hasWall;
     }

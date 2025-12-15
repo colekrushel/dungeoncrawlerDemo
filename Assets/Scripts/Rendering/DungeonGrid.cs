@@ -47,8 +47,8 @@ public class DungeonGrid
             for(int x = (int)pos.x-radius;x <= pos.x + radius; x++)
             {
                 DungeonCell cell = getCell(x, y);
-                //exclude enemy's cell
-                if(cell != null && pos != new Vector2(x, y))ret.Add(cell);
+                //exclude enemy's cell and empty cells
+                if(cell != null && cell.type != "Empty" && pos != new Vector2(x, y))ret.Add(cell);
             }
         }
         return ret;
@@ -70,7 +70,7 @@ public class DungeonGrid
             ret.Add(getCell((int)pos.x + radius, y));
             ret.Add(getCell((int)pos.x - radius, y));
         }
-        ret.RemoveAll(delegate (DungeonCell o) { return o == null; });
+        ret.RemoveAll(delegate (DungeonCell o) { return o == null || (o != null && o.type == "Empty"); });
         return ret;
     }
 
