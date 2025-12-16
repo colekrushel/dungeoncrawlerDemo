@@ -26,7 +26,6 @@ public class UIUtils : MonoBehaviour
         mapGrid = GameObject.Find("MapGrid").gameObject;
         entry = Resources.Load<GameObject>("Prefabs/UI/Entry");
         attackContainer = GameObject.Find("AttackContainer").gameObject;
-        
        
         if (!Instance)
         {

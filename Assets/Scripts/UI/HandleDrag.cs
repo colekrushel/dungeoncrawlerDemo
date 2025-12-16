@@ -1,3 +1,4 @@
+using UnityEditor;
 using UnityEngine;
 using UnityEngine.EventSystems;
 
@@ -12,7 +13,6 @@ public class HandleDrag : MonoBehaviour, IBeginDragHandler, IDragHandler
     {
         window = gameObject.transform.parent.gameObject;
         lastPos = window.transform.localPosition;
-        
     }
 
     public void OnBeginDrag(PointerEventData eventData)
@@ -28,5 +28,23 @@ public class HandleDrag : MonoBehaviour, IBeginDragHandler, IDragHandler
         window.transform.position -= diff;
         //update drag start point
         lastPos = eventData.position;
+        //prevent drag from exiting the screen bounds by checking new position OF CURSOR
+#if UNITY_EDITOR
+        if (Input.mousePosition.x <= 0 || Input.mousePosition.y <= 0 || Input.mousePosition.x >= Handles.GetMainGameViewSize().x - 1 || Input.mousePosition.y >= Handles.GetMainGameViewSize().y - 1) window.transform.position += diff;
+#else
+    if (Input.mousePosition.x <= 0 || Input.mousePosition.y <= 0 || Input.mousePosition.x >= Screen.width - 1 || Input.mousePosition.y >= Screen.height - 1) window.transform.position += diff;
+#endif
+        //if (CountCornersVisibleFrom(this.GetComponent<RectTransform>()) != 4)
+        //{
+        //    //dont update
+        //    Debug.Log("only " + CountCornersVisibleFrom(this.GetComponent<RectTransform>()) + " corners visible!");
+        //    //move back
+        //    window.transform.position += diff;
+        //} 
+
+
+
     }
+
+
 }

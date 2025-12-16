@@ -1,5 +1,7 @@
 using UnityEngine;
 using System;
+using TMPro;
+using UnityEngine.UI;
 
 [Serializable]
 public class DungeonCell
@@ -167,12 +169,21 @@ public class DungeonCell
                     {
                         Debug.Log("attempting to give player equipment " + entity.dataString);
                         Player.inventory.addItem(entity.dataString, "breacher");
+                        //display popup
+                        GameObject popupcontainer = GameObject.Find("PlayerUI").transform.Find("ItemPopup").gameObject;
+                        popupcontainer.transform.Find("Content").Find("desctext").GetComponent<TextMeshProUGUI>().text = "RECEIVED " + entity.dataString;
+                        popupcontainer.transform.Find("Content").Find("icon").GetComponent<Image>().sprite = Resources.Load<EquipmentItem>("Equipment/" + entity.dataString + "").icon;
+                        popupcontainer.SetActive(true);
                         HandleEquipment.displayEquips();
                     } catch {
                         Debug.Log("equipment failed, distributing upgrade instead");
                         if(entity.dataString == "WeaponUpgrade")
                         {
                             HandleEquipment.onUpgradeObtain();
+                            GameObject popupcontainer = GameObject.Find("PlayerUI").transform.Find("ItemPopup").gameObject;
+                            popupcontainer.transform.Find("Content").Find("desctext").GetComponent<TextMeshProUGUI>().text = "RECEIVED " + entity.dataString;
+                            popupcontainer.transform.Find("Content").Find("icon").GetComponent<Image>().sprite = Resources.Load<Sprite>("Tiles/" +  "armsIcon");
+                            popupcontainer.SetActive(true);
                         }
                     }
 
