@@ -17,7 +17,7 @@ MonoBehaviour:
   price: 500
   skillEffects:
   - rid: 311031170042429505
-  time: 30
+  time: 10
   cooldown: 60
   expire: 0
   replaces: {fileID: 0}
@@ -32,6 +32,6 @@ MonoBehaviour:
     - rid: 311031170042429506
       type: {class: PassiveEffect, ns: , asm: Assembly-CSharp}
       data:
-        stat: Health
-        boost: 50
+        stat: TempHealth
+        boost: 25
         flat: 0

@@ -13,7 +13,7 @@ GameObject:
   - component: {fileID: 232450159325638692}
   - component: {fileID: 978233769788228872}
   m_Layer: 5
-  m_Name: Hitpoint
+  m_Name: TemporaryHitpoint
   m_TagString: Untagged
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
@@ -48,7 +48,7 @@ Animator:
   m_GameObject: {fileID: 7884186904797271430}
   m_Enabled: 1
   m_Avatar: {fileID: 0}
-  m_Controller: {fileID: 9100000, guid: 41eb143324e1e6b4f81dd5b61ff16781, type: 2}
+  m_Controller: {fileID: 9100000, guid: c817f672cf501134ea1f5bb642ef7390, type: 2}
   m_CullingMode: 0
   m_UpdateMode: 0
   m_ApplyRootMotion: 0
@@ -88,7 +88,7 @@ MonoBehaviour:
   m_OnCullStateChanged:
     m_PersistentCalls:
       m_Calls: []
-  m_Sprite: {fileID: 1381132, guid: 2857cacc84bbd6842896b121815ffc0f, type: 3}
+  m_Sprite: {fileID: 1819642878, guid: a08f5278e0146d842838fda2beb248b4, type: 3}
   m_Type: 0
   m_PreserveAspect: 0
   m_FillCenter: 1

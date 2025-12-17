@@ -28,5 +28,5 @@ MonoBehaviour:
       type: {class: PassiveEffect, ns: , asm: Assembly-CSharp}
       data:
         stat: Health
-        boost: 5
+        boost: 2
         flat: 1

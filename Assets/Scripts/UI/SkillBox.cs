@@ -23,9 +23,8 @@ public class SkillBox : MonoBehaviour, IPointerEnterHandler, IPointerExitHandler
         HandleCursorOverlay.setState(HandleCursorOverlay.cursorState.none);
     }
 
-    public void OnPointerDown(PointerEventData pointerEventData)
+    public void activateSkill()
     {
-        //activate skill
         if (!onCooldown)
         {
             onCooldown = true;
@@ -37,5 +36,11 @@ public class SkillBox : MonoBehaviour, IPointerEnterHandler, IPointerExitHandler
             //refresh stats window to reflect skill changes
             HandleSkillTree.fillStatsWindow(Player.playerStats.generateStatString());
         }
+
+    }
+
+    public void OnPointerDown(PointerEventData pointerEventData)
+    {
+        activateSkill();
     }
 }

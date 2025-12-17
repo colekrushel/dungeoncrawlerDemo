@@ -274,17 +274,17 @@ public class AnimateUI : MonoBehaviour
     {
         //perform feedback operations on hit by attack
         //make scroll faster
-        scrollSpeed = 1f / healthPercent;
+        //scrollSpeed = 1f / healthPercent;
         //Debug.Log(healthPercent);
         //change color of ui to be darker red
-        Color newColor = new Color(1f ,  healthPercent, healthPercent);
-        foreach (var component in components)
-        {
-            if (component.transform.Find("Content"))
-            {
-                component.transform.Find("Content").gameObject.GetComponent<Image>().color = newColor;
-            }
-        }
+        //Color newColor = new Color(1f ,  healthPercent, healthPercent);
+        //foreach (var component in components)
+        //{
+        //    if (component.transform.Find("Content"))
+        //    {
+        //        component.transform.Find("Content").gameObject.GetComponent<Image>().color = newColor;
+        //    }
+        //}
 
         //make screen shake
         shake = .3f;

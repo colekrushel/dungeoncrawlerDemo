@@ -52,6 +52,7 @@ public class InputHandler : MonoBehaviour
     //ui stuff
     [SerializeField] GameObject interactWindow;
     [SerializeField] GameObject firewall;
+    [SerializeField] GameObject deathScreen;
 
     void Start()
     {
@@ -186,6 +187,39 @@ public class InputHandler : MonoBehaviour
     {
         //return to desktop
         HandleTray.desktopTransition(true);
+    }
+
+    void OnRestart()
+    {
+        //if player is dead
+        if(Player.getHP() <= 0)
+        {
+            Player.teleportPlayer(new Vector3(1, 0.5f, 1));
+            Player.updatePos(new Vector2(1, 1), 0);
+            Player.orientation = "bottom";
+            Player.setRotationFromOrientation();
+            grids = GridUtils.grids;
+            grid = grids[Player.currentLayer];
+            EnemyManager.zoneSwitch("bottom");
+            UIUtils.updateMap();
+            deathScreen.SetActive(false);
+            Player.respawn();
+            
+        }
+    }
+
+    //could combine and read numberkey instead
+    void OnSkill1()
+    {
+        HandleSkillBar.activateSkillFromHotkey(1);
+    }
+    void OnSkill2()
+    {
+        HandleSkillBar.activateSkillFromHotkey(2);
+    }
+    void OnSkill3()
+    {
+        HandleSkillBar.activateSkillFromHotkey(3);
     }
 
     void OnMove2(InputValue value)

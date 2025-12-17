@@ -1,3 +1,4 @@
+using System;
 using System.Collections.Generic;
 
 //store player stats and modifiers from skills so they dont have to be constantly dereferenced
@@ -46,9 +47,9 @@ public class PlayerStats
         real = false; 
     }
 
-    public float getMaxHealth()
+    public int getMaxHealth()
     {
-        return baseHealth * healthMult;
+        return (int)(baseHealth * healthMult);
     }
 
     //damage formula: (player base dmg * player mult * weapon mult) - enemy armor
@@ -96,10 +97,16 @@ public class PlayerStats
                 break;
             case "health":
                 //when health is added increase player's current and total health by that amt
-                float addedamt = 0;
-                if (effect.flat) { baseHealth += boost; addedamt = boost; }
-                else { healthMult += boost * .01f; addedamt = baseHealth * (boost * .01f); }
+                int addedamt = 0;
+                if (effect.flat) { baseHealth += boost; addedamt = (int)boost; }
+                else { healthMult += boost * .01f; addedamt = (int)(baseHealth * (boost * .01f)); }
                 if(real)Player.addMaxHP(addedamt);
+                break;
+            case "temphealth":
+                int addedamt2 = 0;
+                if (effect.flat) { baseHealth += boost; addedamt2 = (int)boost; }
+                else { healthMult += boost * .01f; addedamt2 = (int)Math.Round(baseHealth * (boost * .01f)); }
+                if (real) Player.addMaxHP(addedamt2, true);
                 break;
             case "cooldown":
                 if (effect.flat) baseCooldown += boost;
@@ -195,8 +202,18 @@ public class PlayerStats
     //buffs are just passive effects that are designated to be removed later
     public void addBuff(PassiveEffect buff)
     {
-        //apply the buff directly; its ok because passive effects are all applied additively.
-        addSkillModifiers(buff);
+        if(buff.stat == "Health")
+        {
+            //apply health buff as temporary health
+            buff.stat = "TempHealth";
+            addSkillModifiers(buff);
+
+        } else
+        {
+            //apply the buff directly; its ok because passive effects are all applied additively.
+            addSkillModifiers(buff);
+        }
+
         //buff will be removed when timer reaches 0 on the skillbox.
     }
 
@@ -207,7 +224,10 @@ public class PlayerStats
         foreach (BuffEffect effect in fx)
         {
             foreach(PassiveEffect buff in effect.buffs)
-            addSkillModifiers(buff, -1);
+            {
+                if (buff.stat == "Health") buff.stat = "TempHealth";
+                addSkillModifiers(buff, -1);
+            }
         }
     }
 

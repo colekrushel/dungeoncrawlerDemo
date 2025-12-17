@@ -1,5 +1,6 @@
 using System;
 using System.Collections.Generic;
+using UnityEditor;
 using UnityEngine;
 
 public static class Player 
@@ -16,8 +17,9 @@ public static class Player
     
     //combat values
     public static PlayerStats playerStats = new PlayerStats();
-    private static float totalHP = playerStats.getMaxHealth();
-    private static float currentHP = totalHP;
+    private static int totalHP = playerStats.getMaxHealth();
+    private static int currentHP = totalHP;
+    private static int tempHP = 0;
     public static float leftCooldown = 0;
     public static float rightCooldown = 0;
     //public static float recoil = 0;    what is this even used for?
@@ -45,6 +47,7 @@ public static class Player
         //update equipment display
         HandleEquipment.displayEquips();
         HandleSkillTree.initializeTree(skills);
+        HandleHealthDisplay.initializeHP();
         //HandleEquipment.onUpgradeObtain();
     }
 
@@ -83,7 +86,7 @@ public static class Player
         return gridPos;
     }
 
-    static public float getHP()
+    static public int getHP()
     {
         return currentHP;
     }
@@ -93,16 +96,34 @@ public static class Player
         return currencyHeld;
     }
 
-    static public void addMaxHP(float amt)
+    static public void addMaxHP(int amt, bool temp = false)
     {
-        currentHP += amt;
-        totalHP += amt;
-        //if removing health (from skill end) then only take away max hp, and only take away current hp up to maxHP levels
-        if(amt < 0)
+        //if removing health (from skill end) then only take away temp hp
+        if (amt < 0)
         {
-            totalHP += amt;
-            if(currentHP > totalHP) currentHP = totalHP;
+            if (tempHP > 0)
+            {
+                Debug.Log("removing temp hp from end of skill");
+                HandleHealthDisplay.takeDamage(tempHP);
+                tempHP = 0;
+                
+            }
+        } else
+        {
+            if (temp)
+            {
+                tempHP += amt;
+                HandleHealthDisplay.addTempHP(amt);
+            }
+            else
+            {
+                currentHP += amt;
+                totalHP += amt;
+                HandleHealthDisplay.addMaxHP(amt);
+            }
         }
+  
+
     }
 
     static public void printPos()
@@ -129,8 +150,28 @@ public static class Player
             MovementManager.shakeObject(block, 20f, 1f, .3f, block.transform.position);
         } else
         {
-            currentHP = currentHP - damage;
+            //deal temp hp damage first
+            if(tempHP > 0)
+            {
+                tempHP -= damage;
+                if(tempHP < 0)
+                {
+                    //deal overflow back to player
+                    damage = Math.Abs(tempHP);
+                }
+            } else
+            {
+                currentHP = currentHP - damage;
+            }
+                
+            //if lethal
+            if(currentHP <= 0)
+            {
+                HandleTray.desktopTransition(true);//pause game
+                GameObject.Find("PlayerUI").transform.Find("DeathOverlay").gameObject.SetActive(true);
+            }
             AnimateUI.updateHPMonitor(((float)currentHP / (float)totalHP));
+            HandleHealthDisplay.takeDamage(damage);
         }
 
     }
@@ -191,8 +232,19 @@ public static class Player
         {
             skills.Remove(newSkill);
             //guaranteed to be passive skill so remove effects from stats
+
             playerStats.addSkillModifiers(newSkill, -1);
         }
+    }
+
+    static public void respawn()
+    {
+        //respawn player after death
+        //position reset is handled by inputhandler
+        
+        currentHP = totalHP;
+        HandleHealthDisplay.restoreHP();
+        //reset skill cooldowns?
     }
     
 

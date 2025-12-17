@@ -47,6 +47,11 @@ public class HandleSkillBar : MonoBehaviour
 
     public static void addBox(Skill s)
     {
+        //remove placeholder if necessary
+        if (GameObject.Find("placeholder") != null)
+        {
+            Destroy(GameObject.Find("placeholder"));
+        }
         GameObject sbox = Instantiate(Resources.Load<GameObject>("Prefabs/UI/SkillBox"));
         sbox.transform.Find("Icon").GetComponent<Image>().sprite = s.icon;
         sbox.transform.Find("Name").GetComponent<TextMeshProUGUI>().text = s.name;
@@ -55,6 +60,24 @@ public class HandleSkillBar : MonoBehaviour
         sbox.transform.SetParent(Instance.transform, false);
         addedSkills.Add(s);
     }
+
+    public static void activateSkillFromHotkey(int childnum)
+    {
+        //get skillbox
+        try
+        {
+            GameObject sbox = Instance.transform.GetChild(childnum-1).gameObject;
+            sbox.GetComponent<SkillBox>().activateSkill();
+            
+        } catch {
+            //box doesnt exist; dont do anything
+            return;
+        }
+
+        
+    }
+
+    
 
     public static void activateBox(Skill s)
     {
