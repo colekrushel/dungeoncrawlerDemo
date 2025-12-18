@@ -6,6 +6,7 @@ public class Projectile : MonoBehaviour
     //script attached to projectile objects that just check for collision every frame.
     [SerializeField] float lifetime; //how long the projectile should exist before being destroyed ( in seconds?)
     [SerializeField] int damage;
+    [SerializeField] float speed;
     private int i = 0;
     // Update is called once per frame
     void Update()
@@ -16,7 +17,7 @@ public class Projectile : MonoBehaviour
             Destroy(gameObject);
         }
         //move projectile in right direction because its rotation is set at instantiation so that the right/x vector is looking at the player
-        transform.position += transform.right * Time.deltaTime * 2;
+        transform.position += transform.right * Time.deltaTime * 2 * speed;
     }
 
     private void OnTriggerEnter(Collider other)
@@ -24,7 +25,7 @@ public class Projectile : MonoBehaviour
         
         if (other.gameObject == Player.playerObject && i == 0)
         {
-            Debug.Log("projectile collision with " + other.name);
+            //Debug.Log("projectile collision with " + other.name);
             StartCoroutine(Reset());
 
         }

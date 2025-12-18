@@ -53,7 +53,10 @@ public class StartCellAttack : MonoBehaviour
                 }
                 break;
             case CellAttack.cellAttackType.Random:
-                //...
+                foreach (DungeonCell item in grid.getRandomCellsAroundPoint(enemy.getPos(), atk.range, atk.chance, atk.randMax))
+                {
+                    affectedCells.Add(item.getCellObject());
+                }
                 break;
         }
         //start cellattack on the affected cells

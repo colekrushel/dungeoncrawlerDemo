@@ -15,5 +15,6 @@ public static class EnemyDicts
         enemyToModel.Add("Bee2", Resources.Load<GameObject>("Prefabs/Enemies/Bee2.0"));
         enemyToModel.Add("BeeClean", Resources.Load<GameObject>("Prefabs/Enemies/BeeClean"));
         enemyToModel.Add("HiveClean", Resources.Load<GameObject>("Prefabs/Enemies/HiveClean"));
+        enemyToModel.Add("TreeBoss", Resources.Load<GameObject>("Prefabs/Enemies/TreeBoss"));
     }
 }

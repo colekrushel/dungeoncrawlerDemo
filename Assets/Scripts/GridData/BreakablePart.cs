@@ -1,3 +1,4 @@
+using System.Collections;
 using UnityEngine;
 
 public class BreakablePart : MonoBehaviour, IHittable
@@ -24,7 +25,7 @@ public class BreakablePart : MonoBehaviour, IHittable
             MovementManager.shakeObject(this.gameObject, .04f, 1f, .2f, this.gameObject.transform.position, () =>
             {
                 onBreak();
-                Destroy(this.gameObject);
+                
             });
             
         } else
@@ -48,7 +49,44 @@ public class BreakablePart : MonoBehaviour, IHittable
             Player.addCurrency(breakValue);
             return;
         }
-        //tell its parent construct that a part has been broken
-        this.gameObject.GetComponentInParent<BreakableConstruct>().partBreak(this);
+        //if treebark then check if all of the cores in the scene have been broken; if one is not broken, then regenerate this object (coroutine?)
+        if (breakType == BreakableConstruct.breakType.TreeBark)
+        {
+            if (EnemyManager.barkregen)
+            {
+                StartCoroutine(regenerate());
+            }
+            else
+            {
+                //don't destroy it because we want to bring it back later for phase 2
+                this.gameObject.SetActive(false);
+            }
+        }
+        else if (breakType == BreakableConstruct.breakType.PowerCore)
+        {
+            EnemyManager.onCoreBreak();
+            //don't destroy it because we want to bring it back later for phase 2
+            this.gameObject.SetActive(false);
+        }
+        else {
+            //tell its parent construct that a part has been broken
+            this.gameObject.GetComponentInParent<BreakableConstruct>().partBreak(this);
+            Destroy(this.gameObject);
+        }
+
+
+    }
+
+    IEnumerator regenerate()
+    {
+        //set scale from 0.01 to .2 to kinda animate regeneration
+        this.transform.localScale = new Vector3(0.01f, 0.01f, 0.01f);
+        yield return new WaitForSeconds(0.5f);
+        this.transform.localScale = new Vector3(0.1f, 0.1f, 0.1f);
+        //partial regen
+        yield return new WaitForSeconds(0.5f);
+        this.transform.localScale = new Vector3(0.2f, 0.2f, 0.2f);
+        //finish regen
+
     }
 }

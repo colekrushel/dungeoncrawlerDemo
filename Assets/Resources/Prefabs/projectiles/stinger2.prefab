@@ -129,6 +129,7 @@ MonoBehaviour:
   m_EditorClassIdentifier: Assembly-CSharp::Projectile
   lifetime: 20
   damage: 3
+  speed: 1
 --- !u!114 &895568598541849551
 MonoBehaviour:
   m_ObjectHideFlags: 0

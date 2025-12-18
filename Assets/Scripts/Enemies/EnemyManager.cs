@@ -1,5 +1,6 @@
 using System.Collections;
 using System.Collections.Generic;
+using System.Security.Cryptography;
 using UnityEngine;
 using static UnityEditor.Experimental.GraphView.GraphView;
 using static UnityEditor.PlayerSettings;
@@ -120,6 +121,18 @@ public class EnemyManager : MonoBehaviour
 
                 UIUtils.updateSingleMapCell((int)enemy.getPos().x, (int)enemy.getPos().y, GridDicts.typeToSprite["Enemy"], enemy);
             }
+        }
+    }
+
+    //static boss handling; not a good generic solution but it works for the one boss
+    public static int breakcount = 0;
+    public static bool barkregen = true;
+    public static void onCoreBreak()
+    {
+        breakcount++;
+        if(breakcount >= 4)
+        {
+            barkregen=false;
         }
     }
 }

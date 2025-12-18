@@ -42,7 +42,7 @@ public class AnimateUI : MonoBehaviour
     }
 
     //animate constant scrolling effects
-    [SerializeField] private static float scrollSpeed = 1f; //rework
+    //[SerializeField] private static float scrollSpeed = 1f; //rework
     [SerializeField] private RawImage[] imagesToScroll;
     [SerializeField] private float[] scrollXSpeeds; //separate because cant serialize tuples
     [SerializeField] private float[] scrollYSpeeds;

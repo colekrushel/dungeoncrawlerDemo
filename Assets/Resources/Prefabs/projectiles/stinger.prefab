@@ -129,6 +129,7 @@ MonoBehaviour:
   m_EditorClassIdentifier: Assembly-CSharp::Projectile
   lifetime: 5
   damage: 2
+  speed: 1
 --- !u!114 &895568598541849551
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -145,6 +146,7 @@ MonoBehaviour:
   MaxHP: 1
   breakType: 3
   breakableBy: 4
+  breakValue: 0
 --- !u!54 &-743893463553279835
 Rigidbody:
   m_ObjectHideFlags: 0

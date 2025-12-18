@@ -13,7 +13,7 @@ MonoBehaviour:
   m_Name: Smasher
   m_EditorClassIdentifier: 
   equipType: 0
-  baseDamage: 2
+  baseDamage: 10
   shieldHealth: 0
   shieldDecay: 0
   shieldRegen: 0

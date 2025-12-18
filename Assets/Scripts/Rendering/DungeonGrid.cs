@@ -74,6 +74,30 @@ public class DungeonGrid
         return ret;
     }
 
+    public List<DungeonCell> getRandomCellsAroundPoint(Vector2 pos, int radius, float chancePerCell, float max)
+    {
+        List<DungeonCell> ret = new List<DungeonCell>();
+        for (int y = (int)pos.y + radius; y >= pos.y - radius; y--)
+        {
+            for (int x = (int)pos.x - radius; x <= pos.x + radius; x++)
+            {
+                if (ret.Count >= max) continue;
+                DungeonCell cell = getCell(x, y);
+                //exclude enemy's cell and empty cells
+                if (cell != null && cell.type != "Empty" && pos != new Vector2(x, y))
+                {
+                    //roll random num
+                    int rand = UnityEngine.Random.Range(0, 101);
+                    if (rand <= chancePerCell)ret.Add(cell);
+                }
+            }
+        }
+
+        //prune invalid cells just in case
+        ret.RemoveAll(delegate (DungeonCell o) { return o == null || (o != null && o.type == "Empty"); });
+        return ret;
+    }
+
     public void printGrid()
     {
         Debug.Log(width);

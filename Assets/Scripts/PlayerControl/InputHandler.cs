@@ -194,9 +194,10 @@ public class InputHandler : MonoBehaviour
         //if player is dead
         if(Player.getHP() <= 0)
         {
+            Player.orientation = "bottom";
             Player.teleportPlayer(new Vector3(1, 0.5f, 1));
             Player.updatePos(new Vector2(1, 1), 0);
-            Player.orientation = "bottom";
+            GridUtils.switchZone("bottom");
             Player.setRotationFromOrientation();
             grids = GridUtils.grids;
             grid = grids[Player.currentLayer];

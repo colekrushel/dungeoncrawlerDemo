@@ -32,6 +32,8 @@ public class Enemy : MonoBehaviour, IHittable
     enemyState currentState = enemyState.Idle;
     [SerializeField] string currMovementDir = "";
     protected int dropAmount; //amount of currency to drop on kill
+    protected float phaseThreshold; //hp% to trigger a phase transition; on transition, current action will end immediately and play the given transition action.
+    [SerializeField] protected EnemyAction transitionAction;
 
     private void Update()
     {
@@ -312,6 +314,12 @@ public class Enemy : MonoBehaviour, IHittable
         part.currentHP -= damage;
         HP -= damage;
 
+        if(HP <= phaseThreshold)
+        {
+            phaseThreshold = -100; //stop from happening again
+            onPhaseTransition();
+        }
+
         if (part.currentHP <= 0)
         {
             //broke the part; now apply an effect and change the part to its broken appearance
@@ -446,6 +454,14 @@ public class Enemy : MonoBehaviour, IHittable
         }
         return returnVal;
  
+    }
+
+    public void onPhaseTransition() //to make generic would be declared by the subtype enemy class but only 1 enemy will have a phase transition for this demo so this is fine for this scope
+    {
+        //for the tree, we want to play the transition action, regenerate all bark, and regenerate the cores.
+        //we also want to remove the statue props and spawn enemies instead.
+
+        //stop current action and play the transition action
     }
 
     public Vector2 getPos()
