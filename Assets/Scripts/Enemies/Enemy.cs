@@ -3,7 +3,6 @@ using System.Collections;
 using System.Collections.Generic;
 using System.Linq;
 using UnityEngine;
-using static UnityEditor.Progress;
 
 
 //base enemy class
@@ -34,6 +33,7 @@ public class Enemy : MonoBehaviour, IHittable
     protected int dropAmount; //amount of currency to drop on kill
     protected float phaseThreshold; //hp% to trigger a phase transition; on transition, current action will end immediately and play the given transition action.
     [SerializeField] protected EnemyAction transitionAction;
+    bool phaseactionoverride = false;
 
     private void Update()
     {
@@ -104,6 +104,11 @@ public class Enemy : MonoBehaviour, IHittable
             ranIndex = Random.Range(0, enemyActions.Length);
             selectedAction = enemyActions[ranIndex];
             c++;
+        }
+        if (phaseactionoverride)
+        {
+            selectedAction = transitionAction;
+            phaseactionoverride = false;
         }
         currentAction = selectedAction;
         //before attacking, determine if attack would actually hit the player. if not then turn to move to/face the player.
@@ -419,6 +424,8 @@ public class Enemy : MonoBehaviour, IHittable
     public IEnumerator onDeath()
     {
         yield return new WaitForSeconds(1);
+        
+        if(transitionAction != null) GameObject.Find("PlayerUI").transform.Find("VictoryOverlay").gameObject.SetActive(true);
         EnemyManager.killEnemy(this, this.dropAmount);
     }
 
@@ -461,7 +468,8 @@ public class Enemy : MonoBehaviour, IHittable
         //for the tree, we want to play the transition action, regenerate all bark, and regenerate the cores.
         //we also want to remove the statue props and spawn enemies instead.
 
-        //stop current action and play the transition action
+        phaseactionoverride = true;
+        //push player away?
     }
 
     public Vector2 getPos()

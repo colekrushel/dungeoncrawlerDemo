@@ -506,7 +506,7 @@ BoxCollider:
     serializedVersion: 2
     m_Bits: 0
   m_LayerOverridePriority: 0
-  m_IsTrigger: 0
+  m_IsTrigger: 1
   m_ProvidesContacts: 0
   m_Enabled: 1
   serializedVersion: 3
@@ -1101,6 +1101,7 @@ MonoBehaviour:
   chargeLength: 10
   cellframe: {fileID: 7827658994873127441}
   caller: {fileID: 0}
+  keepObstacleAfterEnd: 0
 --- !u!1 &6043057146698429410
 GameObject:
   m_ObjectHideFlags: 0

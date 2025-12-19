@@ -9,7 +9,7 @@ public class HandleCursorOverlay : MonoBehaviour
 
     public enum cursorState { none, pointer, locked}
     public static cursorState state = cursorState.none;
-    void Start()
+    void Awake()
     {
         Instance = this;
         cursorDefault = transform.Find("CursorOffset").Find("CursorBackground").gameObject;

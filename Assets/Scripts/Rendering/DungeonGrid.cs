@@ -2,7 +2,6 @@ using System;
 using System.Collections.Generic;
 using UnityEngine;
 using UnityEngine.Rendering;
-using static UnityEditor.PlayerSettings;
 
 [Serializable]
 public class DungeonGrid 

@@ -11,6 +11,7 @@ public class HandleTray : MonoBehaviour
 
     private void Awake()
     {
+        Application.targetFrameRate = 120;//testing
         Instance = this;
         desktopContainer = GameObject.Find("DesktopFull").gameObject;
     }
@@ -61,10 +62,11 @@ public class HandleTray : MonoBehaviour
         int price = 10000000;
         if (windowName == "Map") price = 100;
         else if (windowName == "Weapons") price = 400;
-        else if (windowName == "SkillTree") price = 100;
-        else if (windowName == "SkillBar") price = 100;
+        else if (windowName == "SkillTree") price = 1000;
+        else if (windowName == "SkillBar") price = 1500;
         //first check if can afford
-        if (price < Player.getCurrency())
+        Debug.Log(Player.getCurrency());
+        if (price <= Player.getCurrency())
         {
             Player.addCurrency(price * -1);
             GameObject icon = gameObject.transform.Find("Icons").transform.Find(windowName + "Icon").gameObject;

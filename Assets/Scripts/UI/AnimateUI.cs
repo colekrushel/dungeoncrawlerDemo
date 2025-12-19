@@ -60,7 +60,7 @@ public class AnimateUI : MonoBehaviour
     private static bool playRightEffect = false;
     private static float rightSpeedMult = 1;
     // vars for camera shake
-    [SerializeField] private new Camera camera; // set this via inspector
+    [SerializeField] private Camera camera; // set this via inspector
     static float shake = 0;
     float shakeAmount = 0.02f;
     float decreaseFactor = 1f;

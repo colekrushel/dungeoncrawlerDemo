@@ -4,7 +4,7 @@ using TMPro;
 using Unity.VisualScripting;
 using UnityEngine;
 using UnityEngine.UI;
-using static UnityEditor.Progress;
+
 
 
 public class UIUtils : MonoBehaviour 
@@ -180,7 +180,7 @@ public class UIUtils : MonoBehaviour
                             
                     }
                     //for impassable props (props with no modifiers) we want to draw the map cell as being surrounded by walls to signify that it is not traversible.
-                    if(realCell.type == "Prop" && !realCell.isTraversible() && realCell.getPos() != Player.getPos()) //and ignore player's position because player's tile is always considered untraversible
+                    if (realCell.type == "Prop" && !realCell.isTraversible() && realCell.getPos() != Player.getPos() && !EnemyManager.enemyOnPos(realCell.getPos(), Player.currentLayer)) //and ignore player's position because player's tile is always considered untraversible (and enemies)
                     {
                         mapCell.transform.Find("N").gameObject.GetComponent<Image>().color = Color.black;
                         mapCell.transform.Find("E").gameObject.GetComponent<Image>().color = Color.black;

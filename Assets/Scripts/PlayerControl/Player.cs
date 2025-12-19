@@ -32,7 +32,7 @@ public static class Player
     public static float currentBlockHP;
     public static float maxBlockHP;
     //other misc data
-    private static int currencyHeld = 5000;
+    private static int currencyHeld = 0;
     public static List<Skill> skills = new List<Skill>();
     
 

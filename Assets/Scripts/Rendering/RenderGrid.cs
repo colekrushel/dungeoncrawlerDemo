@@ -227,6 +227,8 @@ public class RenderGrid : MonoBehaviour
         if (cell.getFloorToAssign() == "grass1" || cell.getFloorToAssign() == "lawn" || cell.getFloorToAssign() == "water")
         {
             floor = getBorderedTile(cell, cell.getFloorToAssign());
+            //override to make water tiles untraversible
+            if (cell.getFloorToAssign() == "water") cell.traversible = false;
 
         } else
         {
@@ -586,6 +588,10 @@ public class RenderGrid : MonoBehaviour
                 cell.entity.interactable = false;
                 cell.traversible = true;
                 break;
+            case "Item":
+                cell.traversible = false;
+                break;
+
         }
         cell.entity.layer = cell.layer;
     }

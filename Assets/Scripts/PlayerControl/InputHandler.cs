@@ -12,7 +12,7 @@ public class InputHandler : MonoBehaviour
     [SerializeField] GameObject gridParent;
     [SerializeField] bool isCreator = false;
     [SerializeField] Vector2Int startpos;
-    [SerializeField] new Camera camera;
+    [SerializeField] Camera camera;
     [SerializeField] GameObject screencover;
     DungeonGrid[] grids;
     DungeonGrid grid;
@@ -144,11 +144,12 @@ public class InputHandler : MonoBehaviour
         //Debug.Log("mouse1: "  + InputSystem.GetDevice<Mouse>().name);
         //Debug.Log("mouse2: " + InputSystem.GetDevice<Mouse>().position.ReadValue());
         //Debug.Log("mouse3: " + Mouse.current);
-        if (!Mouse.current.enabled)
-        {
-            InputSystem.EnableDevice(Mouse.current);
-        }
-        Vector2 startPos = Mouse.current.position.ReadValue();
+        //if (!Mouse.current.enabled)
+        //{
+        //    InputSystem.EnableDevice(Mouse.current);
+        //}
+        //Vector2 startPos = Mouse.current.position.ReadValue();
+        Vector2 startPos = Input.mousePosition;
         //Debug.Log("startpos " + startPos);
         if(Player.rightCooldown > 0)Player.rightCooldown -= Time.deltaTime;
         if(Player.leftCooldown > 0)Player.leftCooldown -= Time.deltaTime;
@@ -191,22 +192,25 @@ public class InputHandler : MonoBehaviour
 
     void OnRestart()
     {
+        if (GameObject.Find("VictoryOverlay") != null) GameObject.Find("VictoryOverlay").SetActive(false);
         //if player is dead
-        if(Player.getHP() <= 0)
-        {
-            Player.orientation = "bottom";
+        //if(Player.getHP() <= 0)
+        //{
+        Player.orientation = "bottom";
             Player.teleportPlayer(new Vector3(1, 0.5f, 1));
             Player.updatePos(new Vector2(1, 1), 0);
             GridUtils.switchZone("bottom");
             Player.setRotationFromOrientation();
+            Player.facing = "north";
             grids = GridUtils.grids;
             grid = grids[Player.currentLayer];
             EnemyManager.zoneSwitch("bottom");
             UIUtils.updateMap();
             deathScreen.SetActive(false);
+        
             Player.respawn();
-            
-        }
+        Debug.Log(Player.facing);
+        //}
     }
 
     //could combine and read numberkey instead
@@ -511,7 +515,7 @@ public class InputHandler : MonoBehaviour
         //remove tutorial gameobjects
         Destroy(GameObject.Find("tutorialskybox"));
         //adjust lighting
-        RenderSettings.ambientIntensity = 1.5f;
+        RenderSettings.ambientIntensity = 1.8f;
         yield return new WaitForSeconds(1);
         //fade out
         StartCoroutine(UIUtils.fadeObject(screencover, false, .2f));
@@ -640,14 +644,16 @@ public class InputHandler : MonoBehaviour
         } else
         {
             //save initial cursor position
-            leftStartPos = Mouse.current.position.ReadValue();
+            //leftStartPos = Mouse.current.position.ReadValue();
+            leftStartPos = Input.mousePosition;
         }
 
     }
 
     void OnLeftUp(InputValue value)
     {
-        Vector2 startPos = Mouse.current.position.ReadValue();
+        //Vector2 startPos = Mouse.current.position.ReadValue();
+        Vector2 startPos = Input.mousePosition;
         float diff = Mathf.Abs(startPos.x - leftStartPos.x + startPos.y - leftStartPos.y);
         if(Player.leftItem != null && Player.leftCooldown <= 0 && diff > 5) executeAttack(leftStartPos, startPos, false);
     }
@@ -663,7 +669,8 @@ public class InputHandler : MonoBehaviour
         } else
         {
             //save initial cursor position
-            rightStartPos = Mouse.current.position.ReadValue();
+            //rightStartPos = Mouse.current.position.ReadValue();
+            rightStartPos = Input.mousePosition;
         }
 
     }
@@ -672,7 +679,8 @@ public class InputHandler : MonoBehaviour
     {
         //only handle if weapon upgrade is obtained.
         if (!HandleEquipment.getUpgradeStatus()) return;
-        Vector2 startPos = Mouse.current.position.ReadValue();
+        //Vector2 startPos = Mouse.current.position.ReadValue();
+        Vector2 startPos = Input.mousePosition;
         float diff = Mathf.Abs(startPos.x - rightStartPos.x + startPos.y - rightStartPos.y);
         if (Player.rightItem != null && Player.rightCooldown <= 0 && diff > 5) executeAttack(rightStartPos, startPos, true);
     }

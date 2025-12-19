@@ -41,12 +41,14 @@ public class BreakablePart : MonoBehaviour, IHittable
         if (breakType == BreakableConstruct.breakType.None)
         {
             //if none then only destroy object
+            Destroy(this.gameObject);
             return;
         }
         if (breakType == BreakableConstruct.breakType.FieldItem)
         {
             //lone breakable parts that have their own rewards
             Player.addCurrency(breakValue);
+            Destroy(this.gameObject);
             return;
         }
         //if treebark then check if all of the cores in the scene have been broken; if one is not broken, then regenerate this object (coroutine?)
@@ -67,6 +69,21 @@ public class BreakablePart : MonoBehaviour, IHittable
             EnemyManager.onCoreBreak();
             //don't destroy it because we want to bring it back later for phase 2
             this.gameObject.SetActive(false);
+        }
+        else if(breakType == BreakableConstruct.breakType.Statue)
+        {
+            //for statues we want to spawn an enemy on this point after destruction
+            //get the cell this item is on
+            //parent's parent will always be the cell object, so we can use its world pos to get the cell data object
+            Vector3 pos = this.transform.parent.parent.parent.localPosition;
+            Debug.Log("break at " + pos);
+
+            DungeonCell associatedCell = GridUtils.grids[Player.currentLayer].getCell((int)pos.x, (int)pos.z);
+            associatedCell.traversible = true;
+            //spawn enemy
+            EnemySpawn newEnemy = new EnemySpawn((int)pos.x, (int)pos.z, "Bat", 0, "south");//hardcode values for now; can be made generic later  
+            EnemyManager.spawnEnemy(newEnemy);
+            Destroy(this.gameObject);
         }
         else {
             //tell its parent construct that a part has been broken

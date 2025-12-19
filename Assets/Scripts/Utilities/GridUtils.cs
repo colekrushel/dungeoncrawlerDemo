@@ -229,7 +229,7 @@ public static class GridUtils
                 ret = new Vector3(0, .5f, 23);
                 break;
             case "tutorial":
-                ret = new Vector3(50f, 0, 0);
+                ret = new Vector3(0f, -50f, 0);
                 break;
 
         }

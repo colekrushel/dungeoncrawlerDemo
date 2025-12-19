@@ -8,10 +8,7 @@ public class AnimUtils : MonoBehaviour
 
 
     // Update is called once per frame
-    void Update()
-    {
-        
-    }
+    
 
 
     //handle animation finish items because it requires a monobehavior script

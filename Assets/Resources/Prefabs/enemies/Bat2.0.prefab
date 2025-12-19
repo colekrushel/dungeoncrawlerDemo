@@ -58,9 +58,10 @@ MonoBehaviour:
   - {fileID: 6097579473320005459}
   - {fileID: 4910125603542164168}
   - {fileID: 1033669766167684792}
-  breakFX: {fileID: 0}
+  breakFX: {fileID: 6397834174913037371, guid: c7b7bbc32f85ba846840d2729512567f, type: 3}
   behavior: 0
   currMovementDir: 
+  transitionAction: {fileID: 0}
 --- !u!1 &2421027852139255706
 GameObject:
   m_ObjectHideFlags: 0
