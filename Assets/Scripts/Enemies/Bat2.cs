@@ -7,7 +7,7 @@ public class Bat2 : Enemy
         //fill enemy params with Bat's personal stats and animator
         //pos = p;
         //layer = l;
-        HP = 200;
+        HP = 150;
         baseDamage = 5;
         actionRange = 1;
         alertRange = 8;

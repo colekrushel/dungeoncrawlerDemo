@@ -289,7 +289,7 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: b22767b1bd2b1f948a77f0f795e2aa30, type: 3}
   m_Name: 
   m_EditorClassIdentifier: Assembly-CSharp::ConstantRotateMe
-  speed: 1
+  speed: 40
   xMul: 0
   yMul: 1
   zMul: 0
@@ -305,7 +305,7 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: b6e8f19dedf26b0449096fcaef95c60f, type: 3}
   m_Name: 
   m_EditorClassIdentifier: Assembly-CSharp::HoverMe
-  moveSpeed: 0.5
+  moveSpeed: 0.4
   transitionSpeed: 2
   hoverHeight: 0
 --- !u!114 &4431052538570583799
@@ -320,8 +320,8 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 786e413d122a74c41b7d6db8d243dd03, type: 3}
   m_Name: 
   m_EditorClassIdentifier: Assembly-CSharp::BreakablePart
-  HP: 5
-  MaxHP: 5
+  HP: 1
+  MaxHP: 1
   breakType: 1
   breakableBy: 4
   breakValue: 0

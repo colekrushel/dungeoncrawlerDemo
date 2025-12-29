@@ -7,7 +7,7 @@ public class Bee2 : Enemy
         //fill enemy params with Bat's personal stats and animator
         //pos = p;
         //layer = l;
-        HP = 50;
+        HP = 40;
         baseDamage = 2;
         actionRange = 8;
         alertRange = 8;

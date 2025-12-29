@@ -35,7 +35,7 @@ public class RenderGrid : MonoBehaviour
         if (startInTutorial)
         {
             loadZone(tutorialGridFiles, "tutorial");
-
+            RenderSettings.ambientIntensity = 0f;
         }
         //determine current active grid
         //asign current active grid to utils

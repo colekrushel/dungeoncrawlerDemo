@@ -678,7 +678,6 @@ MonoBehaviour:
   positionObject: {fileID: 0}
   enemyActions:
   - {fileID: 11400000, guid: 9be0408283898bf45a248d356db4ad11, type: 2}
-  - {fileID: 11400000, guid: 3fc2bde311a69604aafa51b7694fb467, type: 2}
   parts:
   - {fileID: 1145715147760536954}
   breakFX: {fileID: 6397834174913037371, guid: c7b7bbc32f85ba846840d2729512567f, type: 3}

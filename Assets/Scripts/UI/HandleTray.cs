@@ -63,9 +63,8 @@ public class HandleTray : MonoBehaviour
         if (windowName == "Map") price = 100;
         else if (windowName == "Weapons") price = 400;
         else if (windowName == "SkillTree") price = 1000;
-        else if (windowName == "SkillBar") price = 1500;
+        //else if (windowName == "SkillBar") price = 1500;
         //first check if can afford
-        Debug.Log(Player.getCurrency());
         if (price <= Player.getCurrency())
         {
             Player.addCurrency(price * -1);
@@ -74,6 +73,17 @@ public class HandleTray : MonoBehaviour
             //enable desktop icon too
             GameObject desktopIcon = desktopContainer.transform.Find(windowName + "Icon").gameObject;
             desktopIcon.SetActive(true);
+            if(windowName == "SkillTree")
+            {
+                //if buying skilltree then add skillbar too
+                windowName = "SkillBar";
+                icon = gameObject.transform.Find("Icons").transform.Find(windowName + "Icon").gameObject;
+                icon.SetActive(true);
+                //enable desktop icon too
+                desktopIcon = desktopContainer.transform.Find(windowName + "Icon").gameObject;
+                desktopIcon.SetActive(true);
+                windowName = "SkillTree";
+            }
             //after purchasing the app, remove the associated entry from the store
             GameObject entry = appStoreContainer.transform.Find(windowName + "Entry").gameObject;
             Destroy(entry);

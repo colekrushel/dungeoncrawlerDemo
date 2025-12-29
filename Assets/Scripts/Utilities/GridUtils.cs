@@ -482,7 +482,7 @@ public static class GridUtils
         switch (currzone)
         {
             case "tutorial": //hardcode tutorial arrival coord
-                newcoord.x = 1;
+                newcoord.x = 2;
                 newcoord.y = 1;
                 break;
             case "bottom":

@@ -19,6 +19,16 @@ public class HandleCellAttack : MonoBehaviour
 
         //make warning frame visible
         cellframe.SetActive(true);
+
+        //check if player is on position; if so then activate the warning ui outline
+        Vector3 pos = this.transform.parent.localPosition;
+
+        if(pos.x == Player.getPos().x && pos.z == Player.getPos().y)
+        {
+            UIUtils.toggleWarningOutline(true);
+        }
+        //add self to the list of danger tiles
+        
     }
 
     private void executeAttack()
@@ -34,8 +44,16 @@ public class HandleCellAttack : MonoBehaviour
     {
         yield return new WaitUntil(() => animator.GetCurrentAnimatorStateInfo(0).normalizedTime > 1 && !animator.IsInTransition(0));
         //after finish, start new attack if applicable and kill self
+        Debug.Log("finish cell");
         caller.onattackend();
         //animator.StopPlayback();
+        //bool finish = false;
+        //finish = 
+        //while(!finish)
+        //{
+        //    yield return null;
+        //}
+        UIUtils.removeDangerTile(this.transform.parent.localPosition);
         if (!keepObstacleAfterEnd)
         {
 
@@ -49,10 +67,11 @@ public class HandleCellAttack : MonoBehaviour
 
     public void pauseanim()
     {
-        //just used for status so hard code staute behavior
+        //just used for statues so hard code staute behavior
         animator.speed = 0;
         //mark cell as untraversible
         //hardcoded for south zone
+        UIUtils.removeDangerTile(this.transform.parent.localPosition);
         if (!keepObstacleAfterEnd)
         {
             Destroy(this.gameObject);

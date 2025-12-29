@@ -626,8 +626,8 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: acb1b6fb9ada60749b0400301790b696, type: 3}
   m_Name: 
   m_EditorClassIdentifier: Assembly-CSharp::EnemyPart
-  currentHP: 50
-  maxHP: 50
+  currentHP: 25
+  maxHP: 25
   partName: WingL2
   partModel: {fileID: 389853139018647457}
   effectiveness: 1
@@ -702,8 +702,8 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: acb1b6fb9ada60749b0400301790b696, type: 3}
   m_Name: 
   m_EditorClassIdentifier: Assembly-CSharp::EnemyPart
-  currentHP: 50
-  maxHP: 50
+  currentHP: 20
+  maxHP: 20
   partName: WingL3
   partModel: {fileID: 1132190513344773042}
   effectiveness: 1
@@ -773,8 +773,8 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: acb1b6fb9ada60749b0400301790b696, type: 3}
   m_Name: 
   m_EditorClassIdentifier: Assembly-CSharp::EnemyPart
-  currentHP: 50
-  maxHP: 50
+  currentHP: 30
+  maxHP: 30
   partName: WingL1
   partModel: {fileID: 1591659626370699080}
   effectiveness: 1
@@ -1035,8 +1035,8 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: acb1b6fb9ada60749b0400301790b696, type: 3}
   m_Name: 
   m_EditorClassIdentifier: Assembly-CSharp::EnemyPart
-  currentHP: 50
-  maxHP: 50
+  currentHP: 30
+  maxHP: 30
   partName: WingR1
   partModel: {fileID: 4604021764705616355}
   effectiveness: 1
@@ -1230,8 +1230,8 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: acb1b6fb9ada60749b0400301790b696, type: 3}
   m_Name: 
   m_EditorClassIdentifier: Assembly-CSharp::EnemyPart
-  currentHP: 50
-  maxHP: 50
+  currentHP: 20
+  maxHP: 20
   partName: WingR3
   partModel: {fileID: 5913330816316360068}
   effectiveness: 1
@@ -1407,8 +1407,8 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: acb1b6fb9ada60749b0400301790b696, type: 3}
   m_Name: 
   m_EditorClassIdentifier: Assembly-CSharp::EnemyPart
-  currentHP: 50
-  maxHP: 50
+  currentHP: 25
+  maxHP: 25
   partName: WingR2
   partModel: {fileID: 6593360429819216998}
   effectiveness: 1

@@ -110,18 +110,15 @@ public class InputHandler : MonoBehaviour
 
             //snap to final rotation
             //add check for bizarre softlock (isRotating is stuck at true even when player rotation is 90)
-            if (Mathf.Abs(totalRotation - 90f) < 2*speedMultiplier || Player.playerObject.transform.rotation.y % 90 == 0)
+            if (Mathf.Abs(totalRotation - 90f) < rotationSpeed * Time.deltaTime * 2 || Player.playerObject.transform.rotation.y % 90 == 0)
             {
-                isRotating = false;
+                
                 Player.playerObject.transform.rotation = endRotation;
                 //finished rotating, now check if ui elements need to be displayed
                 Player.updateFacing();
                 OnMoveEnd();
+                isRotating = false;
             }
-
-
-
-
         }
         if (isMoving)
         {
@@ -135,19 +132,12 @@ public class InputHandler : MonoBehaviour
             Vector3 dist = (Player.playerObject.transform.position - finalPosition);
             if ( Mathf.Abs(dist.x) < (.01f*bounds+timeBonus) && Mathf.Abs(dist.z) < (.01f * bounds + timeBonus ) && Mathf.Abs(dist.y) < (.01f * bounds + timeBonus ))
             {
-                isMoving = false;          
+                     
                 Player.playerObject.transform.position = finalPosition;
                 OnMoveEnd();
+                isMoving = false;
             }
         }
-        
-        //Debug.Log("mouse1: "  + InputSystem.GetDevice<Mouse>().name);
-        //Debug.Log("mouse2: " + InputSystem.GetDevice<Mouse>().position.ReadValue());
-        //Debug.Log("mouse3: " + Mouse.current);
-        //if (!Mouse.current.enabled)
-        //{
-        //    InputSystem.EnableDevice(Mouse.current);
-        //}
         //Vector2 startPos = Mouse.current.position.ReadValue();
         Vector2 startPos = Input.mousePosition;
         //Debug.Log("startpos " + startPos);
@@ -197,8 +187,8 @@ public class InputHandler : MonoBehaviour
         //if(Player.getHP() <= 0)
         //{
         Player.orientation = "bottom";
-            Player.teleportPlayer(new Vector3(1, 0.5f, 1));
-            Player.updatePos(new Vector2(1, 1), 0);
+            Player.teleportPlayer(new Vector3(2, 0.5f, 1));
+            Player.updatePos(new Vector2(2, 1), 0);
             GridUtils.switchZone("bottom");
             Player.setRotationFromOrientation();
             Player.facing = "north";
@@ -854,7 +844,8 @@ public class InputHandler : MonoBehaviour
     {
         //disable popup windows tied to entities when movement begins
         //UIUtils.popOut(interactWindow);
-        
+
+        //update danger overlay display
         
     }
     void OnMoveEnd()
@@ -868,5 +859,8 @@ public class InputHandler : MonoBehaviour
         //}
         //update minimap every time player moves
         UIUtils.updateMap();
+        UIUtils.updateWarningOutline();
+
+
     }
 }

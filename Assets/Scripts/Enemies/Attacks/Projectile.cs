@@ -28,7 +28,17 @@ public class Projectile : MonoBehaviour
             //Debug.Log("projectile collision with " + other.name);
             StartCoroutine(Reset());
 
+        } else if(other.gameObject.layer != 3) //ignore enemy layer
+        {
+            //if collides with a collider that isnt player, then destroy it
+            StartCoroutine(destroy());
         }
+    }
+
+    IEnumerator destroy()
+    {
+        yield return new WaitForEndOfFrame();
+        Destroy(gameObject);
     }
 
     IEnumerator Reset()

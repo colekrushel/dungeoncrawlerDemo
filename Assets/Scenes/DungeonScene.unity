@@ -1853,10 +1853,10 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   gridParent: {fileID: 993281072}
   isCreator: 0
-  startpos: {x: 1, y: 3}
+  startpos: {x: 2, y: 1}
   camera: {fileID: 890660339}
   screencover: {fileID: 2030384913}
-  startingZone: tutorial
+  startingZone: bottom
   interactWindow: {fileID: 209323962}
   firewall: {fileID: 1471878254}
   deathScreen: {fileID: 1537283430}
@@ -4006,7 +4006,7 @@ PrefabInstance:
   serializedVersion: 2
   m_Modification:
     serializedVersion: 3
-    m_TransformParent: {fileID: 1102794518}
+    m_TransformParent: {fileID: 1901600990}
     m_Modifications:
     - target: {fileID: 971612549869122891, guid: 5428dce4d6e3d2f4284132c5830bb10e, type: 3}
       propertyPath: m_Sprite
@@ -4018,11 +4018,23 @@ PrefabInstance:
       objectReference: {fileID: 1303239251}
     - target: {fileID: 1152725368967407640, guid: 5428dce4d6e3d2f4284132c5830bb10e, type: 3}
       propertyPath: m_OnClick.m_PersistentCalls.m_Calls.Array.data[0].m_Arguments.m_StringArgument
-      value: SkillBar
+      value: SkillTree
       objectReference: {fileID: 0}
     - target: {fileID: 2666616157448904988, guid: 5428dce4d6e3d2f4284132c5830bb10e, type: 3}
       propertyPath: m_Name
       value: SkillBarEntry
+      objectReference: {fileID: 0}
+    - target: {fileID: 2666616157448904988, guid: 5428dce4d6e3d2f4284132c5830bb10e, type: 3}
+      propertyPath: m_IsActive
+      value: 0
+      objectReference: {fileID: 0}
+    - target: {fileID: 4549613135418111006, guid: 5428dce4d6e3d2f4284132c5830bb10e, type: 3}
+      propertyPath: m_SizeDelta.x
+      value: 275
+      objectReference: {fileID: 0}
+    - target: {fileID: 4549613135418111006, guid: 5428dce4d6e3d2f4284132c5830bb10e, type: 3}
+      propertyPath: m_AnchoredPosition.x
+      value: 6.3
       objectReference: {fileID: 0}
     - target: {fileID: 4775120707195340773, guid: 5428dce4d6e3d2f4284132c5830bb10e, type: 3}
       propertyPath: m_text
@@ -4046,7 +4058,7 @@ PrefabInstance:
       objectReference: {fileID: 0}
     - target: {fileID: 9053994517951834768, guid: 5428dce4d6e3d2f4284132c5830bb10e, type: 3}
       propertyPath: m_AnchorMax.y
-      value: 0
+      value: 1
       objectReference: {fileID: 0}
     - target: {fileID: 9053994517951834768, guid: 5428dce4d6e3d2f4284132c5830bb10e, type: 3}
       propertyPath: m_AnchorMin.x
@@ -4054,15 +4066,15 @@ PrefabInstance:
       objectReference: {fileID: 0}
     - target: {fileID: 9053994517951834768, guid: 5428dce4d6e3d2f4284132c5830bb10e, type: 3}
       propertyPath: m_AnchorMin.y
-      value: 0
+      value: 1
       objectReference: {fileID: 0}
     - target: {fileID: 9053994517951834768, guid: 5428dce4d6e3d2f4284132c5830bb10e, type: 3}
       propertyPath: m_SizeDelta.x
-      value: 0
+      value: 250
       objectReference: {fileID: 0}
     - target: {fileID: 9053994517951834768, guid: 5428dce4d6e3d2f4284132c5830bb10e, type: 3}
       propertyPath: m_SizeDelta.y
-      value: 0
+      value: 250
       objectReference: {fileID: 0}
     - target: {fileID: 9053994517951834768, guid: 5428dce4d6e3d2f4284132c5830bb10e, type: 3}
       propertyPath: m_LocalPosition.x
@@ -4094,11 +4106,11 @@ PrefabInstance:
       objectReference: {fileID: 0}
     - target: {fileID: 9053994517951834768, guid: 5428dce4d6e3d2f4284132c5830bb10e, type: 3}
       propertyPath: m_AnchoredPosition.x
-      value: 0
+      value: 400
       objectReference: {fileID: 0}
     - target: {fileID: 9053994517951834768, guid: 5428dce4d6e3d2f4284132c5830bb10e, type: 3}
       propertyPath: m_AnchoredPosition.y
-      value: 0
+      value: -125
       objectReference: {fileID: 0}
     - target: {fileID: 9053994517951834768, guid: 5428dce4d6e3d2f4284132c5830bb10e, type: 3}
       propertyPath: m_LocalEulerAnglesHint.x
@@ -16331,13 +16343,13 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   bottomGridFiles:
-  - {fileID: 4900000, guid: f44a6c977567fd042a28139b033c46fb, type: 3}
-  - {fileID: 4900000, guid: 3ea1a5bb608e90f4b80fbde7633adbdb, type: 3}
-  - {fileID: 4900000, guid: 5e473672eb4bd094396f9d6ea908c35e, type: 3}
+  - {fileID: 4900000, guid: 23e381ef92074d04890f597d05c28c63, type: 3}
+  - {fileID: 4900000, guid: 993f2d59d6ee30340ae8faaf260a4ee1, type: 3}
+  - {fileID: 4900000, guid: 84ad200e526a0fc4b8810f75fbe18959, type: 3}
   northGridFiles:
-  - {fileID: 4900000, guid: 38db672f44835e744b2d185253561f8e, type: 3}
-  - {fileID: 4900000, guid: cc33994c1797f734f833e1e024b4479c, type: 3}
-  - {fileID: 4900000, guid: f80eabbb6f83e5246a660ffe83251a46, type: 3}
+  - {fileID: 4900000, guid: 428eb2ed02d7eda4381b4de25ae90668, type: 3}
+  - {fileID: 4900000, guid: aa276df910380474b8a3bbc13c2e6c75, type: 3}
+  - {fileID: 4900000, guid: 6c45b8f977ba92c478b438f381a3ab02, type: 3}
   southGridFiles:
   - {fileID: 4900000, guid: 12bd73271503c11439b004e8cee8e168, type: 3}
   - {fileID: 4900000, guid: fd790280ba584e442af7151ee15bdc14, type: 3}
@@ -16351,7 +16363,7 @@ MonoBehaviour:
   - {fileID: 4900000, guid: 83375cb79d4b83040b647328a8216ab9, type: 3}
   - {fileID: 4900000, guid: ef7d6d15752777c438385ae0c2745cc7, type: 3}
   topGridFiles: []
-  startInTutorial: 1
+  startInTutorial: 0
   tutorialGridFiles:
   - {fileID: 4900000, guid: cf7627ef8c8f1f842825bf29012b552d, type: 3}
   - {fileID: 4900000, guid: cdc403fbd9f5b18468eda464090e337d, type: 3}
@@ -18718,7 +18730,6 @@ RectTransform:
   - {fileID: 72676204}
   - {fileID: 1588183942}
   - {fileID: 1901600990}
-  - {fileID: 200935530}
   m_Father: {fileID: 840152209}
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
   m_AnchorMin: {x: 0, y: 1}
@@ -20562,8 +20573,8 @@ RectTransform:
   - {fileID: 5880370253544387349}
   - {fileID: 1471878252}
   - {fileID: 1673976994}
-  - {fileID: 244453364}
   - {fileID: 155101960662178741}
+  - {fileID: 244453364}
   - {fileID: 84234844}
   - {fileID: 287782853}
   - {fileID: 1787071818}
@@ -28667,7 +28678,10 @@ PrefabInstance:
       objectReference: {fileID: 0}
     m_RemovedComponents: []
     m_RemovedGameObjects: []
-    m_AddedGameObjects: []
+    m_AddedGameObjects:
+    - targetCorrespondingSourceObject: {fileID: 9053994517951834768, guid: 5428dce4d6e3d2f4284132c5830bb10e, type: 3}
+      insertIndex: -1
+      addedObject: {fileID: 200935530}
     m_AddedComponents: []
   m_SourcePrefab: {fileID: 100100000, guid: 5428dce4d6e3d2f4284132c5830bb10e, type: 3}
 --- !u!224 &1901600990 stripped

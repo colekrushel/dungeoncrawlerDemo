@@ -1,4 +1,5 @@
 using System.Collections;
+using System.Collections.Generic;
 using System.Linq;
 using TMPro;
 using Unity.VisualScripting;
@@ -15,9 +16,12 @@ public class UIUtils : MonoBehaviour
     static public GameObject entry;
     static public GameObject attackContainer;
     static public GameObject firewall;
+    static public Image UIOverlay;
     public static MonoBehaviour Instance { get; private set; }
     public static bool updatingLock = false;
 
+    //we need to keep a list of all 'danger' tiles (tiles about to be hit by a cell attack) so that we can display them on the map and maintain the warning indicator properly
+    public static List<Vector2> dangerTiles = new List<Vector2>();
     
 
     private void Awake()
@@ -26,7 +30,7 @@ public class UIUtils : MonoBehaviour
         mapGrid = GameObject.Find("MapGrid").gameObject;
         entry = Resources.Load<GameObject>("Prefabs/UI/Entry");
         attackContainer = GameObject.Find("AttackContainer").gameObject;
-       
+        UIOverlay = GameObject.Find("PlayerUI").GetComponent<Image>();
         if (!Instance)
         {
             //Instance = new GameObject("UIUtils").AddComponent<AnimUtils>();
@@ -186,6 +190,12 @@ public class UIUtils : MonoBehaviour
                         mapCell.transform.Find("E").gameObject.GetComponent<Image>().color = Color.black;
                         mapCell.transform.Find("S").gameObject.GetComponent<Image>().color = Color.black;
                         mapCell.transform.Find("W").gameObject.GetComponent<Image>().color = Color.black;
+                    }
+
+                    //finally check if this location is a danger tile (being hit by an enemy cell attack)
+                    if(dangerTiles.Contains(new Vector2(realCell.gridX, realCell.gridY)))
+                    {
+                        mapCell.transform.Find("Icon").gameObject.GetComponent<Image>().sprite = GridDicts.typeToSprite["Danger"];
                     }
 
                 }
@@ -448,4 +458,38 @@ public class UIUtils : MonoBehaviour
         //animate adding of currency
     }
 
+    public static void toggleWarningOutline(bool on)
+    {
+        if (on)
+        {
+            UIOverlay.sprite = Resources.Load<Sprite>("UI/oswindowwidedanger");
+        }
+        else
+        {
+            UIOverlay.sprite = Resources.Load<Sprite>("UI/oswindowwide");
+        }
+    }
+
+    public static void addDangerTile(Vector3 pos)
+    {
+        dangerTiles.Add(new Vector2(pos.x, pos.z));
+    }
+    //bool so waituntil can be used to guarantee removal before cell attack destruction
+    public static void removeDangerTile(Vector3 pos)
+    {
+        Debug.Log("remove dtile at " + pos);
+        dangerTiles.Remove(new Vector2(pos.x, pos.z));
+    }
+
+    public static void updateWarningOutline()
+    {
+        if (dangerTiles.Contains(Player.getPos()))
+        {
+            Debug.Log("player moved onto danger tile");
+            toggleWarningOutline(true);
+        } else
+        {
+            toggleWarningOutline(false);
+        }
+    }
 }

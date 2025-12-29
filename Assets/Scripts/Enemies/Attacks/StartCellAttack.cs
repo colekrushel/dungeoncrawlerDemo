@@ -3,6 +3,7 @@ using System;
 using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
+using static UnityEditor.PlayerSettings;
 
 //script to attach to enemy gameobject that is called from an animationevent to start a cell attack.
 
@@ -67,7 +68,12 @@ public class StartCellAttack : MonoBehaviour
             attack.transform.position = cell.transform.position;
             attack.transform.rotation = Quaternion.Euler(GridUtils.getZoneRotationEuler(Player.orientation));
             attack.transform.SetParent(cell.transform);
+
+            Vector3 pos = attack.transform.parent.localPosition;
+            UIUtils.addDangerTile(pos);
         }
+        //call a map update to reflect the change in the danger tiles
+        UIUtils.updateMap();
         //start next attack by waiting for the charge time and calling this recursively
         if (attackObject != null && attackObject.nextAttack != null)
         {
