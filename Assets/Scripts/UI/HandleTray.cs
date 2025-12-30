@@ -67,6 +67,7 @@ public class HandleTray : MonoBehaviour
         //first check if can afford
         if (price <= Player.getCurrency())
         {
+            AudioManager.playUISelect();
             Player.addCurrency(price * -1);
             GameObject icon = gameObject.transform.Find("Icons").transform.Find(windowName + "Icon").gameObject;
             icon.SetActive(true);

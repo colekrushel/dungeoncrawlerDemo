@@ -150,6 +150,9 @@ public static class Player
             MovementManager.shakeObject(block, 20f, 1f, .3f, block.transform.position);
         } else
         {
+            //play sfx
+            AudioManager.playPlayerHit();
+
             //deal temp hp damage first
             if(tempHP > 0)
             {

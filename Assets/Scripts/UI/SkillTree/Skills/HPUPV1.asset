@@ -18,7 +18,7 @@ MonoBehaviour:
   skillEffects:
   - rid: 311031170042429505
   time: 10
-  cooldown: 60
+  cooldown: 30
   expire: 0
   replaces: {fileID: 0}
   references:

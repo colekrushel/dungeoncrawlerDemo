@@ -38,6 +38,8 @@ public class BreakablePart : MonoBehaviour, IHittable
 
     private void onBreak()
     {
+        //play sfx
+        AudioManager.playPartBreak();
         if (breakType == BreakableConstruct.breakType.None)
         {
             //if none then only destroy object

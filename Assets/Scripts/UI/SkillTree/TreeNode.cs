@@ -214,8 +214,9 @@ public class TreeNode : MonoBehaviour, IPointerEnterHandler, IPointerExitHandler
         //attempt to purchase skill
         if (requirementsMet() && !unlocked)
         {
-            unlockNode(); //are skill effects applied here or somewhere else?
+            unlockNode(); 
             Player.addCurrency(nodeSkill.price * -1);
+            AudioManager.playUISelect();
         }
         HandleSkillTree.fillStatsWindow(Player.playerStats.generateStatString());
     }

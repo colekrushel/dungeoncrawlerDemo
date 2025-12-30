@@ -125,6 +125,7 @@ public class HandleEquipment : MonoBehaviour
 
     public static void selectEquipment(BaseEventData eventData, GameObject box, EquipmentItem item)
     {
+        AudioManager.playUISelect();
         //interpet event data and check if left or right
         bool left = true;
         PointerEventData e = eventData as PointerEventData;

@@ -291,7 +291,7 @@ public class InputHandler : MonoBehaviour
                         startRotation = Player.playerObject.transform.rotation;
                         endRotation = Quaternion.AngleAxis(90f, Player.playerObject.transform.up) * startRotation;
                         totalRotation = 0f;
-                        OnMoveBegin();
+                        
                     }
                     break;
                 case 'a':
@@ -302,7 +302,6 @@ public class InputHandler : MonoBehaviour
                         startRotation = Player.playerObject.transform.rotation;
                         endRotation = Quaternion.AngleAxis(-90f, Player.playerObject.transform.up) * startRotation;
                         totalRotation = 0f;
-                        OnMoveBegin();
 
                     }
                     break;
@@ -368,6 +367,8 @@ public class InputHandler : MonoBehaviour
 
         bool canMove;
 
+
+
         //move the player based on direction relative to the player's forward vector and right vector (forward, sidestep, backwards)
         switch (dirOffset)
         {
@@ -383,6 +384,7 @@ public class InputHandler : MonoBehaviour
                     finalPosition = Player.playerObject.transform.position + moveDir;
                     Player.updatePos(playerPos + GridUtils.directionToGridCoords(playerFacing));
                     isMoving = true;
+                    OnMoveBegin();
                 }
                 //else check if player is attempting to go out of bounds and there is no wall blocking the way
                 //only allow player to transport on a forward movement
@@ -442,6 +444,7 @@ public class InputHandler : MonoBehaviour
                     finalPosition = Player.playerObject.transform.position + moveDir;
                     Player.updatePos(playerPos + GridUtils.directionToGridCoords(moveFacing));
                     isMoving = true;
+                    OnMoveBegin();
                 }
                 break;
             case -90:
@@ -457,6 +460,7 @@ public class InputHandler : MonoBehaviour
                     finalPosition = Player.playerObject.transform.position + moveDir;
                     Player.updatePos(playerPos + GridUtils.directionToGridCoords(moveFacing));
                     isMoving = true;
+                    OnMoveBegin();
                 }
                 break;
             case 180:
@@ -471,11 +475,12 @@ public class InputHandler : MonoBehaviour
                     finalPosition = Player.playerObject.transform.position + moveDir;
                     Player.updatePos(playerPos + GridUtils.directionToGridCoords(GridUtils.getOppositeDirection(playerFacing)));
                     isMoving = true;
+                    OnMoveBegin();
                 }
                 break;
         }
         
-        
+
     }
 
     public IEnumerator tutorialTransition(Vector3 worldDest, Vector3 playerPos, string playerFacing, string destZone, Quaternion newRotation)
@@ -786,6 +791,9 @@ public class InputHandler : MonoBehaviour
                     dmgTxt.transform.SetParent(GameObject.Find("PlayerUI").transform);
                     StartCoroutine(UIUtils.fadeObject(dmgTxt, true, .2f));
                     //rest of the damage text animation and handling will be done by a script on the prefab object
+
+                    //play sfx for each part hit (maybe just one instead?)
+                    AudioManager.playEnemyHit(effectiveness);
                 }
 
             } if(bp != null)
@@ -802,6 +810,8 @@ public class InputHandler : MonoBehaviour
         {
             enemyHit.hitByPlayer(damage, type);
         }
+        //play sfx
+        AudioManager.playWeaponAttack(type.ToString());
         //now apply recoil and cooldown to the player's hit action and display an indicator for this
         if(rightEquip)Player.rightCooldown = cooldown;
         else Player.leftCooldown = cooldown;
@@ -840,13 +850,17 @@ public class InputHandler : MonoBehaviour
     }
 
 
-    void OnMoveBegin()
+    void OnMoveBegin() //called after the player's position is updated to the new tile but at the start of the animation
     {
         //disable popup windows tied to entities when movement begins
         //UIUtils.popOut(interactWindow);
 
         //update danger overlay display
-        
+
+        //play sfx dependant on tile type (grass or non-grass for now)
+        DungeonCell currPlayerCell = GridUtils.getCell((int)Player.getPos().x, (int)Player.getPos().y, Player.currentLayer);
+        AudioManager.playFootsteps(currPlayerCell.floorToAssign == "lawn");
+
     }
     void OnMoveEnd()
     {

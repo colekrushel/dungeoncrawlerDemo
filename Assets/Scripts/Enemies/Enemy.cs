@@ -338,6 +338,8 @@ public class Enemy : MonoBehaviour, IHittable
             ICD = ICDBase;
             currentState = enemyState.Stunned;
             currentAction = null;
+            //play sfx
+            AudioManager.playPartBreak();
         }
         
         return effectiveness;
